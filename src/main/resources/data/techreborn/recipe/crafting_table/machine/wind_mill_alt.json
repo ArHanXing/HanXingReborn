@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "wind_mill",
+  "pattern": [
+    "IGI"
+  ],
+  "key": {
+    "G": {
+      "item": "techreborn:solid_fuel_generator"
+    },
+    "I": {
+      "item": "techreborn:magnalium_plate"
+    }
+  },
+  "result": {
+    "id": "techreborn:wind_mill"
+  }
+}

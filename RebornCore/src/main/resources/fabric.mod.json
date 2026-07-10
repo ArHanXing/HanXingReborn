@@ -1,0 +1,55 @@
+{
+	"schemaVersion": 1,
+	"id": "reborncore",
+	"version": "${version}",
+	"name": "Reborn Core",
+	"icon": "assets/reborncore/icon.png",
+	"description": "Reborn Core is a library used for many of the Tech Reborn team's mods, including Tech Reborn, Quantum Storage, Fluxed Redstone, Hardcore Map Reset, and many more.",
+	"license": "MIT",
+	"contact": {
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/reborncore",
+		"sources": "https://github.com/TechReborn/RebornCore",
+		"issues": "https://github.com/TechReborn/RebornCore/issues"
+	},
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"reborncore.RebornCore"
+		],
+		"client": [
+			"reborncore.RebornCoreClient"
+		]
+	},
+	"mixins": [
+		"reborncore.common.mixins.json",
+		{
+			"config": "reborncore.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"fabric-api": ">=0.100.4",
+		"team_reborn_energy": ">=4.1.0",
+		"fabric-biome-api-v1": ">=3.0.0",
+		"minecraft": ">=1.21.0- <1.21.2-"
+	},
+	"breaks": {
+		"quilt_loader": "*"
+	},
+	"authors": [
+		"Team Reborn",
+		"modmuss50",
+		"drcrazy"
+	],
+	"contributors": [
+		"Gigabit101",
+		"Prospector",
+		"Rushmead",
+		"Dragon2488",
+		"Ourten",
+		"coderbot",
+		"estebes"
+	],
+	"accessWidener": "reborncore.accesswidener"
+}

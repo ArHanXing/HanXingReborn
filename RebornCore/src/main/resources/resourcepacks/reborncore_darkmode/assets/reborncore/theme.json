@@ -1,0 +1,8 @@
+{
+	"titleColor": "#FFFFFF",
+	"subtitleColor": "#D1D1D1",
+	"warningTextColor": "#FF0000",
+	"ioInputColor": "#800000FF",
+	"ioOutputColor": "#80FF4500",
+	"ioBothColor": "#8034FF1E"
+}

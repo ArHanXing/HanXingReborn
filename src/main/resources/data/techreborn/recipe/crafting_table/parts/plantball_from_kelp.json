@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+	"group": "plantball",
+  "pattern": [
+    " X ",
+    "XXX",
+    " X "
+  ],
+  "key": {
+    "X": {
+      "item": "minecraft:kelp"
+    }
+  },
+  "result": {
+    "id": "techreborn:plantball"
+  }
+}

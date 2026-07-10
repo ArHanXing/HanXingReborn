@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "TCT",
+    "TBT",
+    "TTT"
+  ],
+  "key": {
+    "T": {
+      "tag": "c:ingots/tin"
+    },
+    "C": {
+      "item": "techreborn:electronic_circuit"
+    },
+    "B": {
+      "item": "techreborn:basic_machine_frame"
+    }
+  },
+  "result": {
+    "id": "techreborn:solid_canning_machine"
+  }
+}

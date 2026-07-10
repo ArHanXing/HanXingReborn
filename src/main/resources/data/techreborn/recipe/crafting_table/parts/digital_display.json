@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ADA",
+    "DGD",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/aluminum"
+    },
+    "C": {
+	  "item": "techreborn:advanced_circuit"
+    },
+    "D": {
+      "item": "minecraft:black_dye"
+    },
+    "G": {
+      "item": "minecraft:glass_pane"
+    }
+  },
+  "result": {
+    "id": "techreborn:digital_display"
+  }
+}

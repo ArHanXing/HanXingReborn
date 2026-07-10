@@ -1,0 +1,340 @@
+plugins {
+	id 'java'
+    id 'groovy'
+    id 'java-library'
+	id 'idea'
+	id 'eclipse'
+	id 'maven-publish'
+	id 'com.diffplug.spotless' version '6.19.0'
+	id 'fabric-loom' version '1.8-SNAPSHOT'
+    id 'me.modmuss50.mod-publish-plugin' version '0.7.4'
+}
+
+repositories {
+	maven {
+        name "REI"
+		url "https://maven.shedaniel.me/"
+        content {
+            includeGroup "me.shedaniel"
+            includeGroup "me.shedaniel.cloth"
+            includeGroup "dev.architectury"
+        }
+	}
+    maven {
+        name "Ladysnake Mods"
+        url "https://maven.ladysnake.org/releases"
+        content {
+            includeGroup "io.github.ladysnake"
+        }
+    }
+	mavenCentral()
+}
+
+def ENV = System.getenv()
+
+group = 'TechReborn'
+
+allprojects {
+    version = project.mod_version + (ENV.GITHUB_ACTIONS ? "" : "+local")
+
+    apply plugin: "fabric-loom"
+    apply plugin: "maven-publish"
+	apply plugin: "com.diffplug.spotless"
+
+    loom {
+        runtimeOnlyLog4j = true
+        splitEnvironmentSourceSets()
+		mixin {
+			useLegacyMixinAp = false
+		}
+    }
+
+    // Shared deps between TR and RC
+    dependencies {
+        minecraft "com.mojang:minecraft:${project.minecraft_version}"
+        mappings "net.fabricmc:yarn:${project.yarn_version}:v2"
+        modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+        //Fabric api
+        modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fapi_version}"
+
+        include(modApi("teamreborn:energy:${project.energy_version}")) {
+            transitive = false
+        }
+    }
+
+    processResources {
+        inputs.property "version", project.version
+
+        filesMatching("fabric.mod.json") {
+            expand "version": project.version
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.encoding = "UTF-8"
+        it.options.release = 21
+    }
+
+    java {
+        withSourcesJar()
+		sourceCompatibility = JavaVersion.VERSION_21
+		targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    publishing {
+        publications {
+            register("maven", MavenPublication) {
+                groupId project.name
+                artifactId project.base.archivesName.get() + "-" + (ENV.GITHUB_REF_NAME ?: "local")
+                version project.version
+
+                from components.java
+            }
+        }
+        repositories {
+            if (ENV.MAVEN_URL) {
+                maven {
+                    url ENV.MAVEN_URL
+                    credentials {
+                        username ENV.MAVEN_USERNAME
+                        password ENV.MAVEN_PASSWORD
+                    }
+                }
+            }
+        }
+    }
+
+	spotless {
+		java {
+			licenseHeaderFile(file("HEADER"))
+			removeUnusedImports()
+			indentWithTabs()
+			trimTrailingWhitespace()
+			endWithNewline()
+		}
+	}
+}
+
+spotless {
+	groovy {
+		licenseHeaderFile(file("HEADER"))
+		indentWithTabs()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+}
+
+processResources {
+    doLast {
+        // Depend on the reborn core version it was built against
+        fileTree(dir: outputs.files.asPath, include: "fabric.mod.json").each {
+            def jsonSlurper = new JsonSlurper()
+            def modJson = jsonSlurper.parseText(it.text)
+
+            modJson.depends.reborncore = "~${project.version}"
+
+            it.text = JsonOutput.toJson(modJson)
+        }
+    }
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/techreborn.accesswidener")
+}
+
+sourceSets {
+    // Add a data gen sourceset
+    datagen {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
+
+    gametest {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
+
+    main {
+        resources {
+            srcDirs += [
+                'src/main/generated'
+            ]
+        }
+    }
+}
+
+allprojects {
+    loom {
+        mods {
+            reborncore {
+                sourceSet project(":RebornCore").sourceSets.main
+                sourceSet project(":RebornCore").sourceSets.client
+            }
+            techreborn {
+                sourceSet project(":").sourceSets.main
+                sourceSet project(":").sourceSets.client
+            }
+            "techreborn-datagen" {
+                sourceSet project(":").sourceSets.datagen
+            }
+            "techreborn-gametest" {
+                sourceSet project(":").sourceSets.gametest
+            }
+        }
+    }
+}
+
+// TechReborn specific dependencies
+dependencies {
+    api project(path: ":RebornCore", configuration: "namedElements")
+    clientImplementation project(":RebornCore").sourceSets.client.output
+
+    include project(":RebornCore")
+
+	optionalClientDependency("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}", true)
+	optionalDependency("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
+
+    // Use groovy for datagen/gametest, if you are copying this you prob dont want it.
+    gametestImplementation 'org.apache.groovy:groovy:4.0.21'
+    datagenImplementation 'org.apache.groovy:groovy:4.0.21'
+
+    gametestImplementation ("com.google.truth:truth:1.1.3") {
+        exclude module: "guava"
+        exclude module: "asm"
+    }
+}
+
+def optionalDependency(String dep) {
+    def exclude = {
+        exclude group: "net.fabricmc.fabric-api"
+        exclude group: "net.fabricmc"
+    }
+    dependencies.modCompileOnly(dep, exclude)
+}
+
+def optionalClientDependency(String dep, runtime = true) {
+	def exclude = {
+		exclude group: "net.fabricmc.fabric-api"
+		exclude group: "net.fabricmc"
+	}
+	dependencies.modClientCompileOnly(dep, exclude)
+
+	if (runtime) {
+		dependencies.modClientRuntimeOnly(dep, exclude)
+	}
+}
+
+loom {
+    runs {
+        // Add a data gen run config
+        datagen {
+            server()
+            name "Data Generation"
+            vmArg "-Dfabric-api.datagen"
+            vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
+            vmArg "-Dfabric-api.datagen.modid=techreborn-datagen"
+            runDir "build/datagen"
+            source sourceSets.datagen
+        }
+
+        // Use to run the tests
+        gametest {
+            server()
+            name "Game Test"
+            vmArg "-Dfabric-api.gametest"
+            vmArg "-Dfabric-api.gametest.report-file=${project.buildDir}/junit.xml"
+            runDir "build/gametest"
+            source sourceSets.gametest
+        }
+
+        // Use to debug tests
+        gametestClient {
+            client()
+            name "Game Test Client"
+            source sourceSets.gametest
+        }
+    }
+}
+
+// Workaround: IntelliJ 的 Kotlin 协程调试器初始化脚本会在配置阶段
+// 过早访问 Loom 任务的 jvmArguments，而 MinecraftProvider 尚未初始化。
+// 使用 afterEvaluate 延迟配置，避免与 init script 产生竞态。
+afterEvaluate {
+    runDatagen {
+        // Doesn't re-run the task when its up-to date
+        outputs.dir('src/main/generated')
+    }
+}
+
+// Workaround: 中文 Windows 下 Gradle Worker Daemon 管道编码冲突
+// 导致 Groovy 编译失败 (ClassNotFoundException: GradleWorkerMain)
+// 设置 fork=false 让编译在主进程中运行，绕过 Worker Daemon
+tasks.withType(GroovyCompile).configureEach {
+	groovyOptions.fork = false
+}
+
+tasks.sourcesJar.dependsOn runDatagen
+
+jar {
+	exclude "**/*.psd"
+    from file('src/main/generated')
+
+    // A bit of a hack to allow the generated sources when they already exist
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    dependsOn 'runDatagen'
+}
+
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+
+publishMods {
+	changelog = providers.environmentVariable("CHANGELOG").orElse("No changelog provided")
+    version = project.version
+	type = providers.environmentVariable("RELEASE_CHANNEL").orElse("release").map {it == "release" ? STABLE : BETA }
+    modLoaders.add("fabric")
+	dryRun = providers.environmentVariable("CURSEFORGE_API_KEY").getOrNull() == null
+
+    def options = curseforgeOptions {
+        accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
+		minecraftVersions.add("1.21")
+        minecraftVersions.add("1.21.1")
+
+        requires {
+            slug = "fabric-api"
+        }
+    }
+
+    curseforge("curseforgeTechReborn") {
+        from options
+        projectId = "233564"
+        file = remapJar.archiveFile
+
+        embeds {
+            slug = "reborncore"
+        }
+        optional {
+            slug = "roughly-enough-items"
+        }
+    }
+
+    curseforge("curseforgeRebornCore") {
+        from options
+        projectId = "237903"
+        file = project(":RebornCore").tasks.remapJar.archiveFile
+		displayName = "RebornCore ${project.version}"
+    }
+
+	github {
+		file = remapJar.archiveFile
+		additionalFiles.from project(":RebornCore").tasks.remapJar.archiveFile
+		repository = providers.environmentVariable("GITHUB_REPOSITORY").orElse("dryrun")
+		accessToken = providers.environmentVariable("GITHUB_TOKEN")
+		commitish = providers.environmentVariable("GITHUB_REF_NAME").orElse("dryrun")
+	}
+}

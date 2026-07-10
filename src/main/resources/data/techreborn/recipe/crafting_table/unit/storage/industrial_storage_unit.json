@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "XBX",
+    "CDC"
+  ],
+  "key": {
+    "P": {
+      "tag": "c:plates/steel"
+    },
+    "B": {
+      "item": "techreborn:industrial_machine_frame"
+    },
+    "D": {
+      "item": "techreborn:digital_display"
+    },
+    "X": {
+      "item": "techreborn:advanced_storage_unit"
+    },
+	"C": {
+	  "item": "techreborn:industrial_circuit"
+	}
+  },
+  "result": {
+    "id": "techreborn:industrial_storage_unit"
+  }
+}

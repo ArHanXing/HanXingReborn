@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+	"BWB",
+	" B ",
+	" B "
+  ],
+  "key": {
+	"B": {
+	  "tag": "c:ingots/bronze"
+	},
+	"W": {
+	  "tag": "minecraft:wool"
+	}
+  },
+  "result": {
+	"id": "techreborn:painting_tool"
+  }
+}

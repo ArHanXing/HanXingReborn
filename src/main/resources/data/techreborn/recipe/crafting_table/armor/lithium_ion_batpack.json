@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BCB",
+    "BPB",
+    "B B"
+  ],
+  "key": {
+    "C": {
+      "item": "techreborn:advanced_circuit"
+    },
+    "P": {
+      "tag": "c:plates/aluminum"
+    },
+    "B": {
+      "item": "techreborn:lithium_ion_battery"
+    }
+  },
+  "result": {
+    "id": "techreborn:lithium_ion_batpack"
+  }
+}

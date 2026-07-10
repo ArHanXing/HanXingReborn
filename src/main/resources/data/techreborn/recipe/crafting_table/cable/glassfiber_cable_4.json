@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "glassfiber_cable",
+  "pattern": [
+    "GGG",
+    "RDR",
+    "GGG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "D": {
+      "tag": "c:dusts/diamond"
+    }
+  },
+  "result": {
+    "id": "techreborn:glassfiber_cable",
+    "count": 4
+  }
+}

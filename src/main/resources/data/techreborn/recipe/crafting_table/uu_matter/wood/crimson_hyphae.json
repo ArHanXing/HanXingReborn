@@ -1,0 +1,19 @@
+{
+  "type": "reborncore:padded",
+  "pattern": [
+    "   ",
+    "   ",
+    "US "
+  ],
+  "key": {
+	"S": {
+      "tag": "c:dusts/saw"
+	},
+    "U": {
+      "item": "techreborn:uu_matter"
+    }
+  },
+  "result": {
+    "id": "minecraft:crimson_hyphae"
+  }
+}

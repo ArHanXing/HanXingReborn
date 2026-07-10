@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "industrial_machine_casing",
+  "pattern": [
+    "RRR",
+    "CAC",
+    "RRR"
+  ],
+  "key": {
+    "A": {
+      "item": "techreborn:industrial_machine_frame"
+    },
+    "R": {
+      "tag": "c:plates/chromium"
+    },
+    "C": {
+      "item": "techreborn:data_storage_core"
+    }
+  },
+  "result": {
+    "id": "techreborn:industrial_machine_casing",
+    "count": 4
+  }
+}

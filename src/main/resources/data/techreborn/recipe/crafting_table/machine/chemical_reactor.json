@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IEI",
+    "CPC",
+    "IEI"
+  ],
+  "key": {
+    "P": {
+      "item": "techreborn:compressor"
+    },
+    "C": {
+      "item": "techreborn:advanced_circuit"
+    },
+    "E": {
+      "item": "techreborn:extractor"
+    },
+    "I": {
+      "tag": "c:plates/invar"
+    }
+  },
+  "result": {
+    "id": "techreborn:chemical_reactor"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "sap_extract": {
+    "category": "block",
+    "sounds": [
+      "techreborn:sap_extract"
+    ]
+  },
+  "block_dismantle": {
+    "category": "block",
+    "sounds": [
+      "techreborn:block_dismantle"
+    ]
+  },
+  "cable_shock": {
+    "category": "block",
+    "sounds": [
+      "techreborn:cable_shock"
+    ]
+  },
+  "auto_crafting": {
+    "category": "block",
+    "sounds": [
+      "techreborn:auto_crafting"
+    ]
+  },
+  "machine_run": {
+    "category": "block",
+    "sounds": [
+      "techreborn:machine_run"
+    ]
+  },
+  "machine_start": {
+    "category": "block",
+    "sounds": [
+      "techreborn:machine_start"
+    ]
+  },
+  "alarm": {
+    "category": "block",
+    "sounds": [
+      "techreborn:alarm"
+    ]
+  },
+  "alarm_2": {
+    "category": "block",
+    "sounds": [
+      "techreborn:alarm_2"
+    ]
+  },
+  "alarm_3": {
+    "category": "block",
+    "sounds": [
+      "techreborn:alarm_3"
+    ]
+  }
+}

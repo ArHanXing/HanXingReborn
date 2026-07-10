@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "overclocker_upgrade",
+  "pattern": [
+    " T ",
+    "WCW"
+  ],
+  "key": {
+    "C": {
+      "item": "techreborn:electronic_circuit"
+    },
+    "T": {
+      "item": "techreborn:nak_coolant_cell_60k"
+    },
+    "W": {
+      "item": "techreborn:insulated_copper_cable"
+    }
+  },
+  "result": {
+    "id": "techreborn:overclocker_upgrade",
+    "count": 2
+  }
+}

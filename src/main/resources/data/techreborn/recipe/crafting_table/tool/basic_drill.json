@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "SBS",
+    "SCS"
+  ],
+  "key": {
+    "S": {
+      "item": "techreborn:refined_iron_ingot"
+    },
+	"B": {
+	  "item": "techreborn:red_cell_battery"
+	},
+    "C": {
+      "item": "techreborn:electronic_circuit"
+    }
+  },
+  "result": {
+    "id": "techreborn:basic_drill"
+  }
+}

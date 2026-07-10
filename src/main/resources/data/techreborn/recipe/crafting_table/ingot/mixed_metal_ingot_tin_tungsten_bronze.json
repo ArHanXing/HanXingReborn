@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "mixed_metal_ingot",
+  "pattern": [
+    "TTT",
+    "MMM",
+    "BBB"
+  ],
+  "key": {
+    "B": {
+      "tag": "c:ingots/tin"
+    },
+    "T": {
+      "tag": "c:ingots/tungsten"
+    },
+    "M": {
+      "tag": "c:ingots/bronze"
+    }
+  },
+  "result": {
+    "id": "techreborn:mixed_metal_ingot",
+    "count": 5
+  }
+}

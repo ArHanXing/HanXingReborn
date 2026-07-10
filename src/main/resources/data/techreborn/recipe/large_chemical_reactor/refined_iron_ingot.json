@@ -1,0 +1,12 @@
+{
+  "type": "techreborn:large_chemical_reactor",
+  "power": 50,
+  "time": 400,
+  "ingredients": [
+    { "item": "minecraft:iron_ingot", "count": 1 },
+    { "item": "minecraft:coal", "count": 1 }
+  ],
+  "outputs": [
+    { "id": "techreborn:refined_iron_ingot", "count": 1 }
+  ]
+}
