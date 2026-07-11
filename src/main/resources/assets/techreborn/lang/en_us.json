@@ -1217,5 +1217,15 @@
   "emi.category.techreborn.plasma_generator": "Plasma Generator",
   "emi.category.techreborn.large_chemical_reactor": "Large Chemical Reactor",
   "emi.category.techreborn.fluid_from_container": "Fluid from Container",
-  "emi.category.techreborn.fluid_into_container": "Fluid into Container"
+  "emi.category.techreborn.fluid_into_container": "Fluid into Container",
+
+  "item.techreborn.basic_ore_prospector": "Basic Ore Prospector",
+  "item.techreborn.advanced_ore_prospector": "Advanced Ore Prospector",
+  "item.techreborn.industrial_ore_prospector": "Industrial Ore Prospector",
+
+  "tooltip.techreborn.ore_prospector.chunks": "Scans %s closest chunks",
+  "tooltip.techreborn.ore_prospector.cost": "Energy per Scan: %s E",
+  "tooltip.techreborn.ore_prospector.no_energy": "Not enough energy to scan!",
+  "tooltip.techreborn.ore_prospector.no_ores": "No ores found in scanned area.",
+  "tooltip.techreborn.ore_prospector.header": "Ore Prospecting Results (%s closest chunks):"
 }

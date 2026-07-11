@@ -1159,5 +1159,15 @@
   "emi.category.techreborn.plasma_generator": "等离子体发电机",
   "emi.category.techreborn.large_chemical_reactor": "大型化学反应釜",
   "emi.category.techreborn.fluid_from_container": "流体取出",
-  "emi.category.techreborn.fluid_into_container": "流体装入"
+  "emi.category.techreborn.fluid_into_container": "流体装入",
+
+  "item.techreborn.basic_ore_prospector": "基础探矿仪",
+  "item.techreborn.advanced_ore_prospector": "高级探矿仪",
+  "item.techreborn.industrial_ore_prospector": "工业探矿仪",
+
+  "tooltip.techreborn.ore_prospector.chunks": "扫描最近的 %s 个区块",
+  "tooltip.techreborn.ore_prospector.cost": "单次扫描能耗: %s E",
+  "tooltip.techreborn.ore_prospector.no_energy": "能量不足，无法扫描！",
+  "tooltip.techreborn.ore_prospector.no_ores": "扫描区域内未发现矿石。",
+  "tooltip.techreborn.ore_prospector.header": "探矿结果 (最近的 %s 个区块):"
 }

@@ -168,6 +168,10 @@ public class TRContent {
 	public static Item NANOSABER;
 	public static Item OMNI_TOOL;
 
+	public static Item BASIC_ORE_PROSPECTOR;
+	public static Item ADVANCED_ORE_PROSPECTOR;
+	public static Item INDUSTRIAL_ORE_PROSPECTOR;
+
 	public static Item DEBUG_TOOL;
 
 	// Other

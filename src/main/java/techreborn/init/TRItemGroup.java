@@ -599,6 +599,9 @@ public class TRItemGroup {
 		addPoweredItem(TRContent.ADVANCED_CHAINSAW, entries, Items.BUCKET, false);
 		addPoweredItem(TRContent.INDUSTRIAL_CHAINSAW, entries, Items.BUCKET, false);
 		addPoweredItem(TRContent.OMNI_TOOL, entries, Items.BUCKET, false);
+		addPoweredItem(TRContent.BASIC_ORE_PROSPECTOR, entries, Items.BUCKET, false);
+		addPoweredItem(TRContent.ADVANCED_ORE_PROSPECTOR, entries, Items.BUCKET, false);
+		addPoweredItem(TRContent.INDUSTRIAL_ORE_PROSPECTOR, entries, Items.BUCKET, false);
 		entries.addBefore(Items.BUCKET, TRContent.CELL);
 		addPoweredItem(TRContent.RED_CELL_BATTERY, entries, Items.OAK_BOAT, false);
 		addPoweredItem(TRContent.LITHIUM_ION_BATTERY, entries, Items.OAK_BOAT, false);

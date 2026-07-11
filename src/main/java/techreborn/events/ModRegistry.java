@@ -218,6 +218,16 @@ public class ModRegistry {
 		RebornRegistry.registerItem(TRContent.NANOSABER = InitUtils.setup(new NanosaberItem(), "nanosaber"));
 		RebornRegistry.registerItem(TRContent.OMNI_TOOL = InitUtils.setup(new OmniToolItem(), "omni_tool"));
 
+		RebornRegistry.registerItem(TRContent.BASIC_ORE_PROSPECTOR = InitUtils.setup(
+			new OreProspectorItem(3, TechRebornConfig.basicProspectorCharge, TechRebornConfig.basicProspectorCost, RcEnergyTier.MEDIUM),
+			"basic_ore_prospector"));
+		RebornRegistry.registerItem(TRContent.ADVANCED_ORE_PROSPECTOR = InitUtils.setup(
+			new OreProspectorItem(7, TechRebornConfig.advancedProspectorCharge, TechRebornConfig.advancedProspectorCost, RcEnergyTier.HIGH),
+			"advanced_ore_prospector"));
+		RebornRegistry.registerItem(TRContent.INDUSTRIAL_ORE_PROSPECTOR = InitUtils.setup(
+			new OreProspectorItem(11, TechRebornConfig.industrialProspectorCharge, TechRebornConfig.industrialProspectorCost, RcEnergyTier.EXTREME),
+			"industrial_ore_prospector"));
+
 		// Armor
 		RebornRegistry.registerItem(TRContent.CLOAKING_DEVICE = InitUtils.setup(new CloakingDeviceItem(), "cloaking_device"));
 

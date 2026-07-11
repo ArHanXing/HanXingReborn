@@ -247,6 +247,24 @@ public class TechRebornConfig {
 	@Config(config = "items", category = "power", key = "rockCutterCost", comment = "Energy Cost for Rock Cutter")
 	public static int rockCutterCost = 10;
 
+	@Config(config = "items", category = "power", key = "basicProspectorCharge", comment = "Energy Capacity for Basic Ore Prospector")
+	public static int basicProspectorCharge = 10_000;
+
+	@Config(config = "items", category = "power", key = "basicProspectorCost", comment = "Energy Cost per scan for Basic Ore Prospector")
+	public static int basicProspectorCost = 500;
+
+	@Config(config = "items", category = "power", key = "advancedProspectorCharge", comment = "Energy Capacity for Advanced Ore Prospector")
+	public static int advancedProspectorCharge = 100_000;
+
+	@Config(config = "items", category = "power", key = "advancedProspectorCost", comment = "Energy Cost per scan for Advanced Ore Prospector")
+	public static int advancedProspectorCost = 2_000;
+
+	@Config(config = "items", category = "power", key = "industrialProspectorCharge", comment = "Energy Capacity for Industrial Ore Prospector")
+	public static int industrialProspectorCharge = 1_000_000;
+
+	@Config(config = "items", category = "power", key = "industrialProspectorCost", comment = "Energy Cost per scan for Industrial Ore Prospector")
+	public static int industrialProspectorCost = 10_000;
+
 	@Config(config = "items", category = "power", key = "lapotronPackCharge", comment = "Energy Capacity for Lapotron Pack")
 	public static int lapotronPackCharge = 100_000_000;
 
