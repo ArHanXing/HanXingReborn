@@ -1157,5 +1157,7 @@
   "emi.category.techreborn.diesel_generator": "柴油发电机",
   "emi.category.techreborn.semi_fluid_generator": "半流质发电机",
   "emi.category.techreborn.plasma_generator": "等离子体发电机",
-  "emi.category.techreborn.large_chemical_reactor": "大型化学反应釜"
+  "emi.category.techreborn.large_chemical_reactor": "大型化学反应釜",
+  "emi.category.techreborn.fluid_from_container": "流体取出",
+  "emi.category.techreborn.fluid_into_container": "流体装入"
 }

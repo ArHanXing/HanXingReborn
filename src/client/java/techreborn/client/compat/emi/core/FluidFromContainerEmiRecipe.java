@@ -12,6 +12,8 @@ import dev.emi.emi.api.widget.WidgetHolder;
 
 import net.minecraft.util.Identifier;
 
+import techreborn.client.compat.emi.TREmiPlugin;
+
 public class FluidFromContainerEmiRecipe implements EmiRecipe {
 	private final Identifier id;
 	private final EmiStack output;
@@ -27,9 +29,7 @@ public class FluidFromContainerEmiRecipe implements EmiRecipe {
 
 	@Override
 	public EmiRecipeCategory getCategory() {
-		return new EmiRecipeCategory(
-			Identifier.of("emi", "fluid_from_container"),
-			EmiStack.EMPTY);
+		return TREmiPlugin.FLUID_FROM_CONTAINER_CATEGORY;
 	}
 
 	@Override

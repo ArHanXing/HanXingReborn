@@ -17,6 +17,7 @@ import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Identifier;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.item.Items;
 
 import java.util.List;
 
@@ -140,6 +141,11 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiRecipeCategory LARGE_CHEMICAL_REACTOR_CATEGORY =
 		new EmiRecipeCategory(trId("large_chemical_reactor"), LARGE_CHEMICAL_REACTOR_STACK,
 			EmiTextures.LARGE_CHEMICAL_REACTOR, EmiRecipeSorting.compareOutputThenInput());
+
+	public static final EmiRecipeCategory FLUID_FROM_CONTAINER_CATEGORY =
+		new EmiRecipeCategory(trId("fluid_from_container"), EmiStack.of(Items.BUCKET));
+	public static final EmiRecipeCategory FLUID_INTO_CONTAINER_CATEGORY =
+		new EmiRecipeCategory(trId("fluid_into_container"), EmiStack.of(Items.WATER_BUCKET));
 
 	@Override
 	public void register(EmiRegistry registry) {
@@ -329,6 +335,10 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(VanillaEmiRecipeCategories.CRAFTING, AUTO_CRAFTING_TABLE_STACK);
 		registry.addWorkstation(VanillaEmiRecipeCategories.SMELTING, IRON_FURNACE_STACK);
 		registry.addWorkstation(VanillaEmiRecipeCategories.SMELTING, ELECTRIC_FURNACE_STACK);
+
+		// Fluid ↔ Cell container recipes
+		registry.addCategory(FLUID_FROM_CONTAINER_CATEGORY);
+		registry.addCategory(FLUID_INTO_CONTAINER_CATEGORY);
 
 		// Cells should be compared with NBT data
 		registry.setDefaultComparison(CELL, Comparison.compareComponents());
