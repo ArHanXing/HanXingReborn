@@ -27,6 +27,17 @@ repositories {
             includeGroup "io.github.ladysnake"
         }
     }
+    maven {
+        name "Modrinth"
+        url "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven {
+        name "TerraformersMC"
+        url "https://maven.terraformersmc.com/releases"
+    }
 	mavenCentral()
 }
 
@@ -61,6 +72,7 @@ allprojects {
         include(modApi("teamreborn:energy:${project.energy_version}")) {
             transitive = false
         }
+
     }
 
     processResources {
@@ -197,7 +209,11 @@ dependencies {
     include project(":RebornCore")
 
 	optionalClientDependency("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}", true)
+
 	optionalDependency("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
+
+    modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
+    modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
 
     // Use groovy for datagen/gametest, if you are copying this you prob dont want it.
     gametestImplementation 'org.apache.groovy:groovy:4.0.21'

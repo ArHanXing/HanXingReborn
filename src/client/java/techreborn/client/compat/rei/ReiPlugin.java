@@ -118,6 +118,7 @@ public class ReiPlugin implements REIClientPlugin {
 		iconMap.put(ModRecipes.INDUSTRIAL_ELECTROLYZER, Machine.INDUSTRIAL_ELECTROLYZER);
 		iconMap.put(ModRecipes.INDUSTRIAL_GRINDER, Machine.INDUSTRIAL_GRINDER);
 		iconMap.put(ModRecipes.INDUSTRIAL_SAWMILL, Machine.INDUSTRIAL_SAWMILL);
+		iconMap.put(ModRecipes.LARGE_CHEMICAL_REACTOR, Machine.LARGE_CHEMICAL_REACTOR);
 		iconMap.put(ModRecipes.ROLLING_MACHINE, Machine.ROLLING_MACHINE);
 		iconMap.put(ModRecipes.SCRAPBOX, () -> TRContent.SCRAP_BOX);
 		iconMap.put(ModRecipes.SOLID_CANNING_MACHINE, Machine.SOLID_CANNING_MACHINE);
@@ -144,6 +145,7 @@ public class ReiPlugin implements REIClientPlugin {
 		registry.add(new ElectrolyzerCategory<>(ModRecipes.INDUSTRIAL_ELECTROLYZER));
 		registry.add(new GrinderCategory<>(ModRecipes.INDUSTRIAL_GRINDER));
 		registry.add(new SawmillCategory<>(ModRecipes.INDUSTRIAL_SAWMILL));
+		registry.add(new LargeChemicalReactorCategory<>(ModRecipes.LARGE_CHEMICAL_REACTOR));
 		registry.add(new RollingMachineCategory(ModRecipes.ROLLING_MACHINE));
 		registry.add(new OneInputOneOutputCategory<>(ModRecipes.SCRAPBOX));
 		registry.add(new TwoInputsCenterOutputCategory<>(ModRecipes.SOLID_CANNING_MACHINE));
@@ -171,6 +173,7 @@ public class ReiPlugin implements REIClientPlugin {
 		addWorkstations(ModRecipes.INDUSTRIAL_ELECTROLYZER, EntryStacks.of(Machine.INDUSTRIAL_ELECTROLYZER));
 		addWorkstations(ModRecipes.INDUSTRIAL_GRINDER, EntryStacks.of(Machine.INDUSTRIAL_GRINDER));
 		addWorkstations(ModRecipes.INDUSTRIAL_SAWMILL, EntryStacks.of(Machine.INDUSTRIAL_SAWMILL));
+		addWorkstations(ModRecipes.LARGE_CHEMICAL_REACTOR, EntryStacks.of(Machine.LARGE_CHEMICAL_REACTOR));
 		addWorkstations(ModRecipes.ROLLING_MACHINE, EntryStacks.of(Machine.ROLLING_MACHINE));
 		addWorkstations(ModRecipes.SOLID_CANNING_MACHINE, EntryStacks.of(Machine.SOLID_CANNING_MACHINE));
 		addWorkstations(ModRecipes.VACUUM_FREEZER, EntryStacks.of(Machine.VACUUM_FREEZER));
