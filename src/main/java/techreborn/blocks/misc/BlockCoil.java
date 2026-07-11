@@ -24,12 +24,15 @@
 
 package techreborn.blocks.misc;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -51,11 +54,20 @@ import java.util.List;
  */
 public class BlockCoil extends BlockMultiblockBase implements BlockEntityProvider {
 
+	public static final BooleanProperty ACTIVE = BooleanProperty.of("active");
+
 	public final int heat;
 
 	public BlockCoil(int heat) {
 		super(TRBlockSettings.machineCasing());
 		this.heat = heat;
+		setDefaultState(getDefaultState().with(ACTIVE, false));
+	}
+
+	@Override
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+		super.appendProperties(builder);
+		builder.add(ACTIVE);
 	}
 
 	public static int getHeatFromState(BlockState state) {

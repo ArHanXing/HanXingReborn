@@ -1,1 +1,6 @@
-{"variants": {"": { "model": "techreborn:block/machines/structure/coil_superconductor" }}}
+{
+  "variants": {
+    "active=false": { "model": "techreborn:block/machines/structure/coil_superconductor" },
+    "active=true": { "model": "techreborn:block/machines/structure/coil_superconductor_bloom" }
+  }
+}

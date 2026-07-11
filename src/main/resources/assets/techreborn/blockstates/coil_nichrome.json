@@ -1,1 +1,6 @@
-{"variants": {"": { "model": "techreborn:block/machines/structure/coil_nichrome" }}}
+{
+  "variants": {
+    "active=false": { "model": "techreborn:block/machines/structure/coil_nichrome" },
+    "active=true": { "model": "techreborn:block/machines/structure/coil_nichrome_bloom" }
+  }
+}

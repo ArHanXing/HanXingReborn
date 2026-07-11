@@ -1,1 +1,6 @@
-{"variants": {"": { "model": "techreborn:block/machines/structure/coil_kanthal" }}}
+{
+  "variants": {
+    "active=false": { "model": "techreborn:block/machines/structure/coil_kanthal" },
+    "active=true": { "model": "techreborn:block/machines/structure/coil_kanthal_bloom" }
+  }
+}

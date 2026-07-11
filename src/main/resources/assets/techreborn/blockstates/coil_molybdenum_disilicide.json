@@ -1,1 +1,6 @@
-{"variants": {"": { "model": "techreborn:block/machines/structure/coil_molybdenum_disilicide" }}}
+{
+  "variants": {
+    "active=false": { "model": "techreborn:block/machines/structure/coil_molybdenum_disilicide" },
+    "active=true": { "model": "techreborn:block/machines/structure/coil_molybdenum_disilicide_bloom" }
+  }
+}

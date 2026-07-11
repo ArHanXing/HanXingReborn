@@ -1,1 +1,6 @@
-{"variants": {"": { "model": "techreborn:block/machines/structure/coil_tritanium" }}}
+{
+  "variants": {
+    "active=false": { "model": "techreborn:block/machines/structure/coil_tritanium" },
+    "active=true": { "model": "techreborn:block/machines/structure/coil_tritanium_bloom" }
+  }
+}

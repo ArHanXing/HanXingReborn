@@ -1,1 +1,6 @@
-{"variants": {"": { "model": "techreborn:block/machines/structure/coil_rtm_alloy" }}}
+{
+  "variants": {
+    "active=false": { "model": "techreborn:block/machines/structure/coil_rtm_alloy" },
+    "active=true": { "model": "techreborn:block/machines/structure/coil_rtm_alloy_bloom" }
+  }
+}

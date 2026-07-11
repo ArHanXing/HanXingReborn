@@ -32,6 +32,8 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.blockentity.MultiblockWriter;
 import reborncore.common.multiblock.IMultiblockPart;
 import reborncore.common.recipes.RecipeCrafter;
@@ -48,11 +50,13 @@ import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
 import techreborn.multiblocks.MultiBlockCasing;
 
+import java.util.Optional;
 import java.util.function.BiPredicate;
 
 public class IndustrialBlastFurnaceBlockEntity extends GenericMachineBlockEntity implements BuiltScreenHandlerProvider {
 
 	private int cachedHeat;
+	private boolean coilsActive = false;
 
 	public IndustrialBlastFurnaceBlockEntity(BlockPos pos, BlockState state) {
 		super(TRBlockEntities.INDUSTRIAL_BLAST_FURNACE, pos, state, "IndustrialBlastFurnace", TechRebornConfig.industrialBlastFurnaceMaxInput, TechRebornConfig.industrialBlastFurnaceMaxEnergy, TRContent.Machine.INDUSTRIAL_BLAST_FURNACE.block, 4);
@@ -158,4 +162,48 @@ public class IndustrialBlastFurnaceBlockEntity extends GenericMachineBlockEntity
 				.sync(PacketCodecs.INTEGER, this::getHeat, this::setHeat).addInventory().create(this, syncID);
 	}
 
+	// ---- tick with coil bloom ----
+
+	@Override
+	public void tick(World world, BlockPos pos, BlockState state, MachineBaseBlockEntity blockEntity) {
+		super.tick(world, pos, state, blockEntity);
+		if (world.isClient) return;
+
+		boolean shouldBloom = crafter.currentRecipe != null && crafter.currentTickTime > 0;
+		if (shouldBloom != coilsActive) {
+			coilsActive = shouldBloom;
+			updateCoilBloomState(shouldBloom);
+		}
+	}
+
+	/**
+	 * Sets the ACTIVE blockstate on every {@link BlockCoil} inside the multiblock
+	 * so that coil textures switch to the bloom variant while the machine is working.
+	 */
+	private void updateCoilBloomState(boolean bloom) {
+		getMultiblockCasing().ifPresent(casing -> {
+			for (final IMultiblockPart part : casing.connectedParts) {
+				BlockPos partPos = part.getPos();
+				BlockState partState = world.getBlockState(partPos);
+				if (partState.getBlock() instanceof BlockCoil) {
+					world.setBlockState(partPos, partState.with(BlockCoil.ACTIVE, bloom), 2);
+				}
+			}
+		});
+	}
+
+	/**
+	 * Resolves the assembled multiblock casing from the controller position.
+	 */
+	private Optional<MultiBlockCasing> getMultiblockCasing() {
+		if (world == null || !isMultiblockValid()) return Optional.empty();
+		final BlockPos location = pos.offset(getFacing().getOpposite(), 2);
+		final BlockEntity blockEntity = world.getBlockEntity(location);
+		if (blockEntity instanceof MachineCasingBlockEntity casing
+				&& casing.isConnected()
+				&& casing.getMultiblockController().isAssembled()) {
+			return Optional.of(casing.getMultiblockController());
+		}
+		return Optional.empty();
+	}
 }

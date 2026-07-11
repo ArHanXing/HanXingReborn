@@ -1,1 +1,6 @@
-{"variants": {"": { "model": "techreborn:block/machines/structure/coil_naquadah" }}}
+{
+  "variants": {
+    "active=false": { "model": "techreborn:block/machines/structure/coil_naquadah" },
+    "active=true": { "model": "techreborn:block/machines/structure/coil_naquadah_bloom" }
+  }
+}

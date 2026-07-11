@@ -1,1 +1,6 @@
-{"variants": {"": { "model": "techreborn:block/machines/structure/coil_cupronickel" }}}
+{
+  "variants": {
+    "active=false": { "model": "techreborn:block/machines/structure/coil_cupronickel" },
+    "active=true": { "model": "techreborn:block/machines/structure/coil_cupronickel_bloom" }
+  }
+}
