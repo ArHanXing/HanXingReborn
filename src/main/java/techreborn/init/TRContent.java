@@ -695,6 +695,46 @@ public class TRContent {
 		}
 	}
 
+	/**
+	 * GT5-style coil blocks for multiblock machines.
+	 * Each coil tier defines a fixed heat value; machines using coils
+	 * (like the Industrial Blast Furnace) derive their temperature from
+	 * the unique coil type placed in the structure.
+	 */
+	public enum Coils implements ItemConvertible {
+		CUPRONICKEL(1000),
+		KANTHAL(1500),
+		NICHROME(2000),
+		MOLYBDENUM_DISILICIDE(2250),
+		TUNGSTENSTEEL(2500),
+		HSSG(3000),
+		RTM_ALLOY(3500),
+		NAQUADAH(4000),
+		TRINIUM(5000),
+		TRITANIUM(6000),
+		SUPERCONDUCTOR(10000);
+
+		public final String name;
+		public final Block block;
+		public final int heat;
+
+		Coils(int heat) {
+			this.name = "coil_" + this.toString().toLowerCase(Locale.ROOT);
+			this.heat = heat;
+			this.block = new BlockCoil(heat);
+			InitUtils.setup(block, name);
+		}
+
+		public ItemStack getStack() {
+			return new ItemStack(block);
+		}
+
+		@Override
+		public Item asItem() {
+			return block.asItem();
+		}
+	}
+
 
 	public enum Machine implements ItemConvertible {
 		ALLOY_SMELTER(new GenericMachineBlock(GuiType.ALLOY_SMELTER, AlloySmelterBlockEntity::new)),

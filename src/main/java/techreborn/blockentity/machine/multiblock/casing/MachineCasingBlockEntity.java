@@ -94,10 +94,10 @@ public class MachineCasingBlockEntity extends RectangularMultiblockBlockEntityBa
 
 	@Override
 	public void tick(World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
-		// Compatible with old versions
+		// Compatible with old versions — only BlockMachineCasing has the neighbors property
 		if (firstLoad) {
 			firstLoad = false;
-			if (state.get(DirectionUtils.HORIZONTAL_NEIGHBORS) == 0) {
+			if (state.getBlock() instanceof BlockMachineCasing && state.get(DirectionUtils.HORIZONTAL_NEIGHBORS) == 0) {
 				DirectionUtils.loadHorizontalNeighbors(world, pos, state, block -> block instanceof BlockMachineCasing);
 			}
 		}

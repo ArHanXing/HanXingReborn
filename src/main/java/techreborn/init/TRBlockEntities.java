@@ -98,7 +98,8 @@ public class TRBlockEntities {
 	public static final BlockEntityType<ChargeOMatBlockEntity> CHARGE_O_MAT = register(ChargeOMatBlockEntity::new, "charge_o_mat", TRContent.Machine.CHARGE_O_MAT);
 	public static final BlockEntityType<PlayerDetectorBlockEntity> PLAYER_DETECTOR = register(PlayerDetectorBlockEntity::new, "player_detector", TRContent.Machine.PLAYER_DETECTOR);
 	public static final BlockEntityType<CableBlockEntity> CABLE = register(CableBlockEntity::new, "cable", TRContent.Cables.values());
-	public static final BlockEntityType<MachineCasingBlockEntity> MACHINE_CASINGS = register(MachineCasingBlockEntity::new, "machine_casing", TRContent.MachineBlocks.getCasings());
+	public static final BlockEntityType<MachineCasingBlockEntity> MACHINE_CASINGS = register(MachineCasingBlockEntity::new, "machine_casing",
+		getMachineCasingBlocks());
 	public static final BlockEntityType<DragonEggSyphonBlockEntity> DRAGON_EGG_SYPHON = register(DragonEggSyphonBlockEntity::new, "dragon_egg_syphon", TRContent.Machine.DRAGON_EGG_SYPHON);
 	public static final BlockEntityType<AssemblingMachineBlockEntity> ASSEMBLY_MACHINE = register(AssemblingMachineBlockEntity::new, "assembly_machine", TRContent.Machine.ASSEMBLY_MACHINE);
 	public static final BlockEntityType<DieselGeneratorBlockEntity> DIESEL_GENERATOR = register(DieselGeneratorBlockEntity::new, "diesel_generator", TRContent.Machine.DIESEL_GENERATOR);
@@ -167,4 +168,12 @@ public class TRBlockEntities {
 		return blockEntityType;
 	}
 
+	private static ItemConvertible[] getMachineCasingBlocks() {
+		ItemConvertible[] casings = TRContent.MachineBlocks.getCasings();
+		ItemConvertible[] coils = TRContent.Coils.values();
+		ItemConvertible[] all = new ItemConvertible[casings.length + coils.length];
+		System.arraycopy(casings, 0, all, 0, casings.length);
+		System.arraycopy(coils, 0, all, casings.length, coils.length);
+		return all;
+	}
 }

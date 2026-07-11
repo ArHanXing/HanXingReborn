@@ -26,7 +26,6 @@ package techreborn.blockentity.machine.multiblock;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.codec.PacketCodecs;
@@ -42,7 +41,7 @@ import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
 import techreborn.blockentity.machine.GenericMachineBlockEntity;
 import techreborn.blockentity.machine.multiblock.casing.MachineCasingBlockEntity;
-import techreborn.blocks.misc.BlockMachineCasing;
+import techreborn.blocks.misc.BlockCoil;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
@@ -68,26 +67,35 @@ public class IndustrialBlastFurnaceBlockEntity extends GenericMachineBlockEntity
 		Block basic = TRContent.MachineBlocks.BASIC.getCasing();
 		Block advanced = TRContent.MachineBlocks.ADVANCED.getCasing();
 		Block industrial = TRContent.MachineBlocks.INDUSTRIAL.getCasing();
-		BlockState lava = Blocks.LAVA.getDefaultState();
 
 		BiPredicate<BlockView, BlockPos> casing = (view, pos) -> {
 			Block block = view.getBlockState(pos).getBlock();
 			return basic == block || advanced == block || industrial == block;
 		};
 
-		BiPredicate<BlockView, BlockPos> maybeLava = (view, pos) -> {
-			BlockState state = view.getBlockState(pos);
-			return state == lava || state.getBlock() == Blocks.AIR;
+		// Coil predicate: any block that is a BlockCoil (covers all coil tiers)
+		BiPredicate<BlockView, BlockPos> coil = (view, pos) -> {
+			return view.getBlockState(pos).getBlock() instanceof BlockCoil;
 		};
 
 		BlockState state = basic.getDefaultState();
+		// Use cupronickel coil as the hologram representative for coil layers
+		BlockState coilState = TRContent.Coils.CUPRONICKEL.block.getDefaultState();
 		writer.translate(1, 0, -1)
 				.fill(0, 0, 0, 3, 1, 3, casing, state)
-				.ring(Direction.Axis.Y, 3, 1, 3, casing, state, maybeLava, lava)
-				.ring(Direction.Axis.Y, 3, 2, 3, casing, state, maybeLava, lava)
+				.ringWithAir(Direction.Axis.Y, 3, 1, 3, coil, coilState)
+				.ringWithAir(Direction.Axis.Y, 3, 2, 3, coil, coilState)
 				.fill(0, 3, 0, 3, 4, 3, casing, state);
 	}
 
+	/**
+	 * Computes the Industrial Blast Furnace's heat by scanning the multiblock
+	 * frame for coil blocks. Only one coil type may be used; mixed coils
+	 * return zero heat (disabling the machine).
+	 * <p>
+	 * This replaces the old behaviour of summing all casing heat capacities.
+	 * Each coil tier now provides a fixed, GT5-style temperature.
+	 */
 	public int getHeat() {
 		if (!isMultiblockValid()) {
 			return 0;
@@ -102,23 +110,31 @@ public class IndustrialBlastFurnaceBlockEntity extends GenericMachineBlockEntity
 					&& ((MachineCasingBlockEntity) blockEntity).getMultiblockController().isAssembled()) {
 				final MultiBlockCasing casing = ((MachineCasingBlockEntity) blockEntity).getMultiblockController();
 
-				int heat = 0;
-
 				// Bottom center shouldn't have any blockEntity entities below it
 				if (world.getBlockState(new BlockPos(location.getX(), location.getY() - 1, location.getZ()))
 						.getBlock() == blockEntity.getWorld().getBlockState(blockEntity.getPos()).getBlock()) {
 					return 0;
 				}
 
+				// Scan for coils — no mixing allowed
+				Block foundCoilBlock = null;
+
 				for (final IMultiblockPart part : casing.connectedParts) {
-					heat += BlockMachineCasing.getHeatFromState(part.getCachedState());
+					BlockState state = part.getCachedState();
+					Block block = state.getBlock();
+					if (block instanceof BlockCoil) {
+						if (foundCoilBlock == null) {
+							foundCoilBlock = block;
+						} else if (foundCoilBlock != block) {
+							// Mixed coils → reject
+							return 0;
+						}
+					}
 				}
 
-				if (world.getBlockState(location.offset(Direction.UP, 1)).getBlock() == Blocks.LAVA
-						&& world.getBlockState(location.offset(Direction.UP, 2)).getBlock() == Blocks.LAVA) {
-					heat += 500;
+				if (foundCoilBlock instanceof BlockCoil coil) {
+					return coil.heat;
 				}
-				return heat;
 			}
 		}
 

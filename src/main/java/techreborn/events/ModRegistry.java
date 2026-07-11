@@ -77,6 +77,7 @@ public class ModRegistry {
 			RebornRegistry.registerBlock(value.frame, itemGroup);
 			RebornRegistry.registerBlock(value.casing, itemGroup);
 		});
+		Arrays.stream(Coils.values()).forEach(value -> RebornRegistry.registerBlock(value.block, itemGroup));
 		Arrays.stream(SolarPanels.values()).forEach(value -> RebornRegistry.registerBlock(value.block, itemGroup));
 		Arrays.stream(StorageUnit.values()).forEach(value -> RebornRegistry.registerBlock(value.block, itemGroup));
 		Arrays.stream(StorageUnit.values()).map(StorageUnit::getUpgrader).filter(Optional::isPresent).forEach(value -> RebornRegistry.registerItem(value.get()));
