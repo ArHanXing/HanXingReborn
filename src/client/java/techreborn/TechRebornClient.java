@@ -29,6 +29,8 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.minecraft.client.item.ClampedModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
@@ -48,7 +50,10 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.GlobalPos;
 import org.jetbrains.annotations.Nullable;
 import reborncore.client.ClientJumpEvent;
@@ -61,6 +66,8 @@ import techreborn.client.ClientboundPacketHandlers;
 import techreborn.client.events.ClientJumpHandler;
 import techreborn.client.events.StackToolTipHandler;
 import techreborn.client.keybindings.KeyBindings;
+import techreborn.client.multiblock.MultiblockSelector;
+import techreborn.client.multiblock.MultiblockSelectorRenderer;
 import techreborn.client.render.BaseDynamicFluidBakedModel;
 import techreborn.client.render.DynamicBucketBakedModel;
 import techreborn.client.render.DynamicCellBakedModel;
@@ -150,6 +157,34 @@ public class TechRebornClient implements ClientModInitializer {
 
 		StackToolTipHandler.setup();
 		ClientboundPacketHandlers.init();
+
+		MultiblockSelectorRenderer.init();
+		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+			if (world.isClient && player.getStackInHand(hand).isOf(TRContent.MULTIBLOCK_SELECTOR)) {
+				MultiblockSelector.INSTANCE.onUseBlock(player, world, hitResult.getBlockPos());
+				return ActionResult.SUCCESS;
+			}
+			return ActionResult.PASS;
+		});
+		UseItemCallback.EVENT.register((player, world, hand) -> {
+			if (world.isClient && player.getStackInHand(hand).isOf(TRContent.MULTIBLOCK_SELECTOR)) {
+				MultiblockSelector.INSTANCE.onUseItem(player);
+				return TypedActionResult.success(player.getStackInHand(hand));
+			}
+			return TypedActionResult.pass(player.getStackInHand(hand));
+		});
+
+		// Shift + left-click air clears the current selection
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			if (client.player != null
+					&& client.player.isSneaking()
+					&& client.player.getMainHandStack().isOf(TRContent.MULTIBLOCK_SELECTOR)
+					&& client.crosshairTarget != null
+					&& client.crosshairTarget.getType() == HitResult.Type.MISS
+					&& client.options.attackKey.wasPressed()) {
+				MultiblockSelector.INSTANCE.clearSelection(client.player);
+			}
+		});
 
 		GuiBase.wrenchStack = new ItemStack(TRContent.WRENCH);
 		GuiBase.fluidCellProvider = DynamicCellItem::getCellWithFluid;

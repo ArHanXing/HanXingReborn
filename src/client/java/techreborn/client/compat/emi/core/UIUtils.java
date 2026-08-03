@@ -1,7 +1,30 @@
+/*
+ * This file is part of TechReborn, licensed under the MIT License (MIT).
+ *
+ * Copyright (c) 2026 TechReborn
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package techreborn.client.compat.emi.core;
 
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
@@ -18,7 +41,6 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 
-import java.util.List;
 
 public class UIUtils {
 	public static final float FLUID_PATCH_WIDTH = 16f;
@@ -54,7 +76,7 @@ public class UIUtils {
 	}
 
 	public static void renderFluid(MatrixStack matrices, Sprite[] sprites, int color, int x, int areaY,
-	                               float areaHeight, float fluidHeight, float fluidWidth) {
+								float areaHeight, float fluidHeight, float fluidWidth) {
 		if (sprites == null || sprites.length < 1 || sprites[0] == null) {
 			return;
 		}
@@ -85,8 +107,8 @@ public class UIUtils {
 	}
 
 	private static void buildFluidHorizontalStrip(BufferBuilder bufferBuilder, Matrix4f model,
-	                                              Sprite sprite, float x0, float y0,
-	                                              float width, float height, float r, float g, float b) {
+												Sprite sprite, float x0, float y0,
+												float width, float height, float r, float g, float b) {
 		int fluidPatchCount = (int) (width / FLUID_PATCH_WIDTH);
 		for (int i = 0; i < fluidPatchCount; i++) {
 			buildFluidPatch(bufferBuilder, model, sprite, x0 + FLUID_PATCH_WIDTH * i, y0, FLUID_PATCH_WIDTH, height, r, g, b);
@@ -96,7 +118,7 @@ public class UIUtils {
 	}
 
 	private static void buildFluidPatch(BufferBuilder bufferBuilder, Matrix4f model, Sprite sprite,
-	                                    float x0, float y0, float width, float height, float r, float g, float b) {
+										float x0, float y0, float width, float height, float r, float g, float b) {
 		float x1 = x0 + width;
 		float y1 = y0 + height;
 		float uMax = sprite.getMaxU();

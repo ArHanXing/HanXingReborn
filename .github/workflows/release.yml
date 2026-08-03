@@ -17,6 +17,7 @@ jobs:
       image: eclipse-temurin:21-jdk
       options: --user root
     steps:
+      - run: chmod +x ./gradlew
       - run: apt update && apt install git -y
       - run: git config --global --add safe.directory /__w/TechReborn/TechReborn
       - uses: actions/checkout@v4

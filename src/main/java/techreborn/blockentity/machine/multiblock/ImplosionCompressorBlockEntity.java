@@ -27,21 +27,18 @@ package techreborn.blockentity.machine.multiblock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import reborncore.common.blockentity.MultiblockWriter;
 import reborncore.common.crafting.RebornRecipe;
 import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
-import techreborn.blockentity.machine.GenericMachineBlockEntity;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
 
-public class ImplosionCompressorBlockEntity extends GenericMachineBlockEntity implements BuiltScreenHandlerProvider {
+public class ImplosionCompressorBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
 	public ImplosionCompressorBlockEntity(BlockPos pos, BlockState state) {
 		super(TRBlockEntities.IMPLOSION_COMPRESSOR, pos, state, "ImplosionCompressor", TechRebornConfig.implosionCompressorMaxInput, TechRebornConfig.implosionCompressorMaxEnergy, TRContent.Machine.IMPLOSION_COMPRESSOR.block, 4);
@@ -52,11 +49,8 @@ public class ImplosionCompressorBlockEntity extends GenericMachineBlockEntity im
 	}
 
 	@Override
-	public void writeMultiblock(MultiblockWriter writer) {
-		writer.translate(-1, -3, -1)
-				.fill(0, 0, 0, 3, 1, 3, TRContent.MachineBlocks.ADVANCED.getCasing())
-				.ringWithAir(Direction.Axis.Y, 3, 1, 3, TRContent.MachineBlocks.ADVANCED.getCasing())
-				.fill(0, 2, 0, 3, 3, 3, TRContent.MachineBlocks.ADVANCED.getCasing());
+	public String getMultiblockId() {
+		return "implosion_compressor";
 	}
 
 	// IContainerProvider

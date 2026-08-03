@@ -27,21 +27,18 @@ package techreborn.blockentity.machine.multiblock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import reborncore.common.blockentity.MultiblockWriter;
 import reborncore.common.crafting.RebornRecipe;
 import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
-import techreborn.blockentity.machine.GenericMachineBlockEntity;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
 
-public class DistillationTowerBlockEntity extends GenericMachineBlockEntity implements BuiltScreenHandlerProvider {
+public class DistillationTowerBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
 	public DistillationTowerBlockEntity(BlockPos pos, BlockState state) {
 		super(TRBlockEntities.DISTILLATION_TOWER, pos, state, "DistillationTower", TechRebornConfig.distillationTowerMaxInput, TechRebornConfig.distillationTowerMaxEnergy, TRContent.Machine.DISTILLATION_TOWER.block, 6);
@@ -52,12 +49,8 @@ public class DistillationTowerBlockEntity extends GenericMachineBlockEntity impl
 	}
 
 	@Override
-	public void writeMultiblock(MultiblockWriter writer) {
-		writer.translate(1, 0, -1)
-				.fill(0, 0, 0, 3, 1, 3, TRContent.MachineBlocks.BASIC.getCasing())
-				.ringWithAir(Direction.Axis.Y, 3, 1, 3, TRContent.MachineBlocks.INDUSTRIAL.getCasing())
-				.ringWithAir(Direction.Axis.Y, 3, 2, 3, TRContent.MachineBlocks.BASIC.getCasing())
-				.fill(0, 3, 0, 3, 4, 3, TRContent.MachineBlocks.INDUSTRIAL.getCasing());
+	public String getMultiblockId() {
+		return "distillation_tower";
 	}
 
 	// IContainerProvider

@@ -1,3 +1,27 @@
+/*
+ * This file is part of TechReborn, licensed under the MIT License (MIT).
+ *
+ * Copyright (c) 2026 TechReborn
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package techreborn.client.compat.emi.core;
 
 import org.joml.Matrix4f;
@@ -25,13 +49,13 @@ public class NinePatchTexture {
 	private final float leftRightU, rightLeftU, topBottomV, bottomTopV;
 
 	public NinePatchTexture(Identifier textureId, int u, int v, int width, int height, int leftWidth,
-	                        int rightWidth, int topHeight, int bottomHeight, boolean tiling) {
+							int rightWidth, int topHeight, int bottomHeight, boolean tiling) {
 		this(textureId, 256, 256, u, v, width, height, leftWidth, rightWidth, topHeight, bottomHeight, tiling);
 	}
 
 	public NinePatchTexture(Identifier textureId, int textureWidth, int textureHeight, int u, int v, int width,
-	                        int height, int leftWidth, int rightWidth, int topHeight, int bottomHeight,
-	                        boolean tiling) {
+							int height, int leftWidth, int rightWidth, int topHeight, int bottomHeight,
+							boolean tiling) {
 		this.textureId = textureId;
 		this.textureWidth = textureWidth;
 		this.textureHeight = textureHeight;
@@ -129,7 +153,7 @@ public class NinePatchTexture {
 	}
 
 	private static void rect(VertexConsumer consumer, Matrix4f mat, int z, int x0, int y0, int w, int h,
-	                         float u0, float v0, float u1, float v1) {
+							float u0, float v0, float u1, float v1) {
 		int x1 = x0 + w;
 		int y1 = y0 + h;
 		consumer.vertex(mat, x0, y1, z).texture(u0, v1);

@@ -1,0 +1,14 @@
+{
+  "translate": [1, 0, -1],
+  "layers": [
+    ["AAA", "ACA", "AAA"]
+  ],
+  "keys": {
+    "A": {
+      "block": "techreborn:advanced_machine_casing"
+    },
+    "C": {
+      "not": "techreborn:advanced_machine_casing"
+    }
+  }
+}

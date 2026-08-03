@@ -63,6 +63,11 @@ public class Configuration {
 		if (configFiles != null) {
 			final HashMap<String, JsonObject> configs = new HashMap<>();
 			for (File file : configFiles) {
+				// Skip directories (e.g. the JSON multiblock definition folder) and
+				// anything that is not a .json config file
+				if (!file.isFile() || !file.getName().endsWith(".json")) {
+					continue;
+				}
 				final String name = file.getName().substring(0, file.getName().length() - (".json".length()));
 				try {
 					final String fileContents = FileUtils.readFileToString(file, StandardCharsets.UTF_8);

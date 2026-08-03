@@ -173,6 +173,7 @@ public class TRContent {
 	public static Item INDUSTRIAL_ORE_PROSPECTOR;
 
 	public static Item DEBUG_TOOL;
+	public static Item MULTIBLOCK_SELECTOR;
 
 	// Other
 	public static Item FREQUENCY_TRANSMITTER;

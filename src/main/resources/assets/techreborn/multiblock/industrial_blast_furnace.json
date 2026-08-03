@@ -1,0 +1,36 @@
+{
+  "translate": [1, 0, -1],
+  "layers": [
+    ["CCC", "CCC", "CCC"],
+    ["KKK", "KXK", "KKK"],
+    ["KKK", "KXK", "KKK"],
+    ["CCC", "CCC", "CCC"]
+  ],
+  "keys": {
+    "C": {
+      "blocks": [
+        "techreborn:basic_machine_casing",
+        "techreborn:advanced_machine_casing",
+        "techreborn:industrial_machine_casing"
+      ]
+    },
+    "K": {
+      "blocks": [
+        "techreborn:coil_cupronickel",
+        "techreborn:coil_kanthal",
+        "techreborn:coil_nichrome",
+        "techreborn:coil_molybdenum_disilicide",
+        "techreborn:coil_tungstensteel",
+        "techreborn:coil_hssg",
+        "techreborn:coil_rtm_alloy",
+        "techreborn:coil_naquadah",
+        "techreborn:coil_trinium",
+        "techreborn:coil_tritanium",
+        "techreborn:coil_superconductor"
+      ]
+    },
+    "X": {
+      "air": true
+    }
+  }
+}

@@ -24,18 +24,15 @@
 
 package techreborn.blockentity.machine.multiblock;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
-import reborncore.common.blockentity.MultiblockWriter;
 import reborncore.common.fluid.FluidUtils;
 import reborncore.common.fluid.FluidValue;
 import reborncore.common.recipes.RecipeCrafter;
@@ -45,7 +42,6 @@ import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.IInventoryAccess;
 import reborncore.common.util.RebornInventory;
 import reborncore.common.util.Tank;
-import techreborn.blockentity.machine.GenericMachineBlockEntity;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
@@ -54,7 +50,7 @@ import techreborn.init.TRContent;
 /**
  * @author drcrazy
  */
-public class FluidReplicatorBlockEntity extends GenericMachineBlockEntity implements BuiltScreenHandlerProvider {
+public class FluidReplicatorBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
 	public static final FluidValue TANK_CAPACITY = FluidValue.BUCKET.multiply(16);
 	public final Tank tank;
@@ -68,10 +64,8 @@ public class FluidReplicatorBlockEntity extends GenericMachineBlockEntity implem
 	}
 
 	@Override
-	public void writeMultiblock(MultiblockWriter writer) {
-		Block block = TRContent.MachineBlocks.ADVANCED.getCasing();
-		writer.translate(1, 0, -1)
-				.ring(Direction.Axis.Y, 3, 0, 3, (v, p) -> v.getBlockState(p).isOf(block), block.getDefaultState(), null, null);
+	public String getMultiblockId() {
+		return "fluid_replicator";
 	}
 
 	// TileGenericMachine

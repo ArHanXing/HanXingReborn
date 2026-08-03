@@ -50,6 +50,7 @@ import techreborn.init.TRContent;
 import techreborn.init.TRDispenserBehavior;
 import techreborn.init.template.TechRebornTemplates;
 import techreborn.items.DynamicCellItem;
+import techreborn.multiblock.MultiblockDefinitionLoader;
 import techreborn.packets.Packets;
 import techreborn.packets.ServerboundPackets;
 import techreborn.utils.PoweredCraftingHandler;
@@ -94,6 +95,8 @@ public class TechReborn implements ModInitializer {
 
 
 		Torus.genSizeMap(TechRebornConfig.fusionControlComputerMaxCoilSize);
+
+		MultiblockDefinitionLoader.init();
 
 		RedstoneConfiguration.fluidStack = DynamicCellItem.getCellWithFluid(Fluids.LAVA);
 		RedstoneConfiguration.powerStack = new ItemStack(TRContent.RED_CELL_BATTERY);

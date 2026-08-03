@@ -24,25 +24,21 @@
 
 package techreborn.blockentity.machine.multiblock;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import reborncore.common.blockentity.MultiblockWriter;
 import reborncore.common.crafting.RebornRecipe;
 import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
-import techreborn.blockentity.machine.GenericMachineBlockEntity;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
 
-public class LargeChemicalReactorBlockEntity extends GenericMachineBlockEntity implements BuiltScreenHandlerProvider {
+public class LargeChemicalReactorBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
 	public LargeChemicalReactorBlockEntity(BlockPos pos, BlockState state) {
 		super(TRBlockEntities.LARGE_CHEMICAL_REACTOR, pos, state, "LargeChemicalReactor",
@@ -56,12 +52,8 @@ public class LargeChemicalReactorBlockEntity extends GenericMachineBlockEntity i
 	}
 
 	@Override
-	public void writeMultiblock(MultiblockWriter writer) {
-		Block casing = TRContent.MachineBlocks.ADVANCED.getCasing();
-		writer.translate(1, -1, -1)
-				.fill(0, 0, 0, 3, 1, 3, casing)
-				.ringWithAir(Direction.Axis.Y, 3, 1, 3, casing)
-				.fill(0, 2, 0, 3, 3, 3, casing);
+	public String getMultiblockId() {
+		return "large_chemical_reactor";
 	}
 
 	@Override

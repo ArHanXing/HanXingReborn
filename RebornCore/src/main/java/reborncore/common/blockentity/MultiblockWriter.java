@@ -31,7 +31,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 
+import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 
 /**
  * Writes a multiblock for either verification or hologram rendering
@@ -166,6 +168,45 @@ public interface MultiblockWriter {
 
 	default MultiblockWriter translate(int offsetX, int offsetY, int offsetZ) {
 		return (x, y, z, predicate, state) -> add(offsetX + x, offsetY + y, offsetZ + z, predicate, state);
+	}
+
+	/**
+	 * Writes a 3D pattern defined by a list of string layers.
+	 * <p>
+	 * The layers are indexed bottom to top ({@code layers.get(0)} is the lowest Y level).
+	 * Each layer is a list of rows indexed along the Z axis, and each row is a string
+	 * whose characters are indexed along the X axis. The space character {@code ' '}
+	 * is ignored (the position is left unvalidated and rendered as air).
+	 *
+	 * @param layers      {@link List} of layers, from bottom to top
+	 * @param keyResolver {@link Function} mapping each pattern character to its {@link PatternBlock}
+	 * @return {@link MultiblockWriter} This. Useful for chaining
+	 */
+	default MultiblockWriter pattern(List<List<String>> layers, Function<Character, PatternBlock> keyResolver) {
+		for (int y = 0; y < layers.size(); y++) {
+			List<String> rows = layers.get(y);
+			for (int z = 0; z < rows.size(); z++) {
+				String row = rows.get(z);
+				for (int x = 0; x < row.length(); x++) {
+					char key = row.charAt(x);
+					if (key == ' ') {
+						continue;
+					}
+					PatternBlock block = keyResolver.apply(key);
+					add(x, y, z, block.predicate(), block.hologramState());
+				}
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * A single block entry inside a {@link #pattern(List, Function)} definition.
+	 *
+	 * @param predicate     {@link BiPredicate} used to validate the block at a position
+	 * @param hologramState {@link BlockState} shown in the multiblock hologram
+	 */
+	record PatternBlock(BiPredicate<BlockView, BlockPos> predicate, BlockState hologramState) {
 	}
 
 	default MultiblockWriter rotate() {

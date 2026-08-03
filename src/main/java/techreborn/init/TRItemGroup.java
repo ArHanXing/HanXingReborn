@@ -265,6 +265,7 @@ public class TRItemGroup {
 
 		entries.add(TRContent.MANUAL);
 		entries.add(TRContent.DEBUG_TOOL);
+		entries.add(TRContent.MULTIBLOCK_SELECTOR);
 	}
 
 	private static void addBuildingBlocks(FabricItemGroupEntries entries) {
@@ -777,7 +778,7 @@ public class TRItemGroup {
 
 	private static void addOperator(FabricItemGroupEntries entries) {
 		if (entries.shouldShowOpRestrictedItems()) {
-			entries.addAfter(Items.DEBUG_STICK, TRContent.DEBUG_TOOL);
+			entries.addAfter(Items.DEBUG_STICK, TRContent.DEBUG_TOOL, TRContent.MULTIBLOCK_SELECTOR);
 		}
 	}
 

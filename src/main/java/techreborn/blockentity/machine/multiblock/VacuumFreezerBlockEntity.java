@@ -24,25 +24,21 @@
 
 package techreborn.blockentity.machine.multiblock;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import reborncore.common.blockentity.MultiblockWriter;
 import reborncore.common.crafting.RebornRecipe;
 import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
-import techreborn.blockentity.machine.GenericMachineBlockEntity;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
 
-public class VacuumFreezerBlockEntity extends GenericMachineBlockEntity implements BuiltScreenHandlerProvider {
+public class VacuumFreezerBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
 	public VacuumFreezerBlockEntity(BlockPos pos, BlockState state) {
 		super(TRBlockEntities.VACUUM_FREEZER, pos, state, "VacuumFreezer", TechRebornConfig.vacuumFreezerMaxInput, TechRebornConfig.vacuumFreezerMaxEnergy, TRContent.Machine.VACUUM_FREEZER.block, 2);
@@ -53,14 +49,8 @@ public class VacuumFreezerBlockEntity extends GenericMachineBlockEntity implemen
 	}
 
 	@Override
-	public void writeMultiblock(MultiblockWriter writer) {
-		Block advanced = TRContent.MachineBlocks.ADVANCED.getCasing();
-		Block industrial = TRContent.MachineBlocks.INDUSTRIAL.getCasing();
-
-		writer.translate(-1, -3, -1)
-				.fill(0, 0, 0, 3, 1, 3, advanced)
-				.ringWithAir(Direction.Axis.Y, 3, 1, 3, industrial)
-				.fill(0, 2, 0, 3, 3, 3, advanced);
+	public String getMultiblockId() {
+		return "vacuum_freezer";
 	}
 
 	// IContainerProvider

@@ -1,0 +1,35 @@
+{
+	"translate": [
+		1,
+		-1,
+		-1
+	],
+	"layers": [
+		[
+			"AAA",
+			"AAA",
+			"AAA"
+		],
+		[
+			"BBB",
+			"BDB",
+			"BBB"
+		],
+		[
+			"AAA",
+			"AAA",
+			"AAA"
+		]
+	],
+	"keys": {
+		"D": {
+			"block": "minecraft:water"
+		},
+		"A": {
+			"block": "techreborn:basic_machine_casing"
+		},
+		"B": {
+			"block": "techreborn:advanced_machine_casing"
+		}
+	}
+}

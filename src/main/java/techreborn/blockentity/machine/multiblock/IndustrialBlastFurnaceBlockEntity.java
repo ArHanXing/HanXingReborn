@@ -30,18 +30,14 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
-import reborncore.common.blockentity.MultiblockWriter;
 import reborncore.common.multiblock.IMultiblockPart;
 import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
-import techreborn.blockentity.machine.GenericMachineBlockEntity;
 import techreborn.blockentity.machine.multiblock.casing.MachineCasingBlockEntity;
 import techreborn.blocks.misc.BlockCoil;
 import techreborn.config.TechRebornConfig;
@@ -51,9 +47,8 @@ import techreborn.init.TRContent;
 import techreborn.multiblocks.MultiBlockCasing;
 
 import java.util.Optional;
-import java.util.function.BiPredicate;
 
-public class IndustrialBlastFurnaceBlockEntity extends GenericMachineBlockEntity implements BuiltScreenHandlerProvider {
+public class IndustrialBlastFurnaceBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
 	private int cachedHeat;
 	private boolean coilsActive = false;
@@ -67,29 +62,8 @@ public class IndustrialBlastFurnaceBlockEntity extends GenericMachineBlockEntity
 	}
 
 	@Override
-	public void writeMultiblock(MultiblockWriter writer) {
-		Block basic = TRContent.MachineBlocks.BASIC.getCasing();
-		Block advanced = TRContent.MachineBlocks.ADVANCED.getCasing();
-		Block industrial = TRContent.MachineBlocks.INDUSTRIAL.getCasing();
-
-		BiPredicate<BlockView, BlockPos> casing = (view, pos) -> {
-			Block block = view.getBlockState(pos).getBlock();
-			return basic == block || advanced == block || industrial == block;
-		};
-
-		// Coil predicate: any block that is a BlockCoil (covers all coil tiers)
-		BiPredicate<BlockView, BlockPos> coil = (view, pos) -> {
-			return view.getBlockState(pos).getBlock() instanceof BlockCoil;
-		};
-
-		BlockState state = basic.getDefaultState();
-		// Use cupronickel coil as the hologram representative for coil layers
-		BlockState coilState = TRContent.Coils.CUPRONICKEL.block.getDefaultState();
-		writer.translate(1, 0, -1)
-				.fill(0, 0, 0, 3, 1, 3, casing, state)
-				.ringWithAir(Direction.Axis.Y, 3, 1, 3, coil, coilState)
-				.ringWithAir(Direction.Axis.Y, 3, 2, 3, coil, coilState)
-				.fill(0, 3, 0, 3, 4, 3, casing, state);
+	public String getMultiblockId() {
+		return "industrial_blast_furnace";
 	}
 
 	/**

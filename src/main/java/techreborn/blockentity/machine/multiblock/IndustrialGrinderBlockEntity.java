@@ -24,18 +24,14 @@
 
 package techreborn.blockentity.machine.multiblock;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
-import reborncore.common.blockentity.MultiblockWriter;
 import reborncore.common.fluid.FluidUtils;
 import reborncore.common.fluid.FluidValue;
 import reborncore.common.recipes.RecipeCrafter;
@@ -44,13 +40,12 @@ import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
 import reborncore.common.util.Tank;
-import techreborn.blockentity.machine.GenericMachineBlockEntity;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
 
-public class IndustrialGrinderBlockEntity extends GenericMachineBlockEntity implements BuiltScreenHandlerProvider {
+public class IndustrialGrinderBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
 	public static final FluidValue TANK_CAPACITY = FluidValue.BUCKET.multiply(16);
 	public final Tank tank;
@@ -67,13 +62,8 @@ public class IndustrialGrinderBlockEntity extends GenericMachineBlockEntity impl
 	}
 
 	@Override
-	public void writeMultiblock(MultiblockWriter writer) {
-		Block basic = TRContent.MachineBlocks.BASIC.getCasing();
-		Block advanced = TRContent.MachineBlocks.ADVANCED.getCasing();
-		writer.translate(1, -1, -1)
-				.fill(0, 0, 0, 3, 1, 3, basic)
-				.ring(Direction.Axis.Y, 3, 1, 3, (view, pos) -> view.getBlockState(pos).isOf(advanced), advanced.getDefaultState(), (view, pos) -> view.getBlockState(pos).getBlock() == Blocks.WATER, Blocks.WATER.getDefaultState())
-				.fill(0, 2, 0, 3, 3, 3, basic);
+	public String getMultiblockId() {
+		return "industrial_grinder";
 	}
 
 	// TilePowerAcceptor
