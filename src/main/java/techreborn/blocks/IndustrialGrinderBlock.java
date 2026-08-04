@@ -26,56 +26,29 @@ package techreborn.blocks;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import reborncore.api.blockentity.IMachineGuiHandler;
-import reborncore.common.blocks.BlockMachineBase;
-import techreborn.init.TRBlockSettings;
+import techreborn.init.ModRecipes;
+import techreborn.recipe.ProxyRecipeTooltipBuilder;
 
 import java.util.List;
 import java.util.function.BiFunction;
 
 /**
- * @author drcrazy
+ * The Industrial Grinder block. Runs its own (fluid-requiring) recipes plus
+ * every regular grinder recipe (0.5x time, 0.8x power, no fluid), which is
+ * reflected in the item tooltip.
  */
-public class GenericMachineBlock extends BlockMachineBase {
+public class IndustrialGrinderBlock extends GenericMachineBlock {
 
-	private final IMachineGuiHandler gui;
-	final BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass;
-
-	public GenericMachineBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass) {
-		super(TRBlockSettings.genericMachine());
-		this.blockEntityClass = blockEntityClass;
-		this.gui = gui;
+	public IndustrialGrinderBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass) {
+		super(gui, blockEntityClass);
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		if (blockEntityClass == null) {
-			return null;
-		}
-		return blockEntityClass.apply(pos, state);
-	}
-
-	@Override
-	public IMachineGuiHandler getGui() {
-		return gui;
-	}
-
-	@Override
-	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
-		super.appendTooltip(stack, context, tooltip, type);
-		appendMachineTooltip(tooltip);
-	}
-
-	/**
-	 * Hook for subclasses to add machine-specific tooltip lines.
-	 *
-	 * @param tooltip {@link List} the tooltip to append to
-	 */
 	protected void appendMachineTooltip(List<Text> tooltip) {
+		ProxyRecipeTooltipBuilder.build(tooltip, ModRecipes.INDUSTRIAL_GRINDER,
+				List.of(ModRecipes.GRINDER), 0.8F, 0.5F);
 	}
 }

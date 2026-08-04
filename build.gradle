@@ -215,6 +215,8 @@ dependencies {
     modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
     modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
 
+    modLocalRuntime "maven.modrinth:jade:${jade_version}"
+
     // Use groovy for datagen/gametest, if you are copying this you prob dont want it.
     gametestImplementation 'org.apache.groovy:groovy:4.0.21'
     datagenImplementation 'org.apache.groovy:groovy:4.0.21'

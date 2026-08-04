@@ -73,6 +73,8 @@ import techreborn.blockentity.machine.tier3.IndustrialCentrifugeBlockEntity;
 import techreborn.blockentity.machine.tier3.MatterFabricatorBlockEntity;
 import techreborn.blockentity.storage.energy.AdjustableSUBlockEntity;
 import techreborn.blocks.GenericMachineBlock;
+import techreborn.blocks.IndustrialGrinderBlock;
+import techreborn.blocks.LargeChemicalReactorBlock;
 import techreborn.blocks.cable.CableBlock;
 import techreborn.blocks.generator.BlockFusionCoil;
 import techreborn.blocks.generator.BlockFusionControlComputer;
@@ -757,7 +759,7 @@ public class TRContent {
 		INDUSTRIAL_BLAST_FURNACE(new GenericMachineBlock(GuiType.BLAST_FURNACE, IndustrialBlastFurnaceBlockEntity::new)),
 		INDUSTRIAL_CENTRIFUGE(new GenericMachineBlock(GuiType.CENTRIFUGE, IndustrialCentrifugeBlockEntity::new)),
 		INDUSTRIAL_ELECTROLYZER(new GenericMachineBlock(GuiType.INDUSTRIAL_ELECTROLYZER, IndustrialElectrolyzerBlockEntity::new)),
-		INDUSTRIAL_GRINDER(new GenericMachineBlock(GuiType.INDUSTRIAL_GRINDER, IndustrialGrinderBlockEntity::new)),
+		INDUSTRIAL_GRINDER(new IndustrialGrinderBlock(GuiType.INDUSTRIAL_GRINDER, IndustrialGrinderBlockEntity::new)),
 		INDUSTRIAL_SAWMILL(new GenericMachineBlock(GuiType.SAWMILL, IndustrialSawmillBlockEntity::new)),
 		IRON_ALLOY_FURNACE(new IronAlloyFurnaceBlock()),
 		IRON_FURNACE(new IronFurnaceBlock()),
@@ -766,7 +768,7 @@ public class TRContent {
 		ROLLING_MACHINE(new GenericMachineBlock(GuiType.ROLLING_MACHINE, RollingMachineBlockEntity::new)),
 		SCRAPBOXINATOR(new GenericMachineBlock(GuiType.SCRAPBOXINATOR, ScrapboxinatorBlockEntity::new)),
 		VACUUM_FREEZER(new GenericMachineBlock(GuiType.VACUUM_FREEZER, VacuumFreezerBlockEntity::new)),
-		LARGE_CHEMICAL_REACTOR(new GenericMachineBlock(GuiType.LARGE_CHEMICAL_REACTOR, LargeChemicalReactorBlockEntity::new)),
+		LARGE_CHEMICAL_REACTOR(new LargeChemicalReactorBlock(GuiType.LARGE_CHEMICAL_REACTOR, LargeChemicalReactorBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),
 		GREENHOUSE_CONTROLLER(new GenericMachineBlock(GuiType.GREENHOUSE_CONTROLLER, GreenhouseControllerBlockEntity::new)),

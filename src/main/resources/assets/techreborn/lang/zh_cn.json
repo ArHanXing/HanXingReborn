@@ -683,6 +683,8 @@
   "item.techreborn.multiblock_selector.tooltip.2": "右键空气：切换单点/矩形选择模式",
   "item.techreborn.multiblock_selector.tooltip.3": "Shift+右键方块：生成并复制 JSON",
   "item.techreborn.multiblock_selector.tooltip.4": "Shift+左键空气：清空选择",
+  "item.techreborn.multiblock_proxy.tooltip.types": "可用配方类型：%s",
+  "item.techreborn.multiblock_proxy.tooltip.running": "运行%s配方时，具有%s耗能和%s耗时。",
   "item.techreborn.industrial_chainsaw": "工业电锯",
   "item.techreborn.industrial_drill": "工业钻头",
   "item.techreborn.industrial_jackhammer": "工业凿岩机",

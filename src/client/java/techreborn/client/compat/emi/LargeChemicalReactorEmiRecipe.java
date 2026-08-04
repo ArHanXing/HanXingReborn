@@ -30,6 +30,8 @@ import reborncore.common.crafting.RebornRecipe;
 
 import net.minecraft.recipe.RecipeEntry;
 
+import techreborn.client.compat.emi.core.UIUtils;
+
 public class LargeChemicalReactorEmiRecipe extends TREmiRecipe<RebornRecipe> {
 	public LargeChemicalReactorEmiRecipe(RecipeEntry<RebornRecipe> recipe) {
 		super(recipe);
@@ -64,6 +66,7 @@ public class LargeChemicalReactorEmiRecipe extends TREmiRecipe<RebornRecipe> {
 
 		// Arrow
 		TRUIUtils.arrowRight(widgets, recipe, inputStartX + 18 * 2 + 4, (18 * 3 + 4 - 10) / 2);
+		UIUtils.cookTime(widgets, recipe.time(), inputStartX + 18 * 2 + 2, 0);
 
 		// 4 output slots: 2 columns × 2 rows
 		int outputStartX = inputStartX + 18 * 2 + 4 + 24;

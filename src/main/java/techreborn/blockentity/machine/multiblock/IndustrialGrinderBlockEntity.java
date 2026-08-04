@@ -32,9 +32,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
+import reborncore.common.crafting.RebornRecipe;
 import reborncore.common.fluid.FluidUtils;
 import reborncore.common.fluid.FluidValue;
-import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
@@ -44,6 +44,9 @@ import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
+import techreborn.recipe.ProxyRecipeCrafter;
+
+import java.util.List;
 
 public class IndustrialGrinderBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
@@ -56,7 +59,13 @@ public class IndustrialGrinderBlockEntity extends JsonMultiblockMachineBlockEnti
 		final int[] inputs = new int[]{0, 1};
 		final int[] outputs = new int[]{2, 3, 4, 5};
 		this.inventory = new RebornInventory<>(8, "IndustrialGrinderBlockEntity", 64, this);
-		this.crafter = new RecipeCrafter(ModRecipes.INDUSTRIAL_GRINDER, this, 1, 4, this.inventory, inputs, outputs);
+		// Runs the industrial grinder's own recipes (priority) plus every regular
+		// grinder recipe (0.5x time, 0.8x power, no fluid required)
+		this.crafter = new ProxyRecipeCrafter(
+				ModRecipes.INDUSTRIAL_GRINDER,
+				List.of(ModRecipes.GRINDER),
+				0.5F, 0.8F,
+				this, 1, 4, this.inventory, inputs, outputs);
 		this.tank = new Tank("IndustrialGrinderBlockEntity", IndustrialGrinderBlockEntity.TANK_CAPACITY);
 		this.ticksSinceLastChange = 0;
 	}
@@ -64,6 +73,12 @@ public class IndustrialGrinderBlockEntity extends JsonMultiblockMachineBlockEnti
 	@Override
 	public String getMultiblockId() {
 		return "industrial_grinder";
+	}
+
+	@Override
+	public boolean canCraft(RebornRecipe rebornRecipe) {
+		// Ensures proxy (grinder) recipes also require a valid multiblock structure
+		return isMultiblockValid();
 	}
 
 	// TilePowerAcceptor

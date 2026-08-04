@@ -28,7 +28,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import reborncore.common.crafting.RebornRecipe;
-import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
@@ -37,6 +36,9 @@ import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
+import techreborn.recipe.ProxyRecipeCrafter;
+
+import java.util.List;
 
 public class LargeChemicalReactorBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
@@ -48,7 +50,13 @@ public class LargeChemicalReactorBlockEntity extends JsonMultiblockMachineBlockE
 		final int[] inputs = new int[]{0, 1, 2, 3, 4, 5};
 		final int[] outputs = new int[]{6, 7, 8, 9};
 		this.inventory = new RebornInventory<>(11, "LargeChemicalReactorBlockEntity", 64, this);
-		this.crafter = new RecipeCrafter(ModRecipes.LARGE_CHEMICAL_REACTOR, this, 6, 4, this.inventory, inputs, outputs);
+		// Runs both the large reactor's own recipes and every small chemical
+		// reactor recipe (0.5x time, 0.8x power)
+		this.crafter = new ProxyRecipeCrafter(
+				ModRecipes.LARGE_CHEMICAL_REACTOR,
+				List.of(ModRecipes.CHEMICAL_REACTOR),
+				0.5F, 0.8F,
+				this, 6, 4, this.inventory, inputs, outputs);
 	}
 
 	@Override

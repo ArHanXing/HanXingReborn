@@ -708,6 +708,8 @@
   "item.techreborn.multiblock_selector.tooltip.2": "Right-click air: toggle single/rect mode",
   "item.techreborn.multiblock_selector.tooltip.3": "Shift+right-click a block: generate & copy JSON",
   "item.techreborn.multiblock_selector.tooltip.4": "Shift+left-click air: clear selection",
+  "item.techreborn.multiblock_proxy.tooltip.types": "Available recipe types: %s",
+  "item.techreborn.multiblock_proxy.tooltip.running": "Runs %s recipes at %s power and %s time.",
   "item.techreborn.industrial_chainsaw": "Industrial Chainsaw",
   "item.techreborn.industrial_drill": "Industrial Drill",
   "item.techreborn.industrial_jackhammer": "Industrial Jackhammer",
