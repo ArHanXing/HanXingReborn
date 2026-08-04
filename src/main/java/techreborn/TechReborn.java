@@ -25,6 +25,7 @@
 package techreborn;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -51,6 +52,7 @@ import techreborn.init.TRDispenserBehavior;
 import techreborn.init.template.TechRebornTemplates;
 import techreborn.items.DynamicCellItem;
 import techreborn.multiblock.MultiblockDefinitionLoader;
+import techreborn.multiblock.MultiblockStructureTracker;
 import techreborn.packets.Packets;
 import techreborn.packets.ServerboundPackets;
 import techreborn.utils.PoweredCraftingHandler;
@@ -97,6 +99,13 @@ public class TechReborn implements ModInitializer {
 		Torus.genSizeMap(TechRebornConfig.fusionControlComputerMaxCoilSize);
 
 		MultiblockDefinitionLoader.init();
+
+		// Invalidate cached multiblock structure checks as soon as a player
+		// breaks a block, so machines stop instantly when their structure is
+		// damaged. Non-player block changes (pistons, explosions, water) are
+		// covered by the cache TTL in JsonMultiblockMachineBlockEntity.
+		PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) ->
+				MultiblockStructureTracker.onBlockChanged(world, pos));
 
 		RedstoneConfiguration.fluidStack = DynamicCellItem.getCellWithFluid(Fluids.LAVA);
 		RedstoneConfiguration.powerStack = new ItemStack(TRContent.RED_CELL_BATTERY);

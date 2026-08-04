@@ -1,3 +1,5 @@
+# 使用 Vibe Coding，编码模型为 DeepSeek v4 Flash-0731
+
 ![](https://i.imgur.com/m0y21EK.png "Tech Reborn")
 # 涵星喵 Reborn
 使用 DeepSeek v4 pro的对 Tech Reborn 的二次修改。用于 CmRhPack 整合包。
@@ -6,7 +8,7 @@
 - 大型化学反应釜
 - 工业高炉可替换线圈
 - 内置 EMI 兼容
-- 多方块现在支持了更复杂、数据驱动的结构
+- 多方块现在支持了更复杂、数据驱动的结构，并且追加了缓存优化成型jian'c
 - 代理配方！现在可以支持大化反/工业磨粉运行小化反/小磨粉的配方，且有时间和耗能加成
 
 TODO：
