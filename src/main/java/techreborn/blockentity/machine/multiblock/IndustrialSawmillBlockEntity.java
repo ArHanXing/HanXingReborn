@@ -57,6 +57,7 @@ public class IndustrialSawmillBlockEntity extends JsonMultiblockMachineBlockEnti
 		final int[] outputs = new int[]{2, 3, 4};
 		this.inventory = new RebornInventory<>(7, "SawmillBlockEntity", 64, this);
 		this.crafter = new RecipeCrafter(ModRecipes.INDUSTRIAL_SAWMILL, this, 1, 3, this.inventory, inputs, outputs);
+		this.crafter.setMaxParallel(16);
 		this.tank = new Tank("SawmillBlockEntity", IndustrialSawmillBlockEntity.TANK_CAPACITY);
 		this.ticksSinceLastChange = 0;
 	}

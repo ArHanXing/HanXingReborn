@@ -37,6 +37,7 @@ import net.minecraft.util.dynamic.Codecs;
 import reborncore.common.crafting.RebornRecipe;
 import reborncore.common.crafting.SizedIngredient;
 import techreborn.blockentity.machine.multiblock.IndustrialBlastFurnaceBlockEntity;
+import techreborn.blockentity.machine.multiblock.RotaryHearthFurnaceBlockEntity;
 import techreborn.init.TRContent;
 
 import java.util.List;
@@ -72,6 +73,10 @@ public record BlastFurnaceRecipe(RecipeType<?> type, List<SizedIngredient> ingre
 	public boolean canCraft(final BlockEntity blockEntity) {
 		if (blockEntity instanceof final IndustrialBlastFurnaceBlockEntity blastFurnace) {
 			return blastFurnace.getHeat() >= heat;
+		}
+		// The Rotary Hearth Furnace proxies every blast furnace recipe
+		if (blockEntity instanceof final RotaryHearthFurnaceBlockEntity rotaryHearthFurnace) {
+			return rotaryHearthFurnace.getHeat() >= heat;
 		}
 		return false;
 	}

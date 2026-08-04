@@ -128,6 +128,35 @@ public interface RebornRecipe extends Recipe<RebornRecipeInput> {
 		return true;
 	}
 
+	/**
+	 * Crafting hook that knows how many identical recipes run in parallel.
+	 * <p>
+	 * Defaults to {@link #onCraft(BlockEntity)}; recipe types with non-item
+	 * outputs (e.g. fluid) should override this to output {@code parallel}
+	 * times the regular amount.
+	 *
+	 * @param blockEntity {@link BlockEntity} The blockEntity that is doing the crafting
+	 * @param parallel    {@code int} how many identical recipes finish at once
+	 * @return {@code boolean} Returns true if the craft succeeded
+	 */
+	default boolean onCraft(BlockEntity blockEntity, int parallel) {
+		return onCraft(blockEntity);
+	}
+
+	/**
+	 * Optional extra limit on the parallel count imposed by this recipe type
+	 * (e.g. remaining fluid output space in the machine tank).
+	 * <p>
+	 * Returns {@code 0} if no parallel run is possible at all. Defaults to no
+	 * limit, item outputs are already limited by {@code RecipeCrafter}.
+	 *
+	 * @param blockEntity {@link BlockEntity} The blockEntity that is doing the crafting
+	 * @return {@code int} maximum parallel runs allowed by this recipe's outputs
+	 */
+	default int getParallelOutputLimit(BlockEntity blockEntity) {
+		return Integer.MAX_VALUE;
+	}
+
 	// Done as our recipes do not support these functions, hopefully nothing blindly calls them
 	@Deprecated
 	@Override

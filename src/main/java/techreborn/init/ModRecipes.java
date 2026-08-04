@@ -66,4 +66,8 @@ public class ModRecipes {
 	public static final RecipeType<FluidGeneratorRecipe> DIESEL_GENERATOR = RecipeManager.newRecipeType(Identifier.of("techreborn:diesel_generator"), FluidGeneratorRecipe.CODEC, FluidGeneratorRecipe.PACKET_CODEC);
 	public static final RecipeType<FluidGeneratorRecipe> SEMI_FLUID_GENERATOR = RecipeManager.newRecipeType(Identifier.of("techreborn:semi_fluid_generator"), FluidGeneratorRecipe.CODEC, FluidGeneratorRecipe.PACKET_CODEC);
 	public static final RecipeType<FluidGeneratorRecipe> PLASMA_GENERATOR = RecipeManager.newRecipeType(Identifier.of("techreborn:plasma_generator"), FluidGeneratorRecipe.CODEC, FluidGeneratorRecipe.PACKET_CODEC);
+
+	// The RHF has no recipes of its own; it proxies every blast furnace recipe
+	// (see RhfRecipeCrafter), but still needs a type for the crafter to use.
+	public static final RecipeType<BlastFurnaceRecipe> ROTARY_HEARTH_FURNACE = RecipeManager.newRecipeType(Identifier.of("techreborn:rotary_hearth_furnace"), BlastFurnaceRecipe.CODEC, BlastFurnaceRecipe.PACKET_CODEC);
 }

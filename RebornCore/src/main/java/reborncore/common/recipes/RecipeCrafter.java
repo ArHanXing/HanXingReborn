@@ -102,6 +102,18 @@ public class RecipeCrafter implements IUpgradeHandler {
 
 	int ticksSinceLastChange;
 
+	/**
+	 * Maximum number of identical recipes that can run in parallel.
+	 * 1 disables parallelism (default, backwards compatible).
+	 */
+	private int maxParallel = 1;
+
+	/**
+	 * Number of parallel runs for the current recipe, recomputed every time a
+	 * recipe is selected. Always at least 1.
+	 */
+	protected int currentParallelCount = 1;
+
 	@Nullable
 	public static ICrafterSoundHandler soundHandler = (firstRun, blockEntity) -> {
 	};
@@ -168,12 +180,12 @@ public class RecipeCrafter implements IUpgradeHandler {
 				}
 				// The slots that have been filled
 				ArrayList<Integer> filledSlots = new ArrayList<>();
-				if (canGiveInvAll && currentRecipe.onCraft(blockEntity)) {
+				if (canGiveInvAll && currentRecipe.onCraft(blockEntity, currentParallelCount)) {
 					for (int i = 0; i < outputs.size(); i++) {
 						// Checks it has not been filled
 						if (!filledSlots.contains(outputSlots[i])) {
-							// Fills the slot with the output stack
-							fitStack(outputs.get(i).copy(), outputSlots[i]);
+							// Fills the slot with the output stack (parallel count times)
+							fitStack(outputs.get(i).copy(), outputSlots[i], currentParallelCount);
 							filledSlots.add(outputSlots[i]);
 						}
 					}
@@ -189,7 +201,7 @@ public class RecipeCrafter implements IUpgradeHandler {
 					}
 				}
 			} else if (currentRecipe != null && currentTickTime < currentNeededTicks) {
-				long useRequirement = getEuPerTick(currentRecipe.power());
+				long useRequirement = getEuPerTick(currentRecipe.power() * currentParallelCount);
 				if (energy.tryUseExact(useRequirement)) {
 					currentTickTime++;
 					if ((currentTickTime == 1 || currentTickTime % 20 == 0 && cachedWorldTime > lastSoundTime+ 10) && soundHandler != null && !isMuffled()) {
@@ -208,27 +220,20 @@ public class RecipeCrafter implements IUpgradeHandler {
 	public void updateCurrentRecipe() {
 		currentTickTime = 0;
 		for (RebornRecipe recipe : RecipeUtils.getRecipes(blockEntity.getWorld(), recipeType)) {
-			// This checks to see if it has all the inputs
-			if (!hasAllInputs(recipe)) continue;
+			// Computes the parallel count (also checks inputs and output space)
+			int parallel = getParallelCount(recipe);
+			if (parallel <= 0) continue;
 			if (!recipe.canCraft(blockEntity)) continue;
 
-			final List<ItemStack> outputs = recipe.outputs();
-
-			// This checks to see if it can fit all the outputs
-			boolean hasOutputSpace = true;
-			for (int i = 0; i < outputs.size(); i++) {
-				if (!canFitOutput(outputs.get(i), outputSlots[i])) {
-					hasOutputSpace = false;
-				}
-			}
-			if (!hasOutputSpace) continue;
 			// Sets the current recipe then syncs
 			setCurrentRecipe(recipe);
+			this.currentParallelCount = parallel;
 			this.currentNeededTicks = Math.max((int) (currentRecipe.time() * (1.0 - getSpeedMultiplier())), 1);
 			setIsActive();
 			return;
 		}
 		setCurrentRecipe(null);
+		currentParallelCount = 1;
 		currentNeededTicks = 0;
 		setIsActive();
 	}
@@ -238,17 +243,31 @@ public class RecipeCrafter implements IUpgradeHandler {
 	}
 
 	public boolean hasAllInputs(RebornRecipe recipeType) {
+		return hasAllInputs(recipeType, currentParallelCount);
+	}
+
+	/**
+	 * Checks that the inventory holds enough of every ingredient to run the
+	 * recipe {@code parallel} times.
+	 *
+	 * @param recipeType {@link RebornRecipe} the recipe to test
+	 * @param parallel   {@code int} how many parallel runs must be supported
+	 * @return {@code true} if there is enough input
+	 */
+	public boolean hasAllInputs(RebornRecipe recipeType, int parallel) {
 		if (recipeType == null) {
 			return false;
 		}
+		int needed = Math.max(parallel, 1);
 		for (SizedIngredient ingredient : recipeType.ingredients()) {
-			boolean hasItem = false;
+			int available = 0;
 			for (int slot : inputSlots) {
-				if (ingredient.test(inventory.getStack(slot))) {
-					hasItem = true;
+				ItemStack stack = inventory.getStack(slot);
+				if (ingredient.test(stack)) {
+					available += stack.getCount();
 				}
 			}
-			if (!hasItem) {
+			if (available < ingredient.count() * needed) {
 				return false;
 			}
 		}
@@ -259,11 +278,28 @@ public class RecipeCrafter implements IUpgradeHandler {
 		if (currentRecipe == null) {
 			return;
 		}
-		for (SizedIngredient ingredient : currentRecipe.ingredients()) {
-			for (int inputSlot : inputSlots) {// Uses all the inputs
-				if (ingredient.test(inventory.getStack(inputSlot))) {
-					inventory.shrinkSlot(inputSlot, ingredient.count());
+		useInputs(currentRecipe, currentParallelCount);
+	}
+
+	/**
+	 * Consumes {@code parallel} runs worth of every ingredient from the input
+	 * slots, taking from as many slots as needed.
+	 */
+	private void useInputs(RebornRecipe recipe, int parallel) {
+		int times = Math.max(parallel, 1);
+		for (SizedIngredient ingredient : recipe.ingredients()) {
+			int remaining = ingredient.count() * times;
+			for (int inputSlot : inputSlots) {
+				if (remaining <= 0) {
 					break;
+				}
+				ItemStack stack = inventory.getStack(inputSlot);
+				if (ingredient.test(stack)) {
+					int take = Math.min(stack.getCount(), remaining);
+					if (take > 0) {
+						inventory.shrinkSlot(inputSlot, take);
+						remaining -= take;
+					}
 				}
 			}
 		}
@@ -300,6 +336,108 @@ public class RecipeCrafter implements IUpgradeHandler {
 		}
 	}
 
+	/**
+	 * Fits {@code parallel} copies of the output stack into the slot. The
+	 * parallel count is guaranteed by {@link #getParallelCount} to fit, so a
+	 * failed single insertion only happens if external IO fills the slot
+	 * mid-craft, which is treated the same as before.
+	 */
+	private void fitStack(ItemStack stack, int slot, int parallel) {
+		ItemStack single = stack.copy();
+		for (int i = 0; i < parallel; i++) {
+			fitStack(single.copy(), slot);
+		}
+	}
+
+	public void setMaxParallel(int maxParallel) {
+		this.maxParallel = Math.max(1, maxParallel);
+	}
+
+	public int getMaxParallel() {
+		return maxParallel;
+	}
+
+	/**
+	 * Computes how many times the given recipe can run in parallel right now,
+	 * limited by the machine's {@link #maxParallel}, the input inventory and
+	 * the output slot space (GTCEu style). Returns 0 if the recipe cannot be
+	 * run at all. O(ingredients * inputSlots + outputs), i.e. constant for
+	 * realistic machines.
+	 */
+	protected int getParallelCount(RebornRecipe recipe) {
+		if (recipe == null) {
+			return 0;
+		}
+		// With maxParallel == 1 this degrades to the classic check: can the
+		// recipe be run at least once (inputs available and output fits).
+		int parallel = Math.max(1, maxParallel);
+
+		// Limit by available inputs: every ingredient must be present in
+		// enough total quantity across the input slots.
+		for (SizedIngredient ingredient : recipe.ingredients()) {
+			int available = 0;
+			for (int slot : inputSlots) {
+				ItemStack stack = inventory.getStack(slot);
+				if (ingredient.test(stack)) {
+					available += stack.getCount();
+				}
+			}
+			int maxByIngredient = available / ingredient.count();
+			if (maxByIngredient == 0) {
+				return 0;
+			}
+			parallel = Math.min(parallel, maxByIngredient);
+			if (parallel <= 0) {
+				return 0;
+			}
+		}
+
+		// Limit by output space: every output must fit `parallel` times into
+		// its slot.
+		List<ItemStack> outputs = recipe.outputs();
+		for (int i = 0; i < outputs.size(); i++) {
+			ItemStack out = outputs.get(i);
+			if (out.isEmpty()) {
+				continue;
+			}
+			int maxByOutput = maxFitCount(out, outputSlots[i]);
+			if (maxByOutput == 0) {
+				return 0;
+			}
+			parallel = Math.min(parallel, maxByOutput);
+			if (parallel <= 0) {
+				return 0;
+			}
+		}
+
+		// Limit by recipe-specific outputs (e.g. fluid tank space)
+		int recipeLimit = recipe.getParallelOutputLimit(blockEntity);
+		if (recipeLimit <= 0) {
+			return 0;
+		}
+		parallel = Math.min(parallel, recipeLimit);
+		if (parallel <= 0) {
+			return 0;
+		}
+		return Math.max(parallel, 1);
+	}
+
+	/**
+	 * How many copies of {@code stack} the given output slot can still hold,
+	 * considering the slot's current content and the stack max count.
+	 */
+	private int maxFitCount(ItemStack stack, int slot) {
+		ItemStack existing = inventory.getStack(slot);
+		if (existing.isEmpty()) {
+			return stack.getMaxCount() / stack.getCount();
+		}
+		if (ItemUtils.isItemEqual(existing, stack, true, true)) {
+			int space = stack.getMaxCount() - existing.getCount();
+			return space / stack.getCount();
+		}
+		return 0;
+	}
+
 	public void read(NbtCompound tag) {
 		NbtCompound data = tag.getCompound("Crater");
 
@@ -329,7 +467,7 @@ public class RecipeCrafter implements IUpgradeHandler {
 
 	public boolean canCraftAgain() {
 		for (RebornRecipe recipe : RecipeUtils.getRecipes(blockEntity.getWorld(), recipeType)) {
-			if (recipe.canCraft(blockEntity) && hasAllInputs(recipe)) {
+			if (recipe.canCraft(blockEntity) && hasAllInputs(recipe, 1)) {
 				final List<ItemStack> outputs = recipe.outputs();
 
 				for (int i = 0; i < outputs.size(); i++) {

@@ -109,4 +109,50 @@ public record FluidReplicatorRecipe(RecipeType<?> type, List<SizedIngredient> in
 		}
 		return true;
 	}
+
+	@Override
+	public boolean onCraft(BlockEntity be, int parallel) {
+		FluidReplicatorBlockEntity blockEntity = (FluidReplicatorBlockEntity) be;
+		// Output the fluid for `parallel` identical recipes at once
+		FluidInstance fluid = fluid().withAmount(fluid().getAmount().multiply(Math.max(parallel, 1)));
+		if (blockEntity.tank.isEmpty()) {
+			if (blockEntity.tank.getCapacity() >= fluid.getAmount().getRawValue()) {
+				blockEntity.tank.setFluidInstance(fluid);
+				return true;
+			}
+			return false;
+		}
+		if (blockEntity.tank.getFluid() == fluid.fluid()) {
+			if (blockEntity.tank.getFreeSpace().equalOrMoreThan(fluid.getAmount())) {
+				blockEntity.tank.modifyFluid(value -> value.addAmount(fluid.getAmount()));
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public int getParallelOutputLimit(BlockEntity be) {
+		FluidReplicatorBlockEntity blockEntity = (FluidReplicatorBlockEntity) be;
+		FluidValue amount = fluid().getAmount();
+		long amountRaw = amount.getRawValue();
+		if (amountRaw <= 0) {
+			return Integer.MAX_VALUE;
+		}
+		long freeRaw;
+		if (blockEntity.tank.isEmpty()) {
+			freeRaw = blockEntity.tank.getCapacity();
+		} else {
+			if (blockEntity.tank.getFluid() != fluid().fluid()) {
+				// Tank holds a different fluid, cannot output at all
+				return 0;
+			}
+			freeRaw = blockEntity.tank.getFreeSpace().getRawValue();
+		}
+		long times = freeRaw / amountRaw;
+		if (times <= 0) {
+			return 0;
+		}
+		return (int) Math.min(times, Integer.MAX_VALUE);
+	}
 }

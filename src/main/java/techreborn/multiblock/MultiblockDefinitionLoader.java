@@ -70,7 +70,8 @@ public class MultiblockDefinitionLoader {
 			"industrial_blast_furnace",
 			"industrial_grinder",
 			"industrial_sawmill",
-			"vacuum_freezer"
+			"vacuum_freezer",
+			"rotary_hearth_furnace"
 	};
 
 	private MultiblockDefinitionLoader() {

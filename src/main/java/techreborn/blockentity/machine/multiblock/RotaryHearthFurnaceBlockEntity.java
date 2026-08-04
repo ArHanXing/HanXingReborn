@@ -25,57 +25,59 @@
 package techreborn.blockentity.machine.multiblock;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
-import reborncore.common.multiblock.IMultiblockPart;
-import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
-import techreborn.blockentity.machine.multiblock.casing.MachineCasingBlockEntity;
 import techreborn.blocks.misc.BlockCoil;
 import techreborn.config.TechRebornConfig;
-import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
-import techreborn.multiblocks.MultiBlockCasing;
 import techreborn.multiblock.CoilHeatScanner;
+import techreborn.recipe.RhfRecipeCrafter;
 
-import java.util.Optional;
+/**
+ * Rotary Hearth Furnace (RHF): a large multiblock that runs every Industrial
+ * Blast Furnace recipe at 0.5x time and 0.5x power.
+ * <p>
+ * Uses the same coil system as the IBF (single coil type, coil heat), but has
+ * a base heat of {@value #BASE_HEAT} on top of the coils. Its special parallel
+ * rule (see {@link RhfRecipeCrafter}) starts at 4 parallels and multiplies by
+ * 4 for every 1000 heat above the recipe requirement.
+ */
+public class RotaryHearthFurnaceBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
-public class IndustrialBlastFurnaceBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
+	/** Base heat always available on top of the coil heat. */
+	public static final int BASE_HEAT = 1000;
 
 	private int cachedHeat;
 	private boolean coilsActive = false;
 
-	public IndustrialBlastFurnaceBlockEntity(BlockPos pos, BlockState state) {
-		super(TRBlockEntities.INDUSTRIAL_BLAST_FURNACE, pos, state, "IndustrialBlastFurnace", TechRebornConfig.industrialBlastFurnaceMaxInput, TechRebornConfig.industrialBlastFurnaceMaxEnergy, TRContent.Machine.INDUSTRIAL_BLAST_FURNACE.block, 4);
+	public RotaryHearthFurnaceBlockEntity(BlockPos pos, BlockState state) {
+		super(TRBlockEntities.ROTARY_HEARTH_FURNACE, pos, state, "RotaryHearthFurnace",
+				TechRebornConfig.rotaryHearthFurnaceMaxInput,
+				TechRebornConfig.rotaryHearthFurnaceMaxEnergy,
+				TRContent.Machine.ROTARY_HEARTH_FURNACE.block, 4);
 		final int[] inputs = new int[]{0, 1};
 		final int[] outputs = new int[]{2, 3};
-		this.inventory = new RebornInventory<>(5, "IndustrialBlastFurnaceBlockEntity", 64, this);
-		this.crafter = new RecipeCrafter(ModRecipes.BLAST_FURNACE, this, 2, 2, this.inventory, inputs, outputs);
-		this.crafter.setMaxParallel(1);
+		this.inventory = new RebornInventory<>(5, "RotaryHearthFurnaceBlockEntity", 64, this);
+		this.crafter = new RhfRecipeCrafter(this, this.inventory, inputs, outputs);
 	}
 
 	@Override
 	public String getMultiblockId() {
-		return "industrial_blast_furnace";
+		return "rotary_hearth_furnace";
 	}
 
 	/**
-	 * Computes the Industrial Blast Furnace's heat by scanning the JSON-defined
-	 * multiblock structure for coil blocks. Only one coil type may be used;
-	 * mixed coils return zero heat (disabling the machine).
-	 * <p>
-	 * This replaces the old hard-coded "bottom center casing" scan with the
-	 * generic {@link CoilHeatScanner} shared with other coil machines (e.g.
-	 * the Rotary Hearth Furnace). Each coil tier provides a fixed, GT5-style
-	 * temperature.
+	 * Computes the RHF heat: {@value #BASE_HEAT} plus the heat of the coils in
+	 * the structure, using the generic {@link CoilHeatScanner}. Only one coil
+	 * type may be used; mixed coils return zero heat (disabling the machine).
 	 */
 	public int getHeat() {
 		if (!isMultiblockValid()) {
@@ -87,7 +89,7 @@ public class IndustrialBlastFurnaceBlockEntity extends JsonMultiblockMachineBloc
 			// Mixed coils -> reject
 			return 0;
 		}
-		return coilHeat;
+		return BASE_HEAT + coilHeat;
 	}
 
 	public void setHeat(final int heat) {
@@ -101,7 +103,7 @@ public class IndustrialBlastFurnaceBlockEntity extends JsonMultiblockMachineBloc
 	// IContainerProvider
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, final PlayerEntity player) {
-		return new ScreenHandlerBuilder("blastfurnace").player(player.getInventory()).inventory().hotbar().addInventory()
+		return new ScreenHandlerBuilder("rotaryhearthfurnace").player(player.getInventory()).inventory().hotbar().addInventory()
 				.blockEntity(this).slot(0, 50, 27).slot(1, 50, 47).outputSlot(2, 93, 37).outputSlot(3, 113, 37)
 				.energySlot(4, 8, 72).syncEnergyValue().syncCrafterValue()
 				.sync(PacketCodecs.INTEGER, this::getHeat, this::setHeat).addInventory().create(this, syncID);
@@ -126,29 +128,12 @@ public class IndustrialBlastFurnaceBlockEntity extends JsonMultiblockMachineBloc
 	 * so that coil textures switch to the bloom variant while the machine is working.
 	 */
 	private void updateCoilBloomState(boolean bloom) {
-		getMultiblockCasing().ifPresent(casing -> {
-			for (final IMultiblockPart part : casing.connectedParts) {
-				BlockPos partPos = part.getPos();
-				BlockState partState = world.getBlockState(partPos);
-				if (partState.getBlock() instanceof BlockCoil) {
-					world.setBlockState(partPos, partState.with(BlockCoil.ACTIVE, bloom), 2);
-				}
+		if (world == null || world.isClient) return;
+		for (BlockPos position : CoilHeatScanner.collectPositions(getPos(), getFacing(), getMultiblockId())) {
+			BlockState blockState = world.getBlockState(position);
+			if (blockState.getBlock() instanceof BlockCoil) {
+				world.setBlockState(position, blockState.with(BlockCoil.ACTIVE, bloom), 2);
 			}
-		});
-	}
-
-	/**
-	 * Resolves the assembled multiblock casing from the controller position.
-	 */
-	private Optional<MultiBlockCasing> getMultiblockCasing() {
-		if (world == null || !isMultiblockValid()) return Optional.empty();
-		final BlockPos location = pos.offset(getFacing().getOpposite(), 2);
-		final BlockEntity blockEntity = world.getBlockEntity(location);
-		if (blockEntity instanceof MachineCasingBlockEntity casing
-				&& casing.isConnected()
-				&& casing.getMultiblockController().isAssembled()) {
-			return Optional.of(casing.getMultiblockController());
 		}
-		return Optional.empty();
 	}
 }

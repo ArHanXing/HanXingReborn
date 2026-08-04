@@ -30,7 +30,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import reborncore.api.blockentity.IMachineGuiHandler;
 import techreborn.init.ModRecipes;
-import techreborn.recipe.ProxyRecipeTooltipBuilder;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -48,7 +47,10 @@ public class LargeChemicalReactorBlock extends GenericMachineBlock {
 
 	@Override
 	protected void appendMachineTooltip(List<Text> tooltip) {
-		ProxyRecipeTooltipBuilder.build(tooltip, ModRecipes.LARGE_CHEMICAL_REACTOR,
-				List.of(ModRecipes.CHEMICAL_REACTOR), 0.8F, 0.5F);
+		MultiblockTooltipBuilder.create()
+				.recipeTypes(ModRecipes.LARGE_CHEMICAL_REACTOR, List.of(ModRecipes.CHEMICAL_REACTOR))
+				.multipliers(List.of(ModRecipes.CHEMICAL_REACTOR), 0.8F, 0.5F)
+				.maxParallel(16)
+				.appendTo(tooltip);
 	}
 }

@@ -46,6 +46,7 @@ public class ImplosionCompressorBlockEntity extends JsonMultiblockMachineBlockEn
 		final int[] outputs = new int[]{2, 3};
 		this.inventory = new RebornInventory<>(5, "ImplosionCompressorBlockEntity", 64, this);
 		this.crafter = new RecipeCrafter(ModRecipes.IMPLOSION_COMPRESSOR, this, 2, 2, this.inventory, inputs, outputs);
+		this.crafter.setMaxParallel(16);
 	}
 
 	@Override

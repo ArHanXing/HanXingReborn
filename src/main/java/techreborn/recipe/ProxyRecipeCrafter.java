@@ -80,7 +80,7 @@ public class ProxyRecipeCrafter extends RecipeCrafter {
 	@Override
 	public boolean canCraftAgain() {
 		for (RebornRecipe recipe : allRecipes()) {
-			if (recipe.canCraft(blockEntity) && hasAllInputs(recipe)) {
+			if (recipe.canCraft(blockEntity) && hasAllInputs(recipe, 1)) {
 				final List<ItemStack> outputs = recipe.outputs();
 				for (int i = 0; i < outputs.size(); i++) {
 					if (!canFitOutput(outputs.get(i), outputSlots[i])) {
@@ -119,19 +119,16 @@ public class ProxyRecipeCrafter extends RecipeCrafter {
 	 * @return {@code true} if the recipe was selected
 	 */
 	private boolean trySetRecipe(RebornRecipe recipe) {
-		if (!hasAllInputs(recipe)) {
+		// Computes the parallel count (also checks inputs and output space)
+		int parallel = getParallelCount(recipe);
+		if (parallel <= 0) {
 			return false;
 		}
 		if (!recipe.canCraft(blockEntity)) {
 			return false;
 		}
-		final List<ItemStack> outputs = recipe.outputs();
-		for (int i = 0; i < outputs.size(); i++) {
-			if (!canFitOutput(outputs.get(i), outputSlots[i])) {
-				return false;
-			}
-		}
 		setCurrentRecipe(recipe);
+		this.currentParallelCount = parallel;
 		this.currentNeededTicks = Math.max((int) (currentRecipe.time() * (1.0 - getSpeedMultiplier())), 1);
 		setIsActive();
 		return true;

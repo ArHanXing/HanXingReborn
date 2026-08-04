@@ -66,6 +66,7 @@ public class IndustrialGrinderBlockEntity extends JsonMultiblockMachineBlockEnti
 				List.of(ModRecipes.GRINDER),
 				0.5F, 0.8F,
 				this, 1, 4, this.inventory, inputs, outputs);
+		this.crafter.setMaxParallel(16);
 		this.tank = new Tank("IndustrialGrinderBlockEntity", IndustrialGrinderBlockEntity.TANK_CAPACITY);
 		this.ticksSinceLastChange = 0;
 	}

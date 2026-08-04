@@ -35,22 +35,21 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 /**
- * The Industrial Grinder block. Runs its own (fluid-requiring) recipes plus
- * every regular grinder recipe (0.5x time, 0.8x power, no fluid), which is
- * reflected in the item tooltip.
+ * The Rotary Hearth Furnace block. Runs every Industrial Blast Furnace recipe
+ * at 0.5x time and 0.5x power, which is reflected in the item tooltip.
  */
-public class IndustrialGrinderBlock extends GenericMachineBlock {
+public class RotaryHearthFurnaceBlock extends GenericMachineBlock {
 
-	public IndustrialGrinderBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass) {
+	public RotaryHearthFurnaceBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass) {
 		super(gui, blockEntityClass);
 	}
 
 	@Override
 	protected void appendMachineTooltip(List<Text> tooltip) {
 		MultiblockTooltipBuilder.create()
-				.recipeTypes(ModRecipes.INDUSTRIAL_GRINDER, List.of(ModRecipes.GRINDER))
-				.multipliers(List.of(ModRecipes.GRINDER), 0.8F, 0.5F)
-				.maxParallel(16)
+				.recipeTypes(ModRecipes.ROTARY_HEARTH_FURNACE, List.of(ModRecipes.BLAST_FURNACE))
+				.multipliers(List.of(ModRecipes.BLAST_FURNACE), 0.5F, 0.5F)
+				.note("item.techreborn.rotary_hearth_furnace.parallel")
 				.appendTo(tooltip);
 	}
 }

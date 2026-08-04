@@ -1,0 +1,122 @@
+{
+  "translate": [
+    2,
+    0,
+    -3
+  ],
+  "layers": [
+    [
+      "  BBB  ",
+      " BB BB ",
+      "BB   BB",
+      "B     B",
+      "BB   BB",
+      " BB BB ",
+      "  BBB  "
+    ],
+    [
+      "  BBB  ",
+      " BBDBB ",
+      "BBDDDBB",
+      "BDDDDDE",
+      "BBDDDBB",
+      " BBDBB ",
+      "  BBB  "
+    ],
+    [
+      "   F   ",
+      "  A A  ",
+      " A C A ",
+      "  CCC  ",
+      " A C A ",
+      "  A A  ",
+      "   F   "
+    ],
+    [
+      "   F   ",
+      "  A A  ",
+      " A C A ",
+      "  CCC  ",
+      " A C A ",
+      "  A A  ",
+      "   F   "
+    ],
+    [
+      "   F   ",
+      "  BBB  ",
+      " BBCBB ",
+      " BCCCB ",
+      " BBCBB ",
+      "  BBB  ",
+      "   F   "
+    ],
+    [
+      "   F   ",
+      "       ",
+      "   C   ",
+      "  CCC  ",
+      "   C   ",
+      "       ",
+      "   F   "
+    ],
+    [
+      "   F   ",
+      "       ",
+      "   C   ",
+      "  CCC  ",
+      "   C   ",
+      "       ",
+      "   F   "
+    ],
+    [
+      "   F   ",
+      "       ",
+      "   C   ",
+      "  CCC  ",
+      "   C   ",
+      "       ",
+      "   F   "
+    ],
+    [
+      "   A   ",
+      "   A   ",
+      "   B   ",
+      "  B B  ",
+      "   B   ",
+      "   A   ",
+      "   A   "
+    ]
+  ],
+  "keys": {
+    "C": {
+		"blocks": [
+			"techreborn:coil_cupronickel",
+			"techreborn:coil_kanthal",
+			"techreborn:coil_nichrome",
+			"techreborn:coil_molybdenum_disilicide",
+			"techreborn:coil_tungstensteel",
+			"techreborn:coil_hssg",
+			"techreborn:coil_rtm_alloy",
+			"techreborn:coil_naquadah",
+			"techreborn:coil_trinium",
+			"techreborn:coil_tritanium",
+			"techreborn:coil_superconductor"
+		]
+    },
+    "F": {
+      "block": "techreborn:basic_machine_casing"
+    },
+    "A": {
+      "block": "techreborn:advanced_machine_frame"
+    },
+    "D": {
+      "block": "techreborn:advanced_machine_casing"
+    },
+    "B": {
+      "block": "techreborn:industrial_machine_casing"
+    },
+    "E": {
+      "block": "techreborn:computer_cube"
+    }
+  }
+}

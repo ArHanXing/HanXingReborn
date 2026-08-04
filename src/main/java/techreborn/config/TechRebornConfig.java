@@ -484,6 +484,12 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "industrial_furnace", key = "IndustrialFurnaceMaxEnergy", comment = "Industrial Blast Furnace Max Energy")
 	public static int industrialBlastFurnaceMaxEnergy = 40_000;
 
+	@Config(config = "machines", category = "rotary_hearth_furnace", key = "RotaryHearthFurnaceMaxInput", comment = "Rotary Hearth Furnace Max Input (Energy per tick)")
+	public static int rotaryHearthFurnaceMaxInput = 256;
+
+	@Config(config = "machines", category = "rotary_hearth_furnace", key = "RotaryHearthFurnaceMaxEnergy", comment = "Rotary Hearth Furnace Max Energy")
+	public static int rotaryHearthFurnaceMaxEnergy = 100_000;
+
 	@Config(config = "machines", category = "industrial_sawmill", key = "IndustrialSawmillMaxInput", comment = "Industrial Sawmill Max Input (Energy per tick)")
 	public static int industrialSawmillMaxInput = 128;
 

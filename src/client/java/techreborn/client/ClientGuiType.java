@@ -45,6 +45,7 @@ import techreborn.blockentity.machine.multiblock.IndustrialBlastFurnaceBlockEnti
 import techreborn.blockentity.machine.multiblock.IndustrialGrinderBlockEntity;
 import techreborn.blockentity.machine.multiblock.IndustrialSawmillBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeChemicalReactorBlockEntity;
+import techreborn.blockentity.machine.multiblock.RotaryHearthFurnaceBlockEntity;
 import techreborn.blockentity.machine.multiblock.VacuumFreezerBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockBreakerBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockPlacerBlockEntity;
@@ -86,6 +87,7 @@ import techreborn.client.gui.GuiAssemblingMachine;
 import techreborn.client.gui.GuiAutoCrafting;
 import techreborn.client.gui.GuiBatbox;
 import techreborn.client.gui.GuiBlastFurnace;
+import techreborn.client.gui.GuiRotaryHearthFurnace;
 import techreborn.client.gui.GuiBlockBreaker;
 import techreborn.client.gui.GuiBlockPlacer;
 import techreborn.client.gui.GuiCentrifuge;
@@ -143,6 +145,7 @@ public record ClientGuiType<T extends BlockEntity>(GuiType<T> guiType, GuiFactor
 	public static final ClientGuiType<LowVoltageSUBlockEntity> LOW_VOLTAGE_SU = register(GuiType.LOW_VOLTAGE_SU, GuiBatbox::new);
 	public static final ClientGuiType<AutoCraftingTableBlockEntity> AUTO_CRAFTING_TABLE = register(GuiType.AUTO_CRAFTING_TABLE, GuiAutoCrafting::new);
 	public static final ClientGuiType<IndustrialBlastFurnaceBlockEntity> BLAST_FURNACE = register(GuiType.BLAST_FURNACE, GuiBlastFurnace::new);
+	public static final ClientGuiType<RotaryHearthFurnaceBlockEntity> ROTARY_HEARTH_FURNACE = register(GuiType.ROTARY_HEARTH_FURNACE, GuiRotaryHearthFurnace::new);
 	public static final ClientGuiType<IndustrialCentrifugeBlockEntity> CENTRIFUGE = register(GuiType.CENTRIFUGE, GuiCentrifuge::new);
 	public static final ClientGuiType<ChargeOMatBlockEntity> CHARGEBENCH = register(GuiType.CHARGEBENCH, GuiChargeBench::new);
 	public static final ClientGuiType<ChemicalReactorBlockEntity> CHEMICAL_REACTOR = register(GuiType.CHEMICAL_REACTOR, GuiChemicalReactor::new);

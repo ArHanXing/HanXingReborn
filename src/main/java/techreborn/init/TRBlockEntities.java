@@ -90,6 +90,7 @@ public class TRBlockEntities {
 	public static final BlockEntityType<IndustrialCentrifugeBlockEntity> INDUSTRIAL_CENTRIFUGE = register(IndustrialCentrifugeBlockEntity::new, "industrial_centrifuge", TRContent.Machine.INDUSTRIAL_CENTRIFUGE);
 	public static final BlockEntityType<RollingMachineBlockEntity> ROLLING_MACHINE = register(RollingMachineBlockEntity::new, "rolling_machine", TRContent.Machine.ROLLING_MACHINE);
 	public static final BlockEntityType<IndustrialBlastFurnaceBlockEntity> INDUSTRIAL_BLAST_FURNACE = register(IndustrialBlastFurnaceBlockEntity::new, "industrial_blast_furnace", TRContent.Machine.INDUSTRIAL_BLAST_FURNACE);
+	public static final BlockEntityType<RotaryHearthFurnaceBlockEntity> ROTARY_HEARTH_FURNACE = register(RotaryHearthFurnaceBlockEntity::new, "rotary_hearth_furnace", TRContent.Machine.ROTARY_HEARTH_FURNACE);
 	public static final BlockEntityType<AlloySmelterBlockEntity> ALLOY_SMELTER = register(AlloySmelterBlockEntity::new, "alloy_smelter", TRContent.Machine.ALLOY_SMELTER);
 	public static final BlockEntityType<IndustrialGrinderBlockEntity> INDUSTRIAL_GRINDER = register(IndustrialGrinderBlockEntity::new, "industrial_grinder", TRContent.Machine.INDUSTRIAL_GRINDER);
 	public static final BlockEntityType<ImplosionCompressorBlockEntity> IMPLOSION_COMPRESSOR = register(ImplosionCompressorBlockEntity::new, "implosion_compressor", TRContent.Machine.IMPLOSION_COMPRESSOR);

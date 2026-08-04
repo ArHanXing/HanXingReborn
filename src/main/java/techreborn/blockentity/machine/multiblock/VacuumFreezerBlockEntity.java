@@ -46,6 +46,7 @@ public class VacuumFreezerBlockEntity extends JsonMultiblockMachineBlockEntity i
 		final int[] outputs = new int[]{1};
 		this.inventory = new RebornInventory<>(3, "VacuumFreezerBlockEntity", 64, this);
 		this.crafter = new RecipeCrafter(ModRecipes.VACUUM_FREEZER, this, 2, 1, this.inventory, inputs, outputs);
+		this.crafter.setMaxParallel(16);
 	}
 
 	@Override

@@ -30,6 +30,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import reborncore.api.blockentity.IMachineGuiHandler;
 import reborncore.common.blocks.BlockMachineBase;
@@ -46,10 +47,21 @@ public class GenericMachineBlock extends BlockMachineBase {
 	private final IMachineGuiHandler gui;
 	final BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass;
 
+	/**
+	 * Maximum parallel count shown in the tooltip. 0 hides the line.
+	 */
+	private final int maxParallel;
+
 	public GenericMachineBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass) {
+		this(gui, blockEntityClass, 0);
+	}
+
+	public GenericMachineBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass,
+			int maxParallel) {
 		super(TRBlockSettings.genericMachine());
 		this.blockEntityClass = blockEntityClass;
 		this.gui = gui;
+		this.maxParallel = maxParallel;
 	}
 
 	@Override
@@ -73,9 +85,18 @@ public class GenericMachineBlock extends BlockMachineBase {
 
 	/**
 	 * Hook for subclasses to add machine-specific tooltip lines.
+	 * <p>
+	 * The default implementation adds the "maximum parallel" line when the
+	 * block was created with a non-zero {@code maxParallel}. Subclasses should
+	 * call {@code super.appendMachineTooltip(tooltip)} first, then append their
+	 * own lines (e.g. via {@link MultiblockTooltipBuilder}).
 	 *
 	 * @param tooltip {@link List} the tooltip to append to
 	 */
 	protected void appendMachineTooltip(List<Text> tooltip) {
+		if (maxParallel > 0) {
+			tooltip.add(Text.translatable("item.techreborn.multiblock_parallel.tooltip",
+					Text.literal(String.valueOf(maxParallel)).formatted(Formatting.YELLOW)));
+		}
 	}
 }

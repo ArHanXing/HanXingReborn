@@ -57,6 +57,7 @@ public class LargeChemicalReactorBlockEntity extends JsonMultiblockMachineBlockE
 				List.of(ModRecipes.CHEMICAL_REACTOR),
 				0.5F, 0.8F,
 				this, 6, 4, this.inventory, inputs, outputs);
+		this.crafter.setMaxParallel(16);
 	}
 
 	@Override

@@ -60,6 +60,7 @@ public class FluidReplicatorBlockEntity extends JsonMultiblockMachineBlockEntity
 		super(TRBlockEntities.FLUID_REPLICATOR, pos, state, "FluidReplicator", TechRebornConfig.fluidReplicatorMaxInput, TechRebornConfig.fluidReplicatorMaxEnergy, TRContent.Machine.FLUID_REPLICATOR.block, 3);
 		this.inventory = new RebornInventory<>(4, "FluidReplicatorBlockEntity", 64, this, getInventoryAccess());
 		this.crafter = new RecipeCrafter(ModRecipes.FLUID_REPLICATOR, this, 1, 0, this.inventory, new int[]{0}, null);
+		this.crafter.setMaxParallel(16);
 		this.tank = new Tank("FluidReplicatorBlockEntity", FluidReplicatorBlockEntity.TANK_CAPACITY);
 	}
 
