@@ -6,6 +6,6 @@
 		"west": "techreborn:block/machines/tier2_machines/implosion_compressor_west_off",
 		"east": "techreborn:block/machines/tier2_machines/implosion_compressor_east_off",
 		"south": "techreborn:block/machines/tier2_machines/machine_back",
-		"front": "techreborn:block/machines/tier2_machines/implosion_compressor_front_off"
+		"front": "techreborn:block/machines/tier2_machines/large_chemical_reactor_front_off"
 	}
 }
