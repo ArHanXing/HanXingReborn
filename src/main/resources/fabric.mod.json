@@ -25,6 +25,9 @@
     ],
     "emi": [
 		"techreborn.client.compat.emi.TREmiPlugin"
+    ],
+    "jade": [
+		"techreborn.compat.jade.TechRebornJadePlugin"
     ]
   },
   "custom": {

@@ -358,6 +358,14 @@ public class RecipeCrafter implements IUpgradeHandler {
 	}
 
 	/**
+	 * @return {@code int} the number of parallel runs of the current recipe
+	 *         (always at least 1).
+	 */
+	public int getCurrentParallelCount() {
+		return currentParallelCount;
+	}
+
+	/**
 	 * Computes how many times the given recipe can run in parallel right now,
 	 * limited by the machine's {@link #maxParallel}, the input inventory and
 	 * the output slot space (GTCEu style). Returns 0 if the recipe cannot be
