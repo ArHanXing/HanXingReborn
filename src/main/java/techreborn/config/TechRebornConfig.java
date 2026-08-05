@@ -490,6 +490,24 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "rotary_hearth_furnace", key = "RotaryHearthFurnaceMaxEnergy", comment = "Rotary Hearth Furnace Max Energy")
 	public static int rotaryHearthFurnaceMaxEnergy = 100_000;
 
+	@Config(config = "machines", category = "large_compressor", key = "LargeCompressorMaxInput", comment = "Large Compressor Max Input (Energy per tick)")
+	public static int largeCompressorMaxInput = 128;
+
+	@Config(config = "machines", category = "large_compressor", key = "LargeCompressorMaxEnergy", comment = "Large Compressor Max Energy")
+	public static int largeCompressorMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "large_wire_mill", key = "LargeWireMillMaxInput", comment = "Large Wire Mill Max Input (Energy per tick)")
+	public static int largeWireMillMaxInput = 128;
+
+	@Config(config = "machines", category = "large_wire_mill", key = "LargeWireMillMaxEnergy", comment = "Large Wire Mill Max Energy")
+	public static int largeWireMillMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "large_grinder", key = "LargeGrinderMaxInput", comment = "Large Grinder Max Input (Energy per tick)")
+	public static int largeGrinderMaxInput = 128;
+
+	@Config(config = "machines", category = "large_grinder", key = "LargeGrinderMaxEnergy", comment = "Large Grinder Max Energy")
+	public static int largeGrinderMaxEnergy = 10_000;
+
 	@Config(config = "machines", category = "industrial_sawmill", key = "IndustrialSawmillMaxInput", comment = "Industrial Sawmill Max Input (Energy per tick)")
 	public static int industrialSawmillMaxInput = 128;
 

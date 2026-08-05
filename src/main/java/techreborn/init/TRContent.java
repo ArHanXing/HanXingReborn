@@ -75,6 +75,9 @@ import techreborn.blockentity.storage.energy.AdjustableSUBlockEntity;
 import techreborn.blocks.GenericMachineBlock;
 import techreborn.blocks.IndustrialGrinderBlock;
 import techreborn.blocks.LargeChemicalReactorBlock;
+import techreborn.blocks.LargeCompressorBlock;
+import techreborn.blocks.LargeGrinderBlock;
+import techreborn.blocks.LargeWireMillBlock;
 import techreborn.blocks.RotaryHearthFurnaceBlock;
 import techreborn.blocks.cable.CableBlock;
 import techreborn.blocks.generator.BlockFusionCoil;
@@ -771,6 +774,9 @@ public class TRContent {
 		SCRAPBOXINATOR(new GenericMachineBlock(GuiType.SCRAPBOXINATOR, ScrapboxinatorBlockEntity::new)),
 		VACUUM_FREEZER(new GenericMachineBlock(GuiType.VACUUM_FREEZER, VacuumFreezerBlockEntity::new, 16)),
 		LARGE_CHEMICAL_REACTOR(new LargeChemicalReactorBlock(GuiType.LARGE_CHEMICAL_REACTOR, LargeChemicalReactorBlockEntity::new)),
+		LARGE_COMPRESSOR(new LargeCompressorBlock(GuiType.LARGE_COMPRESSOR, LargeCompressorBlockEntity::new)),
+		LARGE_WIRE_MILL(new LargeWireMillBlock(GuiType.LARGE_WIRE_MILL, LargeWireMillBlockEntity::new)),
+		LARGE_GRINDER(new LargeGrinderBlock(GuiType.LARGE_GRINDER, LargeGrinderBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),
 		GREENHOUSE_CONTROLLER(new GenericMachineBlock(GuiType.GREENHOUSE_CONTROLLER, GreenhouseControllerBlockEntity::new)),

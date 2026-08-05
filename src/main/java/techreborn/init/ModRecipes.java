@@ -70,4 +70,10 @@ public class ModRecipes {
 	// The RHF has no recipes of its own; it proxies every blast furnace recipe
 	// (see RhfRecipeCrafter), but still needs a type for the crafter to use.
 	public static final RecipeType<BlastFurnaceRecipe> ROTARY_HEARTH_FURNACE = RecipeManager.newRecipeType(Identifier.of("techreborn:rotary_hearth_furnace"), BlastFurnaceRecipe.CODEC, BlastFurnaceRecipe.PACKET_CODEC);
+
+	// Large multiblock machines with no recipes of their own; they proxy their
+	// smaller counterpart's recipes (see ProxyRecipeCrafter in each BlockEntity).
+	public static final RecipeType<RebornRecipe> LARGE_COMPRESSOR = RecipeManager.newRecipeType(Identifier.of("techreborn:large_compressor"));
+	public static final RecipeType<RebornRecipe> LARGE_WIRE_MILL = RecipeManager.newRecipeType(Identifier.of("techreborn:large_wire_mill"));
+	public static final RecipeType<RebornRecipe> LARGE_GRINDER = RecipeManager.newRecipeType(Identifier.of("techreborn:large_grinder"));
 }

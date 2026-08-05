@@ -64,6 +64,9 @@ import techreborn.blockentity.machine.multiblock.IndustrialBlastFurnaceBlockEnti
 import techreborn.blockentity.machine.multiblock.IndustrialGrinderBlockEntity;
 import techreborn.blockentity.machine.multiblock.IndustrialSawmillBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeChemicalReactorBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeCompressorBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeGrinderBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeWireMillBlockEntity;
 import techreborn.blockentity.machine.multiblock.RotaryHearthFurnaceBlockEntity;
 import techreborn.blockentity.machine.multiblock.VacuumFreezerBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockBreakerBlockEntity;
@@ -147,6 +150,9 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<WireMillBlockEntity> WIRE_MILL = register("wire_mill");
 	public static final GuiType<GreenhouseControllerBlockEntity> GREENHOUSE_CONTROLLER = register("greenhouse_controller");
 	public static final GuiType<FluidReplicatorBlockEntity> FLUID_REPLICATOR = register("fluid_replicator");
+	public static final GuiType<LargeCompressorBlockEntity> LARGE_COMPRESSOR = register("large_compressor");
+	public static final GuiType<LargeWireMillBlockEntity> LARGE_WIRE_MILL = register("large_wire_mill");
+	public static final GuiType<LargeGrinderBlockEntity> LARGE_GRINDER = register("large_grinder");
 	public static final GuiType<RotaryHearthFurnaceBlockEntity> ROTARY_HEARTH_FURNACE = register("rotary_hearth_furnace");
 	public static final GuiType<PlayerDetectorBlockEntity> PLAYER_DETECTOR = register("player_detector");
 	public static final GuiType<BlockBreakerBlockEntity> BLOCK_BREAKER = register("block_breaker");

@@ -1,0 +1,40 @@
+{
+	"translate": [
+		-1,
+		0,
+		-3
+	],
+	"layers": [
+		[
+			"AAA",
+			"AAA",
+			"AAA"
+		],
+		[
+			"BAB",
+			"A A",
+			"BCB"
+		],
+		[
+			"BAB",
+			"A A",
+			"BCB"
+		],
+		[
+			"BAB",
+			"A A",
+			"BBB"
+		]
+	],
+	"keys": {
+		"C": {
+			"block": "techreborn:reinforced_glass"
+		},
+		"B": {
+			"block": "techreborn:basic_machine_casing"
+		},
+		"A": {
+			"block": "techreborn:advanced_machine_casing"
+		}
+	}
+}
