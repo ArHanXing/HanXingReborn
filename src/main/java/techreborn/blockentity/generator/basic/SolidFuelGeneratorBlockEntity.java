@@ -48,13 +48,14 @@ import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
+import techreborn.api.IEnergyProducerProvider;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
 
 import java.util.Map;
 
-public class SolidFuelGeneratorBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider, BuiltScreenHandlerProvider {
+public class SolidFuelGeneratorBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider, BuiltScreenHandlerProvider, IEnergyProducerProvider {
 
 	public final RebornInventory<SolidFuelGeneratorBlockEntity> inventory = new RebornInventory<>(2, "SolidFuelGeneratorBlockEntity", 64, this);
 	public final int fuelSlot = 0;
@@ -183,6 +184,11 @@ public class SolidFuelGeneratorBlockEntity extends PowerAcceptorBlockEntity impl
 	@Override
 	public RebornInventory<SolidFuelGeneratorBlockEntity> getInventory() {
 		return inventory;
+	}
+
+	@Override
+	public long getCurrentOutputPerTick() {
+		return isBurning ? TechRebornConfig.solidFuelGeneratorOutputAmount : 0;
 	}
 
 	// BuiltScreenHandlerProvider

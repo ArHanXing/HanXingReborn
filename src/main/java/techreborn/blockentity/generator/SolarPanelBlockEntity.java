@@ -48,6 +48,7 @@ import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.StringUtils;
+import techreborn.api.IEnergyProducerProvider;
 import techreborn.blocks.generator.BlockSolarPanel;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
@@ -56,7 +57,7 @@ import techreborn.init.TRContent.SolarPanels;
 import java.util.List;
 import java.util.Objects;
 
-public class SolarPanelBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, BuiltScreenHandlerProvider {
+public class SolarPanelBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, BuiltScreenHandlerProvider, IEnergyProducerProvider {
 
 	private boolean generating = false;
 
@@ -199,6 +200,11 @@ public class SolarPanelBlockEntity extends PowerAcceptorBlockEntity implements I
 	@Override
 	public long getBaseMaxInput() {
 		return 0;
+	}
+
+	@Override
+	public long getCurrentOutputPerTick() {
+		return getGenerationRate();
 	}
 
 	@Override

@@ -44,6 +44,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
+import techreborn.api.IEnergyProducerProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,10 +65,24 @@ import java.util.Optional;
 public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 	INSTANCE;
 
+	/** GTCEu style voltage tiers (EU/t), low to high. */
+	private static final long[] VOLTAGES = {8, 32, 128, 512, 2048, 8192, 32768, 131072, 524288};
+	private static final String[] TIER_NAMES = {"ULV", "LV", "MV", "HV", "EV", "IV", "LuV", "ZPM", "UV"};
+	/** GTCEu voltage colours (VCM order): ULV, LV, MV, HV, EV, IV, LuV, ZPM, UV. */
+	private static final Formatting[] TIER_COLORS = {
+			Formatting.DARK_GRAY, Formatting.GRAY, Formatting.AQUA, Formatting.GOLD,
+			Formatting.DARK_PURPLE, Formatting.BLUE, Formatting.LIGHT_PURPLE, Formatting.RED, Formatting.DARK_AQUA
+	};
+
 	// ---- Server side: sync recipe state ----
 
 	@Override
 	public void appendServerData(NbtCompound data, BlockAccessor accessor) {
+		// Generator output (EU/t)
+		if (accessor.getBlockEntity() instanceof IEnergyProducerProvider producer) {
+			data.putLong("output", producer.getCurrentOutputPerTick());
+		}
+
 		if (!(accessor.getBlockEntity() instanceof IRecipeCrafterProvider provider)) {
 			return;
 		}
@@ -115,19 +130,37 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		NbtCompound data = accessor.getServerData();
+		IElementHelper helper = IElementHelper.get();
+		RegistryWrapper.WrapperLookup lookup = accessor.getLevel().getRegistryManager();
+
+		// Generator production line (if producing). Must come before the recipe
+		// check below, because generators have no crafter and therefore no
+		// "parallel" field in the server data.
+		if (data.contains("output") && data.getLong("output") > 0) {
+			long output = data.getLong("output");
+			tooltip.add(Text.translatable("jade.techreborn.generation",
+					Text.literal(String.valueOf(output)).formatted(Formatting.YELLOW),
+					formatVoltage(output)));
+		}
+
+		// Recipe lines (machines with an active crafter)
 		if (!data.contains("parallel")) {
 			return;
 		}
 
-		IElementHelper helper = IElementHelper.get();
-		RegistryWrapper.WrapperLookup lookup = accessor.getLevel().getRegistryManager();
+		// Show the total amount for the current parallel batch; hold shift to
+		// see the single-recipe amounts.
+		int parallel = data.getInt("parallel");
+		boolean showTotal = !accessor.getPlayer().isSneaking();
 
 		// Inputs: item icons + names
 		List<IElement> inputElements = new ArrayList<>();
 		for (NbtElement element : data.getList("inputs", NbtElement.COMPOUND_TYPE)) {
 			decodeStack((NbtCompound) element, lookup).ifPresent(stack -> {
 				inputElements.add(helper.item(stack));
-				inputElements.add(helper.text(Text.literal(" " + stack.getName().getString() + " x" + stack.getCount())));
+				int count = stack.getCount();
+				int displayCount = showTotal ? count * parallel : count;
+				inputElements.add(helper.text(Text.literal(" " + stack.getName().getString() + " x" + displayCount)));
 			});
 		}
 		if (!inputElements.isEmpty()) {
@@ -139,17 +172,20 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 		for (NbtElement element : data.getList("outputs", NbtElement.COMPOUND_TYPE)) {
 			decodeStack((NbtCompound) element, lookup).ifPresent(stack -> {
 				outputElements.add(helper.item(stack));
-				outputElements.add(helper.text(Text.literal(" " + stack.getName().getString() + " x" + stack.getCount())));
+				int count = stack.getCount();
+				int displayCount = showTotal ? count * parallel : count;
+				outputElements.add(helper.text(Text.literal(" " + stack.getName().getString() + " x" + displayCount)));
 			});
 		}
 		if (!outputElements.isEmpty()) {
 			tooltip.add(outputElements);
 		}
 
-		int parallel = data.getInt("parallel");
 		int power = data.getInt("power");
+		int totalPower = power * parallel;
 		tooltip.add(Text.translatable("jade.techreborn.energy",
-				Text.literal(String.valueOf(power * parallel)).formatted(Formatting.YELLOW)));
+				Text.literal(String.valueOf(totalPower)).formatted(Formatting.YELLOW),
+				formatVoltage(totalPower)));
 
 		tooltip.add(Text.translatable("jade.techreborn.parallel",
 				Text.literal(String.valueOf(parallel)).formatted(Formatting.YELLOW),
@@ -161,6 +197,24 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 		tooltip.add(Text.translatable("jade.techreborn.progress",
 				Text.literal(String.valueOf(tickTime)).formatted(Formatting.YELLOW),
 				Text.literal(String.valueOf(neededTicks)).formatted(Formatting.YELLOW)));
+	}
+
+	/**
+	 * Formats an EU/t value GTCEu style: {@code X.XA TIER}, where the tier is
+	 * the highest voltage tier not exceeding the value (e.g. 200 EU/t ->
+	 * {@code 1.6A MV}). Values above UV clamp to UV. The text is coloured with
+	 * the tier's GTCEu colour.
+	 */
+	private static Text formatVoltage(long euPerTick) {
+		int tier = 0;
+		for (int i = 0; i < VOLTAGES.length; i++) {
+			if (VOLTAGES[i] <= euPerTick) {
+				tier = i;
+			}
+		}
+		double amps = (double) euPerTick / VOLTAGES[tier];
+		String ampsText = String.format("%.1fA", amps);
+		return Text.literal(ampsText + " " + TIER_NAMES[tier]).formatted(TIER_COLORS[tier]);
 	}
 
 	private static Optional<ItemStack> decodeStack(NbtCompound tag, RegistryWrapper.WrapperLookup lookup) {

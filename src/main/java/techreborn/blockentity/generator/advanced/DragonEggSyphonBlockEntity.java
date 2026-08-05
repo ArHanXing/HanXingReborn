@@ -38,12 +38,13 @@ import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.blocks.BlockMachineBase;
 import reborncore.common.powerSystem.PowerAcceptorBlockEntity;
 import reborncore.common.util.RebornInventory;
+import techreborn.api.IEnergyProducerProvider;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
 
 public class DragonEggSyphonBlockEntity extends PowerAcceptorBlockEntity
-		implements IToolDrop, InventoryProvider {
+		implements IToolDrop, InventoryProvider, IEnergyProducerProvider {
 
 	public final RebornInventory<DragonEggSyphonBlockEntity> inventory = new RebornInventory<>(3, "DragonEggSyphonBlockEntity", 64, this);
 	private long lastOutput = 0;
@@ -100,6 +101,11 @@ public class DragonEggSyphonBlockEntity extends PowerAcceptorBlockEntity
 	@Override
 	public long getBaseMaxInput() {
 		return 0;
+	}
+
+	@Override
+	public long getCurrentOutputPerTick() {
+		return isActive() ? TechRebornConfig.dragonEggSyphonEnergyPerTick : 0;
 	}
 
 	// IToolDrop

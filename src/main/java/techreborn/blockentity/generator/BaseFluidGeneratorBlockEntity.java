@@ -45,11 +45,12 @@ import reborncore.common.fluid.FluidValue;
 import reborncore.common.powerSystem.PowerAcceptorBlockEntity;
 import reborncore.common.util.RebornInventory;
 import reborncore.common.util.Tank;
+import techreborn.api.IEnergyProducerProvider;
 import techreborn.recipe.recipes.FluidGeneratorRecipe;
 
 import java.util.List;
 
-public abstract class BaseFluidGeneratorBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider {
+public abstract class BaseFluidGeneratorBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider, IEnergyProducerProvider {
 	private final int euTick;
 	private final RecipeType<FluidGeneratorRecipe> recipeType;
 	private int ticksSinceLastChange;
@@ -213,5 +214,10 @@ public abstract class BaseFluidGeneratorBlockEntity extends PowerAcceptorBlockEn
 	@Override
 	public Tank getTank() {
 		return tank;
+	}
+
+	@Override
+	public long getCurrentOutputPerTick() {
+		return isActive() ? euTick : 0;
 	}
 }
