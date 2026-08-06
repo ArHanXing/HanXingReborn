@@ -76,4 +76,5 @@ public class ModRecipes {
 	public static final RecipeType<RebornRecipe> LARGE_COMPRESSOR = RecipeManager.newRecipeType(Identifier.of("techreborn:large_compressor"));
 	public static final RecipeType<RebornRecipe> LARGE_WIRE_MILL = RecipeManager.newRecipeType(Identifier.of("techreborn:large_wire_mill"));
 	public static final RecipeType<RebornRecipe> LARGE_GRINDER = RecipeManager.newRecipeType(Identifier.of("techreborn:large_grinder"));
+	public static final RecipeType<RebornRecipe> PRIMITIVE_DISTILLATION_TOWER = RecipeManager.newRecipeType(Identifier.of("techreborn:primitive_distillation_tower"));
 }

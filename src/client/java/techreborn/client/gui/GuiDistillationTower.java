@@ -30,13 +30,19 @@ import reborncore.client.gui.GuiBase;
 import reborncore.client.gui.widget.GuiButtonExtended;
 import reborncore.client.gui.GuiBuilder;
 import reborncore.common.screen.BuiltScreenHandler;
-import techreborn.blockentity.machine.multiblock.DistillationTowerBlockEntity;
+import reborncore.common.screen.BuiltScreenHandlerProvider;
+import techreborn.blockentity.machine.multiblock.JsonMultiblockMachineBlockEntity;
 
-public class GuiDistillationTower extends GuiBase<BuiltScreenHandler> {
+/**
+ * GUI for the distillation towers (Distillation Tower and Primitive
+ * Distillation Tower). Draws a 4-slot (2x2) input area, a 6-slot (3x2) output
+ * area, the progress bar and the multiblock hologram button.
+ */
+public class GuiDistillationTower<T extends JsonMultiblockMachineBlockEntity & BuiltScreenHandlerProvider> extends GuiBase<BuiltScreenHandler> {
 
-	private final DistillationTowerBlockEntity blockEntity;
+	private final T blockEntity;
 
-	public GuiDistillationTower(int syncID, final PlayerEntity player, final DistillationTowerBlockEntity blockEntity) {
+	public GuiDistillationTower(int syncID, final PlayerEntity player, T blockEntity) {
 		super(player, blockEntity, blockEntity.createScreenHandler(syncID, player));
 		this.blockEntity = blockEntity;
 	}
@@ -45,13 +51,21 @@ public class GuiDistillationTower extends GuiBase<BuiltScreenHandler> {
 	protected void drawBackground(DrawContext drawContext, final float f, final int mouseX, final int mouseY) {
 		super.drawBackground(drawContext, f, mouseX, mouseY);
 		final GuiBase.Layer layer = Layer.BACKGROUND;
+
 		// Battery slot
 		drawSlot(drawContext, 8, 72, layer);
-		// Input slots
-		drawSlot(drawContext, 35, 27, layer);
-		drawSlot(drawContext, 35, 47, layer);
-		// Four output slots
-		drawOutputSlotBar(drawContext, 78, 36, 4, layer);
+		// 4 input slots: 2 columns x 2 rows
+		drawSlot(drawContext, 35, 26, layer);
+		drawSlot(drawContext, 53, 26, layer);
+		drawSlot(drawContext, 35, 44, layer);
+		drawSlot(drawContext, 53, 44, layer);
+		// 6 output slots: 3 columns x 2 rows
+		drawSlot(drawContext, 89, 26, layer);
+		drawSlot(drawContext, 107, 26, layer);
+		drawSlot(drawContext, 125, 26, layer);
+		drawSlot(drawContext, 89, 44, layer);
+		drawSlot(drawContext, 107, 44, layer);
+		drawSlot(drawContext, 125, 44, layer);
 	}
 
 	@Override
@@ -59,7 +73,7 @@ public class GuiDistillationTower extends GuiBase<BuiltScreenHandler> {
 		super.drawForeground(drawContext, mouseX, mouseY);
 		final GuiBase.Layer layer = Layer.FOREGROUND;
 
-		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 55, 40, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
+		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 67, 40, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
 		if (blockEntity.isMultiblockValid()) {
 			addHologramButton(6, 4, 212, layer).clickHandler(this::onClick);
 			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, layer);

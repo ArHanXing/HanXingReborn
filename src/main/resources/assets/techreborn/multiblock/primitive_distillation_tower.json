@@ -1,0 +1,35 @@
+{
+	"translate": [
+		1,
+		0,
+		-1
+	],
+	"layers": [
+		[
+			"ABA",
+			"BBB",
+			"ABA"
+		],
+		[
+			"BCB",
+			"C C",
+			"BCB"
+		],
+		[
+			"BCB",
+			"C C",
+			"BCB"
+		]
+	],
+	"keys": {
+		"B": {
+			"block": "minecraft:stone_bricks"
+		},
+		"A": {
+			"block": "techreborn:basic_machine_frame"
+		},
+		"C": {
+			"block": "techreborn:reinforced_glass"
+		}
+	}
+}

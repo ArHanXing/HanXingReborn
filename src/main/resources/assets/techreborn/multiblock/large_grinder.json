@@ -27,14 +27,14 @@
 		]
 	],
 	"keys": {
-		"C": {
-			"block": "techreborn:reinforced_glass"
-		},
 		"B": {
 			"block": "techreborn:basic_machine_casing"
 		},
 		"A": {
 			"block": "techreborn:advanced_machine_casing"
+		},
+		"C": {
+			"block": "techreborn:reinforced_glass"
 		}
 	}
 }

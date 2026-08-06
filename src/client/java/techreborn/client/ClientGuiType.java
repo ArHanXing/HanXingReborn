@@ -48,6 +48,7 @@ import techreborn.blockentity.machine.multiblock.LargeChemicalReactorBlockEntity
 import techreborn.blockentity.machine.multiblock.LargeCompressorBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeGrinderBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeWireMillBlockEntity;
+import techreborn.blockentity.machine.multiblock.PrimitiveDistillationTowerBlockEntity;
 import techreborn.blockentity.machine.multiblock.RotaryHearthFurnaceBlockEntity;
 import techreborn.blockentity.machine.multiblock.VacuumFreezerBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockBreakerBlockEntity;
@@ -152,6 +153,7 @@ public record ClientGuiType<T extends BlockEntity>(GuiType<T> guiType, GuiFactor
 	public static final ClientGuiType<LargeCompressorBlockEntity> LARGE_COMPRESSOR = register(GuiType.LARGE_COMPRESSOR, GuiLargeMachine::new);
 	public static final ClientGuiType<LargeWireMillBlockEntity> LARGE_WIRE_MILL = register(GuiType.LARGE_WIRE_MILL, GuiLargeMachine::new);
 	public static final ClientGuiType<LargeGrinderBlockEntity> LARGE_GRINDER = register(GuiType.LARGE_GRINDER, GuiLargeMachine::new);
+	public static final ClientGuiType<PrimitiveDistillationTowerBlockEntity> PRIMITIVE_DISTILLATION_TOWER = register(GuiType.PRIMITIVE_DISTILLATION_TOWER, GuiDistillationTower::new);
 	public static final ClientGuiType<RotaryHearthFurnaceBlockEntity> ROTARY_HEARTH_FURNACE = register(GuiType.ROTARY_HEARTH_FURNACE, GuiRotaryHearthFurnace::new);
 	public static final ClientGuiType<IndustrialCentrifugeBlockEntity> CENTRIFUGE = register(GuiType.CENTRIFUGE, GuiCentrifuge::new);
 	public static final ClientGuiType<ChargeOMatBlockEntity> CHARGEBENCH = register(GuiType.CHARGEBENCH, GuiChargeBench::new);
