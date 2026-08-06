@@ -75,7 +75,8 @@ public class MultiblockDefinitionLoader {
 			"large_compressor",
 			"large_wire_mill",
 			"large_grinder",
-			"primitive_distillation_tower"
+			"primitive_distillation_tower",
+			"large_lathe"
 	};
 
 	private MultiblockDefinitionLoader() {

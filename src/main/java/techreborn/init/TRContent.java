@@ -77,6 +77,7 @@ import techreborn.blocks.IndustrialGrinderBlock;
 import techreborn.blocks.LargeChemicalReactorBlock;
 import techreborn.blocks.LargeCompressorBlock;
 import techreborn.blocks.LargeGrinderBlock;
+import techreborn.blocks.LargeLatheBlock;
 import techreborn.blocks.LargeWireMillBlock;
 import techreborn.blocks.PrimitiveDistillationTowerBlock;
 import techreborn.blocks.RotaryHearthFurnaceBlock;
@@ -767,6 +768,7 @@ public class TRContent {
 		INDUSTRIAL_ELECTROLYZER(new GenericMachineBlock(GuiType.INDUSTRIAL_ELECTROLYZER, IndustrialElectrolyzerBlockEntity::new)),
 		INDUSTRIAL_GRINDER(new IndustrialGrinderBlock(GuiType.INDUSTRIAL_GRINDER, IndustrialGrinderBlockEntity::new)),
 		INDUSTRIAL_SAWMILL(new GenericMachineBlock(GuiType.SAWMILL, IndustrialSawmillBlockEntity::new, 16)),
+		LATHE(new GenericMachineBlock(GuiType.LATHE, LatheBlockEntity::new)),
 		IRON_ALLOY_FURNACE(new IronAlloyFurnaceBlock()),
 		IRON_FURNACE(new IronFurnaceBlock()),
 		MATTER_FABRICATOR(new GenericMachineBlock(GuiType.MATTER_FABRICATOR, MatterFabricatorBlockEntity::new)),
@@ -778,6 +780,7 @@ public class TRContent {
 		LARGE_COMPRESSOR(new LargeCompressorBlock(GuiType.LARGE_COMPRESSOR, LargeCompressorBlockEntity::new)),
 		LARGE_WIRE_MILL(new LargeWireMillBlock(GuiType.LARGE_WIRE_MILL, LargeWireMillBlockEntity::new)),
 		LARGE_GRINDER(new LargeGrinderBlock(GuiType.LARGE_GRINDER, LargeGrinderBlockEntity::new)),
+		LARGE_LATHE(new LargeLatheBlock(GuiType.LARGE_LATHE, LargeLatheBlockEntity::new)),
 		PRIMITIVE_DISTILLATION_TOWER(new PrimitiveDistillationTowerBlock(GuiType.PRIMITIVE_DISTILLATION_TOWER, PrimitiveDistillationTowerBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),

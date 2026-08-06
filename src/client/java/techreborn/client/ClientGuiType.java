@@ -48,6 +48,7 @@ import techreborn.blockentity.machine.multiblock.LargeChemicalReactorBlockEntity
 import techreborn.blockentity.machine.multiblock.LargeCompressorBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeGrinderBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeWireMillBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeLatheBlockEntity;
 import techreborn.blockentity.machine.multiblock.PrimitiveDistillationTowerBlockEntity;
 import techreborn.blockentity.machine.multiblock.RotaryHearthFurnaceBlockEntity;
 import techreborn.blockentity.machine.multiblock.VacuumFreezerBlockEntity;
@@ -64,6 +65,7 @@ import techreborn.blockentity.machine.tier1.ExtractorBlockEntity;
 import techreborn.blockentity.machine.tier1.GreenhouseControllerBlockEntity;
 import techreborn.blockentity.machine.tier1.GrinderBlockEntity;
 import techreborn.blockentity.machine.tier1.IndustrialElectrolyzerBlockEntity;
+import techreborn.blockentity.machine.tier1.LatheBlockEntity;
 import techreborn.blockentity.machine.tier1.PlayerDetectorBlockEntity;
 import techreborn.blockentity.machine.tier1.RecyclerBlockEntity;
 import techreborn.blockentity.machine.tier1.RollingMachineBlockEntity;
@@ -153,6 +155,7 @@ public record ClientGuiType<T extends BlockEntity>(GuiType<T> guiType, GuiFactor
 	public static final ClientGuiType<LargeCompressorBlockEntity> LARGE_COMPRESSOR = register(GuiType.LARGE_COMPRESSOR, GuiLargeMachine::new);
 	public static final ClientGuiType<LargeWireMillBlockEntity> LARGE_WIRE_MILL = register(GuiType.LARGE_WIRE_MILL, GuiLargeMachine::new);
 	public static final ClientGuiType<LargeGrinderBlockEntity> LARGE_GRINDER = register(GuiType.LARGE_GRINDER, GuiLargeMachine::new);
+	public static final ClientGuiType<LargeLatheBlockEntity> LARGE_LATHE = register(GuiType.LARGE_LATHE, GuiLargeMachine::new);
 	public static final ClientGuiType<PrimitiveDistillationTowerBlockEntity> PRIMITIVE_DISTILLATION_TOWER = register(GuiType.PRIMITIVE_DISTILLATION_TOWER, GuiDistillationTower::new);
 	public static final ClientGuiType<RotaryHearthFurnaceBlockEntity> ROTARY_HEARTH_FURNACE = register(GuiType.ROTARY_HEARTH_FURNACE, GuiRotaryHearthFurnace::new);
 	public static final ClientGuiType<IndustrialCentrifugeBlockEntity> CENTRIFUGE = register(GuiType.CENTRIFUGE, GuiCentrifuge::new);
@@ -165,6 +168,7 @@ public record ClientGuiType<T extends BlockEntity>(GuiType<T> guiType, GuiFactor
 	public static final ClientGuiType<ElectricFurnaceBlockEntity> ELECTRIC_FURNACE = register(GuiType.ELECTRIC_FURNACE, GuiElectricFurnace::new);
 	public static final ClientGuiType<ExtractorBlockEntity> EXTRACTOR = register(GuiType.EXTRACTOR, GuiExtractor::new);
 	public static final ClientGuiType<GrinderBlockEntity> GRINDER = register(GuiType.GRINDER, GuiGrinder::new);
+	public static final ClientGuiType<LatheBlockEntity> LATHE = register(GuiType.LATHE, GuiWireMill::new);
 	public static final ClientGuiType<FusionControlComputerBlockEntity> FUSION_CONTROLLER = register(GuiType.FUSION_CONTROLLER, GuiFusionReactor::new);
 	public static final ClientGuiType<GasTurbineBlockEntity> GAS_TURBINE = register(GuiType.GAS_TURBINE, GuiGasTurbine::new);
 	public static final ClientGuiType<SolidFuelGeneratorBlockEntity> GENERATOR = register(GuiType.GENERATOR, GuiGenerator::new);

@@ -22,46 +22,42 @@
  * SOFTWARE.
  */
 
-package techreborn.client.gui;
+package techreborn.blockentity.machine.tier1;
 
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import reborncore.client.gui.GuiBase;
-import reborncore.client.gui.GuiBuilder;
+import net.minecraft.util.math.BlockPos;
+import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
+import reborncore.common.screen.builder.ScreenHandlerBuilder;
+import reborncore.common.util.RebornInventory;
 import techreborn.blockentity.machine.GenericMachineBlockEntity;
+import techreborn.init.ModRecipes;
+import techreborn.init.TRBlockEntities;
+import techreborn.init.TRContent;
 
-public class GuiWireMill<T extends GenericMachineBlockEntity & BuiltScreenHandlerProvider> extends GuiBase<BuiltScreenHandler> {
+public class LatheBlockEntity extends GenericMachineBlockEntity implements BuiltScreenHandlerProvider {
 
-	final T blockEntity;
-
-	public GuiWireMill(int syncID, final PlayerEntity player, T blockEntity) {
-		super(player, blockEntity, blockEntity.createScreenHandler(syncID, player));
-		this.blockEntity = blockEntity;
+	public LatheBlockEntity(BlockPos pos, BlockState state) {
+		super(TRBlockEntities.LATHE, pos, state, "Lathe", 32, 1000, TRContent.Machine.LATHE.block, 2);
+		final int[] inputs = new int[]{0};
+		final int[] outputs = new int[]{1};
+		this.inventory = new RebornInventory<>(3, "LatheBlockEntity", 64, this);
+		this.crafter = new RecipeCrafter(ModRecipes.LATHE, this, 1, 1, this.inventory, inputs, outputs);
 	}
 
+	// IContainerProvider
 	@Override
-	protected void drawBackground(DrawContext drawContext, final float partialTicks, final int mouseX, final int mouseY) {
-		super.drawBackground(drawContext, partialTicks, mouseX, mouseY);
-		final Layer layer = Layer.BACKGROUND;
-
-		// Battery slot
-		drawSlot(drawContext, 8, 72, layer);
-
-		// Input slots
-		drawSlot(drawContext, 55, 45, layer);
-		drawSlot(drawContext, 101, 45, layer);
-
-		drawOutputSlot(drawContext, 101, 45, layer);
-	}
-
-	@Override
-	protected void drawForeground(DrawContext drawContext, final int mouseX, final int mouseY) {
-		super.drawForeground(drawContext, mouseX, mouseY);
-		final Layer layer = Layer.FOREGROUND;
-
-		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 76, 48, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
-		builder.drawMultiEnergyBar(drawContext, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
+	public BuiltScreenHandler createScreenHandler(int syncID, final PlayerEntity player) {
+		return new ScreenHandlerBuilder("lathe").player(player.getInventory()).inventory().hotbar()
+				.addInventory().blockEntity(this)
+				.slot(0, 55, 45)
+				.outputSlot(1, 101, 45)
+				.energySlot(2, 8, 72)
+				.syncEnergyValue()
+				.syncCrafterValue()
+				.addInventory()
+				.create(this, syncID);
 	}
 }

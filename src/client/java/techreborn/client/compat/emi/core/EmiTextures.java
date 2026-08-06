@@ -52,6 +52,8 @@ public class EmiTextures {
 	public static final EmiTexture ROLLING_MACHINE = new EmiTexture(SIMPLIFIED_ICONS, 16, 16, 16, 16);
 	public static final EmiTexture WIRE_MILLING = new EmiTexture(SIMPLIFIED_ICONS, 32, 16, 16, 16);
 	public static final EmiTexture CANNING = new EmiTexture(SIMPLIFIED_ICONS, 48, 16, 16, 16);
+	// Reserved slot for the Lathe icon (placeholder, replace once the icon is drawn)
+	public static final EmiTexture LATHE = new EmiTexture(SIMPLIFIED_ICONS, 64, 16, 16, 16);
 	public static final EmiTexture LARGE_CHEMICAL_REACTOR = new EmiTexture(SIMPLIFIED_ICONS, 32, 32, 16, 16);
 
 	public static final NinePatchTexture SLOT_BG = new NinePatchTexture(WIDGETS, 0, 0, 3, 3, 1, 1, 1, 1, false);

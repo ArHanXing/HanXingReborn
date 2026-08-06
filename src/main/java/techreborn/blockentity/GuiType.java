@@ -67,6 +67,7 @@ import techreborn.blockentity.machine.multiblock.LargeChemicalReactorBlockEntity
 import techreborn.blockentity.machine.multiblock.LargeCompressorBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeGrinderBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeWireMillBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeLatheBlockEntity;
 import techreborn.blockentity.machine.multiblock.PrimitiveDistillationTowerBlockEntity;
 import techreborn.blockentity.machine.multiblock.RotaryHearthFurnaceBlockEntity;
 import techreborn.blockentity.machine.multiblock.VacuumFreezerBlockEntity;
@@ -83,6 +84,7 @@ import techreborn.blockentity.machine.tier1.ExtractorBlockEntity;
 import techreborn.blockentity.machine.tier1.GreenhouseControllerBlockEntity;
 import techreborn.blockentity.machine.tier1.GrinderBlockEntity;
 import techreborn.blockentity.machine.tier1.IndustrialElectrolyzerBlockEntity;
+import techreborn.blockentity.machine.tier1.LatheBlockEntity;
 import techreborn.blockentity.machine.tier1.PlayerDetectorBlockEntity;
 import techreborn.blockentity.machine.tier1.RecyclerBlockEntity;
 import techreborn.blockentity.machine.tier1.RollingMachineBlockEntity;
@@ -142,6 +144,7 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<RollingMachineBlockEntity> ROLLING_MACHINE = register("rolling_machine");
 	public static final GuiType<IndustrialSawmillBlockEntity> SAWMILL = register("sawmill");
 	public static final GuiType<GrinderBlockEntity> GRINDER = register("grinder");
+	public static final GuiType<LatheBlockEntity> LATHE = register("lathe");
 	public static final GuiType<ScrapboxinatorBlockEntity> SCRAPBOXINATOR = register("scrapboxinator");
 	public static final GuiType<SolarPanelBlockEntity> SOLAR_PANEL = register("solar_panel");
 	public static final GuiType<SemiFluidGeneratorBlockEntity> SEMIFLUID_GENERATOR = register("semifluid_generator");
@@ -154,6 +157,7 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<LargeCompressorBlockEntity> LARGE_COMPRESSOR = register("large_compressor");
 	public static final GuiType<LargeWireMillBlockEntity> LARGE_WIRE_MILL = register("large_wire_mill");
 	public static final GuiType<LargeGrinderBlockEntity> LARGE_GRINDER = register("large_grinder");
+	public static final GuiType<LargeLatheBlockEntity> LARGE_LATHE = register("large_lathe");
 	public static final GuiType<PrimitiveDistillationTowerBlockEntity> PRIMITIVE_DISTILLATION_TOWER = register("primitive_distillation_tower");
 	public static final GuiType<RotaryHearthFurnaceBlockEntity> ROTARY_HEARTH_FURNACE = register("rotary_hearth_furnace");
 	public static final GuiType<PlayerDetectorBlockEntity> PLAYER_DETECTOR = register("player_detector");

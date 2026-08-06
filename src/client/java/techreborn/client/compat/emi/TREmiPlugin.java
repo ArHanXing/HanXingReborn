@@ -145,6 +145,16 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiRecipeCategory WIRE_MILL_CATEGORY =
 		new EmiRecipeCategory(trId("wire_mill"), WIRE_MILL_STACK, EmiTextures.WIRE_MILLING,
 			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiStack LATHE_STACK = EmiStack.of(TRContent.Machine.LATHE);
+	public static final EmiStack LARGE_LATHE_STACK = EmiStack.of(TRContent.Machine.LARGE_LATHE);
+	public static final EmiStack LARGE_COMPRESSOR_STACK = EmiStack.of(TRContent.Machine.LARGE_COMPRESSOR);
+	public static final EmiStack LARGE_WIRE_MILL_STACK = EmiStack.of(TRContent.Machine.LARGE_WIRE_MILL);
+	public static final EmiStack LARGE_GRINDER_STACK = EmiStack.of(TRContent.Machine.LARGE_GRINDER);
+	public static final EmiStack PRIMITIVE_DISTILLATION_TOWER_STACK = EmiStack.of(TRContent.Machine.PRIMITIVE_DISTILLATION_TOWER);
+	public static final EmiStack ROTARY_HEARTH_FURNACE_STACK = EmiStack.of(TRContent.Machine.ROTARY_HEARTH_FURNACE);
+	public static final EmiRecipeCategory LATHE_CATEGORY =
+		new EmiRecipeCategory(trId("lathe"), LATHE_STACK, EmiTextures.LATHE,
+			EmiRecipeSorting.compareOutputThenInput());
 
 	public static final EmiRecipeCategory THERMAL_GENERATOR_CATEGORY =
 		new EmiRecipeCategory(trId("thermal_generator"), THERMAL_GENERATOR_STACK, THERMAL_GENERATOR_STACK,
@@ -191,6 +201,7 @@ public class TREmiPlugin implements EmiPlugin {
 		// Blast Furnace
 		registry.addCategory(BLAST_FURNACE_CATEGORY);
 		registry.addWorkstation(BLAST_FURNACE_CATEGORY, BLAST_FURNACE_STACK);
+		registry.addWorkstation(BLAST_FURNACE_CATEGORY, ROTARY_HEARTH_FURNACE_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.BLAST_FURNACE)) {
 			registry.addRecipe(new BlastFurnaceEmiRecipe(recipe));
 		}
@@ -205,6 +216,7 @@ public class TREmiPlugin implements EmiPlugin {
 		// Chemical Reacting (small)
 		registry.addCategory(CHEMICAL_REACTOR_CATEGORY);
 		registry.addWorkstation(CHEMICAL_REACTOR_CATEGORY, CHEMICAL_REACTOR_STACK);
+		registry.addWorkstation(CHEMICAL_REACTOR_CATEGORY, LARGE_CHEMICAL_REACTOR_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.CHEMICAL_REACTOR)) {
 			registry.addRecipe(new SimpleTwoInputEmiRecipe(recipe, CHEMICAL_REACTOR_CATEGORY, 10));
 		}
@@ -219,6 +231,7 @@ public class TREmiPlugin implements EmiPlugin {
 		// Compressing
 		registry.addCategory(COMPRESSOR_CATEGORY);
 		registry.addWorkstation(COMPRESSOR_CATEGORY, COMPRESSOR_STACK);
+		registry.addWorkstation(COMPRESSOR_CATEGORY, LARGE_COMPRESSOR_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.COMPRESSOR)) {
 			registry.addRecipe(new SimpleOneInputEmiRecipe(recipe, COMPRESSOR_CATEGORY, 1));
 		}
@@ -226,6 +239,7 @@ public class TREmiPlugin implements EmiPlugin {
 		// Distillation Tower
 		registry.addCategory(DISTILLATION_TOWER_CATEGORY);
 		registry.addWorkstation(DISTILLATION_TOWER_CATEGORY, DISTILLATION_TOWER_STACK);
+		registry.addWorkstation(DISTILLATION_TOWER_CATEGORY, PRIMITIVE_DISTILLATION_TOWER_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.DISTILLATION_TOWER)) {
 			registry.addRecipe(new DistillationTowerEmiRecipe(recipe));
 		}
@@ -240,6 +254,8 @@ public class TREmiPlugin implements EmiPlugin {
 		// Grinding
 		registry.addCategory(GRINDER_CATEGORY);
 		registry.addWorkstation(GRINDER_CATEGORY, GRINDER_STACK);
+		registry.addWorkstation(GRINDER_CATEGORY, INDUSTRIAL_GRINDER_STACK);
+		registry.addWorkstation(GRINDER_CATEGORY, LARGE_GRINDER_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.GRINDER)) {
 			registry.addRecipe(new SimpleOneInputEmiRecipe(recipe, GRINDER_CATEGORY, 1));
 		}
@@ -320,8 +336,17 @@ public class TREmiPlugin implements EmiPlugin {
 		// Wire Milling
 		registry.addCategory(WIRE_MILL_CATEGORY);
 		registry.addWorkstation(WIRE_MILL_CATEGORY, WIRE_MILL_STACK);
+		registry.addWorkstation(WIRE_MILL_CATEGORY, LARGE_WIRE_MILL_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.WIRE_MILL)) {
 			registry.addRecipe(new SimpleOneInputEmiRecipe(recipe, WIRE_MILL_CATEGORY, 1));
+		}
+
+		// Lathe
+		registry.addCategory(LATHE_CATEGORY);
+		registry.addWorkstation(LATHE_CATEGORY, LATHE_STACK);
+		registry.addWorkstation(LATHE_CATEGORY, LARGE_LATHE_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.LATHE)) {
+			registry.addRecipe(new SimpleOneInputEmiRecipe(recipe, LATHE_CATEGORY, 1));
 		}
 
 		// Generators

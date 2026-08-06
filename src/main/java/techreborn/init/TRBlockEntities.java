@@ -122,8 +122,10 @@ public class TRBlockEntities {
 	public static final BlockEntityType<LargeCompressorBlockEntity> LARGE_COMPRESSOR = register(LargeCompressorBlockEntity::new, "large_compressor", TRContent.Machine.LARGE_COMPRESSOR);
 	public static final BlockEntityType<LargeWireMillBlockEntity> LARGE_WIRE_MILL = register(LargeWireMillBlockEntity::new, "large_wire_mill", TRContent.Machine.LARGE_WIRE_MILL);
 	public static final BlockEntityType<LargeGrinderBlockEntity> LARGE_GRINDER = register(LargeGrinderBlockEntity::new, "large_grinder", TRContent.Machine.LARGE_GRINDER);
+	public static final BlockEntityType<LargeLatheBlockEntity> LARGE_LATHE = register(LargeLatheBlockEntity::new, "large_lathe", TRContent.Machine.LARGE_LATHE);
 	public static final BlockEntityType<PrimitiveDistillationTowerBlockEntity> PRIMITIVE_DISTILLATION_TOWER = register(PrimitiveDistillationTowerBlockEntity::new, "primitive_distillation_tower", TRContent.Machine.PRIMITIVE_DISTILLATION_TOWER);
 	public static final BlockEntityType<GrinderBlockEntity> GRINDER = register(GrinderBlockEntity::new, "grinder", TRContent.Machine.GRINDER);
+	public static final BlockEntityType<LatheBlockEntity> LATHE = register(LatheBlockEntity::new, "lathe", TRContent.Machine.LATHE);
 	public static final BlockEntityType<SolidFuelGeneratorBlockEntity> SOLID_FUEL_GENERATOR = register(SolidFuelGeneratorBlockEntity::new, "solid_fuel_generator", TRContent.Machine.SOLID_FUEL_GENERATOR);
 	public static final BlockEntityType<ExtractorBlockEntity> EXTRACTOR = register(ExtractorBlockEntity::new, "extractor", TRContent.Machine.EXTRACTOR);
 	public static final BlockEntityType<ResinBasinBlockEntity> RESIN_BASIN = register(ResinBasinBlockEntity::new, "resin_basin", TRContent.Machine.RESIN_BASIN);

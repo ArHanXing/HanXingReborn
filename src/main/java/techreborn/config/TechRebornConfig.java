@@ -514,6 +514,12 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "primitive_distillation_tower", key = "PrimitiveDistillationTowerMaxEnergy", comment = "Primitive Distillation Tower Max Energy")
 	public static int primitiveDistillationTowerMaxEnergy = 20_000;
 
+	@Config(config = "machines", category = "large_lathe", key = "LargeLatheMaxInput", comment = "Large Lathe Max Input (Energy per tick)")
+	public static int largeLatheMaxInput = 128;
+
+	@Config(config = "machines", category = "large_lathe", key = "LargeLatheMaxEnergy", comment = "Large Lathe Max Energy")
+	public static int largeLatheMaxEnergy = 10_000;
+
 	@Config(config = "machines", category = "industrial_sawmill", key = "IndustrialSawmillMaxInput", comment = "Industrial Sawmill Max Input (Energy per tick)")
 	public static int industrialSawmillMaxInput = 128;
 
