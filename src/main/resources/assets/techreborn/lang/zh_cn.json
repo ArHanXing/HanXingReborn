@@ -1193,6 +1193,8 @@
   "emi.category.techreborn.large_chemical_reactor": "大型化学反应釜",
   "emi.category.techreborn.fluid_from_container": "流体取出",
   "emi.category.techreborn.fluid_into_container": "流体装入",
+  "emi.category.techreborn.multiblock_info": "多方块结构",
+  "gui.techreborn.emi.multiblock_total": "结构方块总数: %s",
 
   "item.techreborn.basic_ore_prospector": "基础探矿仪",
   "item.techreborn.advanced_ore_prospector": "高级探矿仪",

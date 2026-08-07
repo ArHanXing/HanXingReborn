@@ -37,6 +37,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -110,6 +111,17 @@ public class MultiblockDefinitionLoader {
 
 	public static boolean has(String id) {
 		return definitions.containsKey(id);
+	}
+
+	/**
+	 * Returns all loaded definitions (config overrides already applied).
+	 * Used by client-side displays (e.g. the EMI multiblock info page) to
+	 * enumerate every available structure.
+	 *
+	 * @return {@link Map} an unmodifiable map of definition id to definition
+	 */
+	public static Map<String, MultiblockDefinition> getAll() {
+		return Collections.unmodifiableMap(definitions);
 	}
 
 	private static void loadFromConfigDir() {

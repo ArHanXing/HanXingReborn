@@ -63,10 +63,18 @@ public class MultiblockKeyDefinition {
 
 	private final BiPredicate<BlockView, BlockPos> predicate;
 	private final BlockState hologramState;
+	/**
+	 * The concrete blocks this key can match, used by client-side displays
+	 * (e.g. EMI) to show what materials are needed. Empty when the match
+	 * cannot be enumerated ({@code air}, {@code any}, {@code not}).
+	 */
+	private final List<Block> candidateBlocks;
 
-	private MultiblockKeyDefinition(BiPredicate<BlockView, BlockPos> predicate, BlockState hologramState) {
+	private MultiblockKeyDefinition(BiPredicate<BlockView, BlockPos> predicate, BlockState hologramState,
+			List<Block> candidateBlocks) {
 		this.predicate = predicate;
 		this.hologramState = hologramState;
+		this.candidateBlocks = candidateBlocks;
 	}
 
 	public BiPredicate<BlockView, BlockPos> getPredicate() {
@@ -75,6 +83,10 @@ public class MultiblockKeyDefinition {
 
 	public BlockState getHologramState() {
 		return hologramState;
+	}
+
+	public List<Block> getCandidateBlocks() {
+		return candidateBlocks;
 	}
 
 	public PatternBlock toPatternBlock() {
@@ -90,6 +102,7 @@ public class MultiblockKeyDefinition {
 	public static MultiblockKeyDefinition parse(JsonObject json) {
 		BiPredicate<BlockView, BlockPos> predicate = null;
 		BlockState hologramState = Blocks.AIR.getDefaultState();
+		List<Block> candidateBlocks = List.of();
 
 		if (json.has("air") && json.get("air").getAsBoolean()) {
 			predicate = (view, pos) -> view.getBlockState(pos).isAir();
@@ -101,6 +114,7 @@ public class MultiblockKeyDefinition {
 			Block block = resolveBlock(json.get("block").getAsString());
 			predicate = (view, pos) -> view.getBlockState(pos).isOf(block);
 			hologramState = block.getDefaultState();
+			candidateBlocks = List.of(block);
 		} else if (json.has("blocks")) {
 			List<Block> blocks = new ArrayList<>();
 			JsonArray array = json.getAsJsonArray("blocks");
@@ -110,10 +124,14 @@ public class MultiblockKeyDefinition {
 				return blocks.contains(block);
 			};
 			hologramState = blocks.isEmpty() ? Blocks.AIR.getDefaultState() : blocks.get(0).getDefaultState();
+			candidateBlocks = List.copyOf(blocks);
 		} else if (json.has("tag")) {
 			TagKey<Block> tag = TagKey.of(RegistryKeys.BLOCK, Identifier.of(json.get("tag").getAsString()));
 			predicate = (view, pos) -> view.getBlockState(pos).isIn(tag);
 			hologramState = firstBlockFromTag(tag);
+			candidateBlocks = Registries.BLOCK.getEntryList(tag)
+					.map(list -> list.stream().map(entry -> entry.value()).toList())
+					.orElseGet(List::of);
 		} else if (json.has("not")) {
 			Block block = resolveBlock(json.get("not").getAsString());
 			predicate = (view, pos) -> !view.getBlockState(pos).isOf(block);
@@ -130,7 +148,7 @@ public class MultiblockKeyDefinition {
 			hologramState = resolveBlock(json.get("hologram").getAsString()).getDefaultState();
 		}
 
-		return new MultiblockKeyDefinition(predicate, hologramState);
+		return new MultiblockKeyDefinition(predicate, hologramState, candidateBlocks);
 	}
 
 	private static Block resolveBlock(String id) {

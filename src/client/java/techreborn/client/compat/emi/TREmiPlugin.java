@@ -44,9 +44,12 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Items;
 
 import java.util.List;
+import java.util.Map;
 
 import techreborn.client.compat.emi.core.EmiTextures;
 import techreborn.client.compat.emi.core.LongHolder;
+import techreborn.multiblock.MultiblockDefinition;
+import techreborn.multiblock.MultiblockDefinitionLoader;
 
 @EmiEntrypoint
 public class TREmiPlugin implements EmiPlugin {
@@ -185,6 +188,31 @@ public class TREmiPlugin implements EmiPlugin {
 		new EmiRecipeCategory(trId("fluid_from_container"), EmiStack.of(Items.BUCKET));
 	public static final EmiRecipeCategory FLUID_INTO_CONTAINER_CATEGORY =
 		new EmiRecipeCategory(trId("fluid_into_container"), EmiStack.of(Items.WATER_BUCKET));
+
+	public static final EmiRecipeCategory MULTIBLOCK_INFO_CATEGORY =
+		new EmiRecipeCategory(trId("multiblock_info"), EmiStack.of(TRContent.MULTIBLOCK_BUILDER));
+
+	/**
+	 * Maps every JSON multiblock definition id to its controller machine, used
+	 * to build the multiblock info page.
+	 */
+	private static final Map<String, TRContent.Machine> MULTIBLOCK_MACHINES = Map.ofEntries(
+		Map.entry("large_chemical_reactor", TRContent.Machine.LARGE_CHEMICAL_REACTOR),
+		Map.entry("distillation_tower", TRContent.Machine.DISTILLATION_TOWER),
+		Map.entry("fluid_replicator", TRContent.Machine.FLUID_REPLICATOR),
+		Map.entry("implosion_compressor", TRContent.Machine.IMPLOSION_COMPRESSOR),
+		Map.entry("industrial_blast_furnace", TRContent.Machine.INDUSTRIAL_BLAST_FURNACE),
+		Map.entry("industrial_grinder", TRContent.Machine.INDUSTRIAL_GRINDER),
+		Map.entry("industrial_sawmill", TRContent.Machine.INDUSTRIAL_SAWMILL),
+		Map.entry("vacuum_freezer", TRContent.Machine.VACUUM_FREEZER),
+		Map.entry("rotary_hearth_furnace", TRContent.Machine.ROTARY_HEARTH_FURNACE),
+		Map.entry("large_compressor", TRContent.Machine.LARGE_COMPRESSOR),
+		Map.entry("large_wire_mill", TRContent.Machine.LARGE_WIRE_MILL),
+		Map.entry("large_grinder", TRContent.Machine.LARGE_GRINDER),
+		Map.entry("primitive_distillation_tower", TRContent.Machine.PRIMITIVE_DISTILLATION_TOWER),
+		Map.entry("large_lathe", TRContent.Machine.LARGE_LATHE),
+		Map.entry("furnace_pro_max", TRContent.Machine.FURNACE_PRO_MAX),
+		Map.entry("precise_assembler", TRContent.Machine.PRECISE_ASSEMBLER));
 
 	@Override
 	public void register(EmiRegistry registry) {
@@ -397,6 +425,18 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(VanillaEmiRecipeCategories.SMELTING, IRON_FURNACE_STACK);
 		registry.addWorkstation(VanillaEmiRecipeCategories.SMELTING, ELECTRIC_FURNACE_STACK);
 		registry.addWorkstation(VanillaEmiRecipeCategories.SMELTING, FURNACE_PRO_MAX_STACK);
+
+		// Multiblock structure info: every JSON-defined machine lists the
+		// blocks it needs (block × count) as inputs and its controller as output.
+		registry.addCategory(MULTIBLOCK_INFO_CATEGORY);
+		for (Map.Entry<String, TRContent.Machine> entry : MULTIBLOCK_MACHINES.entrySet()) {
+			MultiblockDefinition definition = MultiblockDefinitionLoader.get(entry.getKey());
+			if (definition == null) {
+				continue;
+			}
+			registry.addRecipe(new MultiblockInfoEmiRecipe(entry.getKey(), definition,
+				TRIntegration.stackOf(entry.getValue())));
+		}
 
 		// Fluid ↔ Cell container recipes
 		registry.addCategory(FLUID_FROM_CONTAINER_CATEGORY);
