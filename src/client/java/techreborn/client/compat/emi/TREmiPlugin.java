@@ -413,7 +413,7 @@ public class TREmiPlugin implements EmiPlugin {
 				Identifier.of("techreborn",
 					"/fluid_into_container/extra_mod_integrations_core/" + cellId.getNamespace() + "/" +
 						cellId.getNamespace() + "/" + fluidId.getNamespace() + "/" + fluidId.getPath());
-			registry.addRecipe(new techreborn.client.compat.emi.core.FluidIntoContainerEmiRecipe(intoId, fluidStack, fluidCellStack, CELL));
+			registry.addRecipe(new techreborn.client.compat.emi.core.FluidIntoContainerEmiRecipe(intoId, fluidStack, CELL, fluidCellStack));
 		}
 	}
 

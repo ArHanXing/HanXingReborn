@@ -37,7 +37,15 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.util.Identifier;
 
 import techreborn.client.compat.emi.TREmiPlugin;
+import techreborn.client.compat.emi.TRTextures;
 
+/**
+ * Recipe for pouring a fluid out of a filled container:
+ * {@code filled container -> fluid + empty container}.
+ * <p>
+ * Layout: the filled container is on the left, an arrow points to the fluid
+ * and the empty container on the right.
+ */
 public class FluidFromContainerEmiRecipe implements EmiRecipe {
 	private final Identifier id;
 	private final EmiStack output;
@@ -73,18 +81,22 @@ public class FluidFromContainerEmiRecipe implements EmiRecipe {
 
 	@Override
 	public int getDisplayWidth() {
-		return 18 + 24 + 18;
+		return 18 + 24 + 18 + 18;
 	}
 
 	@Override
 	public int getDisplayHeight() {
-		return 56;
+		return 38;
 	}
 
 	@Override
 	public void addWidgets(WidgetHolder widgets) {
-		widgets.addSlot(input, 0, 0);
-		widgets.addSlot(output, 18 + 24, 0).recipeContext(this);
-		widgets.addSlot(container, 18 + 24 + 26, 0).recipeContext(this);
+		// Input: filled container
+		widgets.addSlot(input, 0, 10);
+		// Arrow from input to outputs
+		widgets.addTexture(TRTextures.ARROW_RIGHT_EMPTY, 24, 14);
+		// Outputs: fluid and empty container
+		widgets.addSlot(output, 48, 0).recipeContext(this);
+		widgets.addSlot(container, 68, 0).recipeContext(this);
 	}
 }

@@ -161,6 +161,14 @@ public class RecipeCrafter implements IUpgradeHandler {
 			updateCurrentRecipe();
 		}
 		if (currentRecipe != null) {
+			// Recompute the parallel count every tick so inputs that arrive after
+			// the recipe was selected (e.g. gradual RS auto-crafting feeding) are
+			// consumed in a single pass when the craft fires, instead of crafting
+			// once at the stale count and again for the remainder.
+			int freshParallel = getParallelCount(currentRecipe);
+			if (freshParallel > 0) {
+				currentParallelCount = freshParallel;
+			}
 			// If it doesn't have all the inputs reset
 			if (isInvDirty() && !hasAllInputs()) {
 				currentRecipe = null;

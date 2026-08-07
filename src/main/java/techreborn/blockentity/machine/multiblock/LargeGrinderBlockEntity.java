@@ -41,7 +41,8 @@ import java.util.List;
 
 /**
  * Large Grinder: runs every regular grinder recipe at 0.5x time and 0.8x
- * power, up to 16 parallels.
+ * power, up to 32 parallels (higher than the Industrial Grinder's 16 so the
+ * two machines play differently).
  */
 public class LargeGrinderBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
@@ -58,7 +59,7 @@ public class LargeGrinderBlockEntity extends JsonMultiblockMachineBlockEntity im
 				List.of(ModRecipes.GRINDER),
 				0.5F, 0.8F,
 				this, 2, 1, this.inventory, inputs, outputs);
-		this.crafter.setMaxParallel(16);
+		this.crafter.setMaxParallel(32);
 	}
 
 	@Override

@@ -36,7 +36,7 @@ import java.util.function.BiFunction;
 
 /**
  * The Large Grinder block. Runs every regular grinder recipe at
- * 0.5x time and 0.8x power, up to 16 parallels.
+ * 0.5x time and 0.8x power, up to 32 parallels.
  */
 public class LargeGrinderBlock extends GenericMachineBlock {
 
@@ -49,7 +49,7 @@ public class LargeGrinderBlock extends GenericMachineBlock {
 		MultiblockTooltipBuilder.create()
 				.recipeTypes(ModRecipes.LARGE_GRINDER, List.of(ModRecipes.GRINDER))
 				.multipliers(List.of(ModRecipes.GRINDER), 0.8F, 0.5F)
-				.maxParallel(16)
+				.maxParallel(32)
 				.appendTo(tooltip);
 	}
 }

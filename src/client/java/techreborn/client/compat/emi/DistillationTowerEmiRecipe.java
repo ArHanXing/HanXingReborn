@@ -46,7 +46,7 @@ public class DistillationTowerEmiRecipe extends TREmiRecipe<RebornRecipe> {
 
 	@Override
 	public int getDisplayWidth() {
-		return 16 + 18 + 24 + 4 + 18 * 3 + 2 * 2 + 4;
+		return 16 + 18 * 2 + 24 + 4 + 18 * 3 + 2 * 2 + 4;
 	}
 
 	@Override
@@ -56,16 +56,26 @@ public class DistillationTowerEmiRecipe extends TREmiRecipe<RebornRecipe> {
 
 	@Override
 	public void addWidgets(WidgetHolder widgets) {
-		widgets.addSlot(getInput(0), 16, (50 - 18 * 2 - 2) / 2);
-		widgets.addSlot(getInput(1), 16, (50 - 18 * 2 - 2) / 2 + 18 + 2);
+		// 4 inputs: 2 columns x 2 rows
+		int inX = 16;
+		int inY = (50 - 18 * 2 - 2) / 2;
+		widgets.addSlot(getInput(0), inX, inY);
+		widgets.addSlot(getInput(1), inX + 18, inY);
+		widgets.addSlot(getInput(2), inX, inY + 18 + 2);
+		widgets.addSlot(getInput(3), inX + 18, inY + 18 + 2);
 
-		widgets.add(new NinePatchWidget(EmiTextures.SLOT_BG, 16 + 18 + 24, (50 - 26) / 2, 4 + 18 * 3 + 2 * 2 + 4, 26));
-		widgets.addSlot(getOutput(0), 16 + 18 + 24 + 4, (50 - 18) / 2).drawBack(false).recipeContext(this);
-		widgets.addSlot(getOutput(1), 16 + 18 + 24 + 4 + 18 + 2, (50 - 18) / 2).drawBack(false).recipeContext(this);
-		widgets.addSlot(getOutput(2), 16 + 18 + 24 + 4 + 18 * 2 + 2 * 2, (50 - 18) / 2).drawBack(false).recipeContext(this);
+		// 6 outputs: 3 columns x 2 rows
+		int outX = inX + 18 * 2 + 24 + 4;
+		widgets.add(new NinePatchWidget(EmiTextures.SLOT_BG, outX - 4, (50 - 26) / 2, 4 + 18 * 3 + 2 * 2 + 4, 26));
+		widgets.addSlot(getOutput(0), outX, inY).drawBack(false).recipeContext(this);
+		widgets.addSlot(getOutput(1), outX + 18 + 2, inY).drawBack(false).recipeContext(this);
+		widgets.addSlot(getOutput(2), outX + 18 * 2 + 2 * 2, inY).drawBack(false).recipeContext(this);
+		widgets.addSlot(getOutput(3), outX, inY + 18 + 2).drawBack(false).recipeContext(this);
+		widgets.addSlot(getOutput(4), outX + 18 + 2, inY + 18 + 2).drawBack(false).recipeContext(this);
+		widgets.addSlot(getOutput(5), outX + 18 * 2 + 2 * 2, inY + 18 + 2).drawBack(false).recipeContext(this);
 
 		TRUIUtils.energyBar(widgets, recipe, 10, 0, 0);
-		TRUIUtils.arrowRight(widgets, recipe, 16 + 18 + 4, (50 - 10) / 2);
-		UIUtils.cookTime(widgets, recipe.time(), 16 + 18 + 2, 0);
+		TRUIUtils.arrowRight(widgets, recipe, inX + 18 * 2 + 4, (50 - 10) / 2);
+		UIUtils.cookTime(widgets, recipe.time(), inX + 18 * 2 + 2, 0);
 	}
 }
