@@ -1,0 +1,71 @@
+{
+	"translate": [
+		2,
+		0,
+		-3
+	],
+	"layers": [
+		[
+			"ABBBA",
+			"ABDBA",
+			"ABDBA",
+			"ABDBA",
+			"ABDBA",
+			"ABDBA",
+			"ABDBA"
+		],
+		[
+			" BBB ",
+			" C C ",
+			" C C ",
+			" C C ",
+			" C C ",
+			" C C ",
+			" BBB "
+		],
+		[
+			" BCB ",
+			" C C ",
+			" C C ",
+			" C C ",
+			" C C ",
+			" C C ",
+			" BCB "
+		],
+		[
+			" BBB ",
+			" C C ",
+			" C C ",
+			" C C ",
+			" C C ",
+			" C C ",
+			" BBB "
+		],
+		[
+			"ADBDA",
+			"AEBEA",
+			"AEBEA",
+			"AEBEA",
+			"AEBEA",
+			"AEBEA",
+			"ADBDA"
+		]
+	],
+	"keys": {
+		"C": {
+			"block": "techreborn:reinforced_glass"
+		},
+		"E": {
+			"block": "techreborn:basic_machine_frame"
+		},
+		"B": {
+			"block": "techreborn:advanced_machine_casing"
+		},
+		"D": {
+			"block": "techreborn:advanced_machine_frame"
+		},
+		"A": {
+			"block": "techreborn:basic_machine_casing"
+		}
+	}
+}

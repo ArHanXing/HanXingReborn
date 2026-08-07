@@ -153,8 +153,12 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiStack PRIMITIVE_DISTILLATION_TOWER_STACK = EmiStack.of(TRContent.Machine.PRIMITIVE_DISTILLATION_TOWER);
 	public static final EmiStack ROTARY_HEARTH_FURNACE_STACK = EmiStack.of(TRContent.Machine.ROTARY_HEARTH_FURNACE);
 	public static final EmiStack FURNACE_PRO_MAX_STACK = EmiStack.of(TRContent.Machine.FURNACE_PRO_MAX);
+	public static final EmiStack PRECISE_ASSEMBLER_STACK = EmiStack.of(TRContent.Machine.PRECISE_ASSEMBLER);
 	public static final EmiRecipeCategory LATHE_CATEGORY =
 		new EmiRecipeCategory(trId("lathe"), LATHE_STACK, EmiTextures.LATHE,
+			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiRecipeCategory PRECISE_ASSEMBLER_CATEGORY =
+		new EmiRecipeCategory(trId("precise_assembler"), PRECISE_ASSEMBLER_STACK, EmiTextures.PRECISE_ASSEMBLER,
 			EmiRecipeSorting.compareOutputThenInput());
 
 	public static final EmiRecipeCategory THERMAL_GENERATOR_CATEGORY =
@@ -348,6 +352,13 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(LATHE_CATEGORY, LARGE_LATHE_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.LATHE)) {
 			registry.addRecipe(new SimpleOneInputEmiRecipe(recipe, LATHE_CATEGORY, 1));
+		}
+
+		// Precise Assembler
+		registry.addCategory(PRECISE_ASSEMBLER_CATEGORY);
+		registry.addWorkstation(PRECISE_ASSEMBLER_CATEGORY, PRECISE_ASSEMBLER_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.PRECISE_ASSEMBLER)) {
+			registry.addRecipe(new PreciseAssemblerEmiRecipe(recipe));
 		}
 
 		// Generators

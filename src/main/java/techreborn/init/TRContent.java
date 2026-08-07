@@ -79,6 +79,7 @@ import techreborn.blocks.LargeCompressorBlock;
 import techreborn.blocks.LargeGrinderBlock;
 import techreborn.blocks.LargeLatheBlock;
 import techreborn.blocks.FurnaceProMaxBlock;
+import techreborn.blocks.PreciseAssemblerBlock;
 import techreborn.blocks.LargeWireMillBlock;
 import techreborn.blocks.PrimitiveDistillationTowerBlock;
 import techreborn.blocks.RotaryHearthFurnaceBlock;
@@ -784,6 +785,7 @@ public class TRContent {
 		LARGE_GRINDER(new LargeGrinderBlock(GuiType.LARGE_GRINDER, LargeGrinderBlockEntity::new)),
 		LARGE_LATHE(new LargeLatheBlock(GuiType.LARGE_LATHE, LargeLatheBlockEntity::new)),
 		FURNACE_PRO_MAX(new FurnaceProMaxBlock(GuiType.FURNACE_PRO_MAX, FurnaceProMaxBlockEntity::new)),
+		PRECISE_ASSEMBLER(new PreciseAssemblerBlock(GuiType.PRECISE_ASSEMBLER, PreciseAssemblerBlockEntity::new)),
 		PRIMITIVE_DISTILLATION_TOWER(new PrimitiveDistillationTowerBlock(GuiType.PRIMITIVE_DISTILLATION_TOWER, PrimitiveDistillationTowerBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),

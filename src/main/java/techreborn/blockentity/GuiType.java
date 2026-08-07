@@ -69,6 +69,7 @@ import techreborn.blockentity.machine.multiblock.LargeGrinderBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeWireMillBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeLatheBlockEntity;
 import techreborn.blockentity.machine.multiblock.FurnaceProMaxBlockEntity;
+import techreborn.blockentity.machine.multiblock.PreciseAssemblerBlockEntity;
 import techreborn.blockentity.machine.multiblock.PrimitiveDistillationTowerBlockEntity;
 import techreborn.blockentity.machine.multiblock.RotaryHearthFurnaceBlockEntity;
 import techreborn.blockentity.machine.multiblock.VacuumFreezerBlockEntity;
@@ -160,6 +161,7 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<LargeGrinderBlockEntity> LARGE_GRINDER = register("large_grinder");
 	public static final GuiType<LargeLatheBlockEntity> LARGE_LATHE = register("large_lathe");
 	public static final GuiType<FurnaceProMaxBlockEntity> FURNACE_PRO_MAX = register("furnace_pro_max");
+	public static final GuiType<PreciseAssemblerBlockEntity> PRECISE_ASSEMBLER = register("precise_assembler");
 	public static final GuiType<PrimitiveDistillationTowerBlockEntity> PRIMITIVE_DISTILLATION_TOWER = register("primitive_distillation_tower");
 	public static final GuiType<RotaryHearthFurnaceBlockEntity> ROTARY_HEARTH_FURNACE = register("rotary_hearth_furnace");
 	public static final GuiType<PlayerDetectorBlockEntity> PLAYER_DETECTOR = register("player_detector");

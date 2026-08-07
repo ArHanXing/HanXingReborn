@@ -526,6 +526,12 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "furnace_pro_max", key = "FurnaceProMaxMaxEnergy", comment = "Furnace Pro Max Max Energy")
 	public static int furnaceProMaxMaxEnergy = 1_000_000_000;
 
+	@Config(config = "machines", category = "precise_assembler", key = "PreciseAssemblerMaxInput", comment = "Precise Assembler Max Input (Energy per tick)")
+	public static int preciseAssemblerMaxInput = 128;
+
+	@Config(config = "machines", category = "precise_assembler", key = "PreciseAssemblerMaxEnergy", comment = "Precise Assembler Max Energy")
+	public static int preciseAssemblerMaxEnergy = 10_000;
+
 	@Config(config = "machines", category = "industrial_sawmill", key = "IndustrialSawmillMaxInput", comment = "Industrial Sawmill Max Input (Energy per tick)")
 	public static int industrialSawmillMaxInput = 128;
 

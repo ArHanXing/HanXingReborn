@@ -80,4 +80,5 @@ public class ModRecipes {
 	public static final RecipeType<RebornRecipe> LATHE = RecipeManager.newRecipeType(Identifier.of("techreborn:lathe"));
 	public static final RecipeType<RebornRecipe> LARGE_LATHE = RecipeManager.newRecipeType(Identifier.of("techreborn:large_lathe"));
 	public static final RecipeType<RebornRecipe> FURNACE_PRO_MAX = RecipeManager.newRecipeType(Identifier.of("techreborn:furnace_pro_max"));
+	public static final RecipeType<RebornRecipe> PRECISE_ASSEMBLER = RecipeManager.newRecipeType(Identifier.of("techreborn:precise_assembler"));
 }
