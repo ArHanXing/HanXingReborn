@@ -520,6 +520,12 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "large_lathe", key = "LargeLatheMaxEnergy", comment = "Large Lathe Max Energy")
 	public static int largeLatheMaxEnergy = 10_000;
 
+	@Config(config = "machines", category = "furnace_pro_max", key = "FurnaceProMaxMaxInput", comment = "Furnace Pro Max Max Input (Energy per tick)")
+	public static int furnaceProMaxMaxInput = 100_000_000;
+
+	@Config(config = "machines", category = "furnace_pro_max", key = "FurnaceProMaxMaxEnergy", comment = "Furnace Pro Max Max Energy")
+	public static int furnaceProMaxMaxEnergy = 1_000_000_000;
+
 	@Config(config = "machines", category = "industrial_sawmill", key = "IndustrialSawmillMaxInput", comment = "Industrial Sawmill Max Input (Energy per tick)")
 	public static int industrialSawmillMaxInput = 128;
 

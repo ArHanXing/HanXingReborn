@@ -78,6 +78,7 @@ import techreborn.blocks.LargeChemicalReactorBlock;
 import techreborn.blocks.LargeCompressorBlock;
 import techreborn.blocks.LargeGrinderBlock;
 import techreborn.blocks.LargeLatheBlock;
+import techreborn.blocks.FurnaceProMaxBlock;
 import techreborn.blocks.LargeWireMillBlock;
 import techreborn.blocks.PrimitiveDistillationTowerBlock;
 import techreborn.blocks.RotaryHearthFurnaceBlock;
@@ -182,6 +183,7 @@ public class TRContent {
 
 	public static Item DEBUG_TOOL;
 	public static Item MULTIBLOCK_SELECTOR;
+	public static Item MULTIBLOCK_BUILDER;
 
 	// Other
 	public static Item FREQUENCY_TRANSMITTER;
@@ -781,6 +783,7 @@ public class TRContent {
 		LARGE_WIRE_MILL(new LargeWireMillBlock(GuiType.LARGE_WIRE_MILL, LargeWireMillBlockEntity::new)),
 		LARGE_GRINDER(new LargeGrinderBlock(GuiType.LARGE_GRINDER, LargeGrinderBlockEntity::new)),
 		LARGE_LATHE(new LargeLatheBlock(GuiType.LARGE_LATHE, LargeLatheBlockEntity::new)),
+		FURNACE_PRO_MAX(new FurnaceProMaxBlock(GuiType.FURNACE_PRO_MAX, FurnaceProMaxBlockEntity::new)),
 		PRIMITIVE_DISTILLATION_TOWER(new PrimitiveDistillationTowerBlock(GuiType.PRIMITIVE_DISTILLATION_TOWER, PrimitiveDistillationTowerBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),

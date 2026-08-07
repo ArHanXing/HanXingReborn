@@ -76,7 +76,8 @@ public class MultiblockDefinitionLoader {
 			"large_wire_mill",
 			"large_grinder",
 			"primitive_distillation_tower",
-			"large_lathe"
+			"large_lathe",
+			"furnace_pro_max"
 	};
 
 	private MultiblockDefinitionLoader() {

@@ -266,6 +266,7 @@ public class TRItemGroup {
 		entries.add(TRContent.MANUAL);
 		entries.add(TRContent.DEBUG_TOOL);
 		entries.add(TRContent.MULTIBLOCK_SELECTOR);
+		entries.add(TRContent.MULTIBLOCK_BUILDER);
 	}
 
 	private static void addBuildingBlocks(FabricItemGroupEntries entries) {

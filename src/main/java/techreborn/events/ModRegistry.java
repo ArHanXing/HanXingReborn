@@ -238,6 +238,7 @@ public class ModRegistry {
 		RebornRegistry.registerItem(TRContent.MANUAL = InitUtils.setup(new ManualItem(), "manual"));
 		RebornRegistry.registerItem(TRContent.DEBUG_TOOL = InitUtils.setup(new DebugToolItem(), "debug_tool"));
 		RebornRegistry.registerItem(TRContent.MULTIBLOCK_SELECTOR = InitUtils.setup(new MultiblockSelectorItem(), "multiblock_selector"));
+		RebornRegistry.registerItem(TRContent.MULTIBLOCK_BUILDER = InitUtils.setup(new MultiblockBuilderItem(), "multiblock_builder"));
 		RebornRegistry.registerItem(TRContent.CELL = InitUtils.setup(new DynamicCellItem(), "cell"));
 		TRContent.CELL.registerFluidApi();
 

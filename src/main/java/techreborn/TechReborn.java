@@ -25,10 +25,13 @@
 package techreborn;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reborncore.common.blockentity.RedstoneConfiguration;
@@ -36,6 +39,7 @@ import reborncore.common.config.Configuration;
 import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.util.Torus;
 import techreborn.blockentity.GuiType;
+import techreborn.blockentity.machine.multiblock.JsonMultiblockMachineBlockEntity;
 import techreborn.component.TRDataComponentTypes;
 import techreborn.config.TechRebornConfig;
 import techreborn.events.ApplyArmorToDamageHandler;
@@ -51,6 +55,7 @@ import techreborn.init.TRContent;
 import techreborn.init.TRDispenserBehavior;
 import techreborn.init.template.TechRebornTemplates;
 import techreborn.items.DynamicCellItem;
+import techreborn.items.tool.MultiblockBuilderItem;
 import techreborn.multiblock.MultiblockDefinitionLoader;
 import techreborn.multiblock.MultiblockStructureTracker;
 import techreborn.packets.Packets;
@@ -94,6 +99,24 @@ public class TechReborn implements ModInitializer {
 		UseBlockHandler.init();
 		ApplyArmorToDamageHandler.init();
 		FuelRecipes.init();
+
+		// Multiblock Builder tool: right-click a machine controller to inspect
+		// missing structure positions, sneak+right-click to auto-build it
+		// (10 blocks/tick). The callback returns SUCCESS on both sides so the
+		// machine GUI never opens while the tool is held.
+		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+			if (!player.getStackInHand(hand).isOf(TRContent.MULTIBLOCK_BUILDER)) {
+				return ActionResult.PASS;
+			}
+			if (!(world.getBlockEntity(hitResult.getBlockPos()) instanceof JsonMultiblockMachineBlockEntity machine)) {
+				return ActionResult.PASS;
+			}
+			if (!world.isClient) {
+				MultiblockBuilderItem.handleUse(player, world, machine);
+			}
+			return ActionResult.SUCCESS;
+		});
+		ServerTickEvents.END_SERVER_TICK.register(MultiblockBuilderItem::tickJobs);
 
 
 		Torus.genSizeMap(TechRebornConfig.fusionControlComputerMaxCoilSize);

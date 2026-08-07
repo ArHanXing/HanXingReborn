@@ -152,6 +152,7 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiStack LARGE_GRINDER_STACK = EmiStack.of(TRContent.Machine.LARGE_GRINDER);
 	public static final EmiStack PRIMITIVE_DISTILLATION_TOWER_STACK = EmiStack.of(TRContent.Machine.PRIMITIVE_DISTILLATION_TOWER);
 	public static final EmiStack ROTARY_HEARTH_FURNACE_STACK = EmiStack.of(TRContent.Machine.ROTARY_HEARTH_FURNACE);
+	public static final EmiStack FURNACE_PRO_MAX_STACK = EmiStack.of(TRContent.Machine.FURNACE_PRO_MAX);
 	public static final EmiRecipeCategory LATHE_CATEGORY =
 		new EmiRecipeCategory(trId("lathe"), LATHE_STACK, EmiTextures.LATHE,
 			EmiRecipeSorting.compareOutputThenInput());
@@ -384,6 +385,7 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(VanillaEmiRecipeCategories.CRAFTING, AUTO_CRAFTING_TABLE_STACK);
 		registry.addWorkstation(VanillaEmiRecipeCategories.SMELTING, IRON_FURNACE_STACK);
 		registry.addWorkstation(VanillaEmiRecipeCategories.SMELTING, ELECTRIC_FURNACE_STACK);
+		registry.addWorkstation(VanillaEmiRecipeCategories.SMELTING, FURNACE_PRO_MAX_STACK);
 
 		// Fluid ↔ Cell container recipes
 		registry.addCategory(FLUID_FROM_CONTAINER_CATEGORY);

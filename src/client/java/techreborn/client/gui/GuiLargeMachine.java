@@ -34,6 +34,7 @@ import reborncore.common.screen.BuiltScreenHandlerProvider;
 import techreborn.blockentity.machine.multiblock.JsonMultiblockMachineBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeLatheBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeWireMillBlockEntity;
+import techreborn.blockentity.machine.multiblock.FurnaceProMaxBlockEntity;
 
 /**
  * Generic GUI for the "large" multiblock machines (Large Compressor, Large
@@ -57,7 +58,8 @@ public class GuiLargeMachine<T extends JsonMultiblockMachineBlockEntity & BuiltS
 
 		drawSlot(drawContext, 8, 72, layer);
 
-		if (blockEntity instanceof LargeWireMillBlockEntity || blockEntity instanceof LargeLatheBlockEntity) {
+		if (blockEntity instanceof LargeWireMillBlockEntity || blockEntity instanceof LargeLatheBlockEntity
+				|| blockEntity instanceof FurnaceProMaxBlockEntity) {
 			// 1 input + 1 output
 			drawSlot(drawContext, 55, 45, layer);
 			drawSlot(drawContext, 101, 45, layer);

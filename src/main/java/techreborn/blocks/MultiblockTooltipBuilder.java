@@ -54,7 +54,8 @@ public final class MultiblockTooltipBuilder {
 	 * translation key than {@code block.&lt;ns&gt;.&lt;path&gt;}.
 	 */
 	private static final Map<Identifier, String> NAME_OVERRIDES = Map.of(
-			Identifier.of("techreborn", "blast_furnace"), "block.techreborn.industrial_blast_furnace"
+			Identifier.of("techreborn", "blast_furnace"), "block.techreborn.industrial_blast_furnace",
+			Identifier.of("minecraft", "smelting"), "block.minecraft.furnace"
 	);
 
 	private final List<Text> lines = new ArrayList<>();
@@ -71,7 +72,7 @@ public final class MultiblockTooltipBuilder {
 	 * followed by every proxied type. No-op when there are no proxy types.
 	 */
 	public MultiblockTooltipBuilder recipeTypes(RecipeType<? extends RebornRecipe> ownType,
-			List<RecipeType<? extends RebornRecipe>> proxyTypes) {
+			List<RecipeType<?>> proxyTypes) {
 		if (proxyTypes.isEmpty()) {
 			return this;
 		}
@@ -86,7 +87,7 @@ public final class MultiblockTooltipBuilder {
 	 * Adds the "runs X recipes at Y power and Z time" line for the given proxy
 	 * types. No-op when there are no proxy types.
 	 */
-	public MultiblockTooltipBuilder multipliers(List<RecipeType<? extends RebornRecipe>> proxyTypes,
+	public MultiblockTooltipBuilder multipliers(List<RecipeType<?>> proxyTypes,
 			float powerMultiplier, float timeMultiplier) {
 		if (proxyTypes.isEmpty()) {
 			return this;
@@ -133,7 +134,7 @@ public final class MultiblockTooltipBuilder {
 	 * Falls back to {@link #NAME_OVERRIDES} for recipe types whose machine block
 	 * uses a different name (e.g. {@code blast_furnace} -> {@code industrial_blast_furnace}).
 	 */
-	private static Text machineName(RecipeType<? extends RebornRecipe> type) {
+	private static Text machineName(RecipeType<?> type) {
 		Identifier id = Registries.RECIPE_TYPE.getId(type);
 		String key = NAME_OVERRIDES.getOrDefault(id, "block." + id.getNamespace() + "." + id.getPath());
 		return Text.translatable(key).formatted(Formatting.YELLOW);
