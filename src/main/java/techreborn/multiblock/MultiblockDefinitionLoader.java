@@ -75,6 +75,7 @@ public class MultiblockDefinitionLoader {
 			"rotary_hearth_furnace",
 			"large_compressor",
 			"large_wire_mill",
+			"large_ore_crusher",
 			"large_grinder",
 			"primitive_distillation_tower",
 			"large_lathe",

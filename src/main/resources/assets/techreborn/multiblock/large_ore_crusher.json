@@ -1,0 +1,38 @@
+{
+	"translate": [
+		1,
+		0,
+		-1
+	],
+	"layers": [
+		[
+			"AAAAA",
+			"ABABA",
+			"AAAAA"
+		],
+		[
+			"ABABA",
+			"BCBDB",
+			"ABABA"
+		],
+		[
+			"AAAAA",
+			"ABABA",
+			"AAAAA"
+		]
+	],
+	"keys": {
+		"D": {
+			"block": "minecraft:lava"
+		},
+		"B": {
+			"block": "techreborn:advanced_machine_frame"
+		},
+		"A": {
+			"block": "techreborn:basic_machine_casing"
+		},
+		"C": {
+			"block": "minecraft:water"
+		}
+	}
+}

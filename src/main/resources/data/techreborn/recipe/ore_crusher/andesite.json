@@ -1,0 +1,16 @@
+{
+  "type": "techreborn:ore_crusher",
+  "ingredients": [
+    {
+      "item": "minecraft:andesite"
+    }
+  ],
+  "outputs": [
+    {
+      "count": 16,
+      "id": "minecraft:andesite"
+    }
+  ],
+  "power": 32,
+  "time": 200
+}

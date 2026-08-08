@@ -32,7 +32,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.multiblock.IMultiblockPart;
-import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
@@ -40,11 +39,11 @@ import reborncore.common.util.RebornInventory;
 import techreborn.blockentity.machine.multiblock.casing.MachineCasingBlockEntity;
 import techreborn.blocks.misc.BlockCoil;
 import techreborn.config.TechRebornConfig;
-import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
 import techreborn.multiblocks.MultiBlockCasing;
 import techreborn.multiblock.CoilHeatScanner;
+import techreborn.recipe.BlastFurnaceRecipeCrafter;
 
 import java.util.Optional;
 
@@ -58,7 +57,7 @@ public class IndustrialBlastFurnaceBlockEntity extends JsonMultiblockMachineBloc
 		final int[] inputs = new int[]{0, 1};
 		final int[] outputs = new int[]{2, 3};
 		this.inventory = new RebornInventory<>(5, "IndustrialBlastFurnaceBlockEntity", 64, this);
-		this.crafter = new RecipeCrafter(ModRecipes.BLAST_FURNACE, this, 2, 2, this.inventory, inputs, outputs);
+		this.crafter = new BlastFurnaceRecipeCrafter(this, this.inventory, inputs, outputs);
 		this.crafter.setMaxParallel(1);
 	}
 

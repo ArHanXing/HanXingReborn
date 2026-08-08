@@ -1,0 +1,16 @@
+{
+  "type": "techreborn:ore_crusher",
+  "ingredients": [
+    {
+      "item": "minecraft:cobblestone"
+    }
+  ],
+  "outputs": [
+    {
+      "count": 16,
+      "id": "minecraft:cobblestone"
+    }
+  ],
+  "power": 32,
+  "time": 200
+}

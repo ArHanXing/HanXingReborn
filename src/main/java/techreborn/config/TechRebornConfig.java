@@ -415,6 +415,12 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "grinder", key = "GrinderMaxEnergy", comment = "Grinder Max Energy")
 	public static int grinderMaxEnergy = 1_000;
 
+	@Config(config = "machines", category = "ore_crusher", key = "OreCrusherMaxInput", comment = "Ore Crusher Max Input (Energy per tick)")
+	public static int oreCrusherMaxInput = 32;
+
+	@Config(config = "machines", category = "ore_crusher", key = "OreCrusherMaxEnergy", comment = "Ore Crusher Max Energy")
+	public static int oreCrusherMaxEnergy = 1_000;
+
 	@Config(config = "machines", category = "compressor", key = "CompressorInput", comment = "Compressor Max Input (Energy per tick)")
 	public static int compressorMaxInput = 32;
 
@@ -507,6 +513,12 @@ public class TechRebornConfig {
 
 	@Config(config = "machines", category = "large_grinder", key = "LargeGrinderMaxEnergy", comment = "Large Grinder Max Energy")
 	public static int largeGrinderMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "large_ore_crusher", key = "LargeOreCrusherMaxInput", comment = "Large Ore Crusher Max Input (Energy per tick)")
+	public static int largeOreCrusherMaxInput = 128;
+
+	@Config(config = "machines", category = "large_ore_crusher", key = "LargeOreCrusherMaxEnergy", comment = "Large Ore Crusher Max Energy")
+	public static int largeOreCrusherMaxEnergy = 10_000;
 
 	@Config(config = "machines", category = "primitive_distillation_tower", key = "PrimitiveDistillationTowerMaxInput", comment = "Primitive Distillation Tower Max Input (Energy per tick)")
 	public static int primitiveDistillationTowerMaxInput = 128;

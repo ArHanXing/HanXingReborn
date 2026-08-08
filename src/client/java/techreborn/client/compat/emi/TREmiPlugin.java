@@ -87,6 +87,8 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiStack IRON_FURNACE_STACK = EmiStack.of(TRContent.Machine.IRON_FURNACE);
 	public static final EmiStack ELECTRIC_FURNACE_STACK = EmiStack.of(TRContent.Machine.ELECTRIC_FURNACE);
 	public static final EmiStack LARGE_CHEMICAL_REACTOR_STACK = EmiStack.of(TRContent.Machine.LARGE_CHEMICAL_REACTOR);
+	public static final EmiStack ORE_CRUSHER_STACK = EmiStack.of(TRContent.Machine.ORE_CRUSHER);
+	public static final EmiStack LARGE_ORE_CRUSHER_STACK = EmiStack.of(TRContent.Machine.LARGE_ORE_CRUSHER);
 
 	public static final EmiRecipeCategory ALLOY_SMELTER_CATEGORY =
 		new EmiRecipeCategory(trId("alloy_smelter"), ALLOY_SMELTER_STACK, EmiTextures.ALLOY_SMELTING,
@@ -184,6 +186,10 @@ public class TREmiPlugin implements EmiPlugin {
 		new EmiRecipeCategory(trId("large_chemical_reactor"), LARGE_CHEMICAL_REACTOR_STACK,
 			EmiTextures.LARGE_CHEMICAL_REACTOR, EmiRecipeSorting.compareOutputThenInput());
 
+	public static final EmiRecipeCategory ORE_CRUSHER_CATEGORY =
+		new EmiRecipeCategory(trId("ore_crusher"), ORE_CRUSHER_STACK, EmiTextures.GRINDING,
+			EmiRecipeSorting.compareOutputThenInput());
+
 	public static final EmiRecipeCategory FLUID_FROM_CONTAINER_CATEGORY =
 		new EmiRecipeCategory(trId("fluid_from_container"), EmiStack.of(Items.BUCKET));
 	public static final EmiRecipeCategory FLUID_INTO_CONTAINER_CATEGORY =
@@ -208,6 +214,7 @@ public class TREmiPlugin implements EmiPlugin {
 		Map.entry("rotary_hearth_furnace", TRContent.Machine.ROTARY_HEARTH_FURNACE),
 		Map.entry("large_compressor", TRContent.Machine.LARGE_COMPRESSOR),
 		Map.entry("large_wire_mill", TRContent.Machine.LARGE_WIRE_MILL),
+		Map.entry("large_ore_crusher", TRContent.Machine.LARGE_ORE_CRUSHER),
 		Map.entry("large_grinder", TRContent.Machine.LARGE_GRINDER),
 		Map.entry("primitive_distillation_tower", TRContent.Machine.PRIMITIVE_DISTILLATION_TOWER),
 		Map.entry("large_lathe", TRContent.Machine.LARGE_LATHE),
@@ -259,6 +266,14 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(LARGE_CHEMICAL_REACTOR_CATEGORY, LARGE_CHEMICAL_REACTOR_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.LARGE_CHEMICAL_REACTOR)) {
 			registry.addRecipe(new LargeChemicalReactorEmiRecipe(recipe));
+		}
+
+		// Ore Crushing
+		registry.addCategory(ORE_CRUSHER_CATEGORY);
+		registry.addWorkstation(ORE_CRUSHER_CATEGORY, ORE_CRUSHER_STACK);
+		registry.addWorkstation(ORE_CRUSHER_CATEGORY, LARGE_ORE_CRUSHER_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.ORE_CRUSHER)) {
+			registry.addRecipe(new OreCrusherEmiRecipe(recipe));
 		}
 
 		// Compressing

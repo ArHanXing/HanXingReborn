@@ -48,6 +48,7 @@ public class ModRecipes {
 	public static final RecipeType<RebornRecipe> DISTILLATION_TOWER = RecipeManager.newRecipeType(Identifier.of("techreborn:distillation_tower"));
 	public static final RecipeType<RebornRecipe> EXTRACTOR = RecipeManager.newRecipeType(Identifier.of("techreborn:extractor"));
 	public static final RecipeType<RebornRecipe> GRINDER = RecipeManager.newRecipeType(Identifier.of("techreborn:grinder"));
+	public static final RecipeType<RebornRecipe> ORE_CRUSHER = RecipeManager.newRecipeType(Identifier.of("techreborn:ore_crusher"));
 	public static final RecipeType<RebornRecipe> IMPLOSION_COMPRESSOR = RecipeManager.newRecipeType(Identifier.of("techreborn:implosion_compressor"));
 	public static final RecipeType<RebornRecipe> LARGE_CHEMICAL_REACTOR = RecipeManager.newRecipeType(Identifier.of("techreborn:large_chemical_reactor"));
 	public static final RecipeType<RebornRecipe> INDUSTRIAL_ELECTROLYZER = RecipeManager.newRecipeType(Identifier.of("techreborn:industrial_electrolyzer"));
@@ -81,4 +82,5 @@ public class ModRecipes {
 	public static final RecipeType<RebornRecipe> LARGE_LATHE = RecipeManager.newRecipeType(Identifier.of("techreborn:large_lathe"));
 	public static final RecipeType<RebornRecipe> FURNACE_PRO_MAX = RecipeManager.newRecipeType(Identifier.of("techreborn:furnace_pro_max"));
 	public static final RecipeType<RebornRecipe> PRECISE_ASSEMBLER = RecipeManager.newRecipeType(Identifier.of("techreborn:precise_assembler"));
+	public static final RecipeType<RebornRecipe> LARGE_ORE_CRUSHER = RecipeManager.newRecipeType(Identifier.of("techreborn:large_ore_crusher"));
 }

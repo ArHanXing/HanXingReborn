@@ -1,3 +1,8 @@
 {
-	"parent": "techreborn:block/machines/tier2_machines/implosion_compressor"
+	"parent": "minecraft:block/orientable",
+	"textures": {
+		"top": "techreborn:block/machines/tier1_machines/machine_top",
+		"front": "techreborn:block/machines/tier1_machines/multiblock_off",
+		"side": "techreborn:block/machines/tier1_machines/machine_side"
+	}
 }

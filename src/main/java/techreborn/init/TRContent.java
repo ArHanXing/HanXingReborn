@@ -81,6 +81,7 @@ import techreborn.blocks.LargeLatheBlock;
 import techreborn.blocks.FurnaceProMaxBlock;
 import techreborn.blocks.PreciseAssemblerBlock;
 import techreborn.blocks.LargeWireMillBlock;
+import techreborn.blocks.LargeOreCrusherBlock;
 import techreborn.blocks.PrimitiveDistillationTowerBlock;
 import techreborn.blocks.RotaryHearthFurnaceBlock;
 import techreborn.blocks.cable.CableBlock;
@@ -763,6 +764,7 @@ public class TRContent {
 		RESIN_BASIN(new ResinBasinBlock(ResinBasinBlockEntity::new)),
 		FLUID_REPLICATOR(new GenericMachineBlock(GuiType.FLUID_REPLICATOR, FluidReplicatorBlockEntity::new, 16)),
 		GRINDER(new GenericMachineBlock(GuiType.GRINDER, GrinderBlockEntity::new)),
+		ORE_CRUSHER(new GenericMachineBlock(GuiType.ORE_CRUSHER, OreCrusherBlockEntity::new)),
 		ELECTRIC_FURNACE(new GenericMachineBlock(GuiType.ELECTRIC_FURNACE, ElectricFurnaceBlockEntity::new)),
 		IMPLOSION_COMPRESSOR(new GenericMachineBlock(GuiType.IMPLOSION_COMPRESSOR, ImplosionCompressorBlockEntity::new, 16)),
 		INDUSTRIAL_BLAST_FURNACE(new GenericMachineBlock(GuiType.BLAST_FURNACE, IndustrialBlastFurnaceBlockEntity::new, 1)),
@@ -782,6 +784,7 @@ public class TRContent {
 		LARGE_CHEMICAL_REACTOR(new LargeChemicalReactorBlock(GuiType.LARGE_CHEMICAL_REACTOR, LargeChemicalReactorBlockEntity::new)),
 		LARGE_COMPRESSOR(new LargeCompressorBlock(GuiType.LARGE_COMPRESSOR, LargeCompressorBlockEntity::new)),
 		LARGE_WIRE_MILL(new LargeWireMillBlock(GuiType.LARGE_WIRE_MILL, LargeWireMillBlockEntity::new)),
+		LARGE_ORE_CRUSHER(new LargeOreCrusherBlock(GuiType.LARGE_ORE_CRUSHER, LargeOreCrusherBlockEntity::new)),
 		LARGE_GRINDER(new LargeGrinderBlock(GuiType.LARGE_GRINDER, LargeGrinderBlockEntity::new)),
 		LARGE_LATHE(new LargeLatheBlock(GuiType.LARGE_LATHE, LargeLatheBlockEntity::new)),
 		FURNACE_PRO_MAX(new FurnaceProMaxBlock(GuiType.FURNACE_PRO_MAX, FurnaceProMaxBlockEntity::new)),

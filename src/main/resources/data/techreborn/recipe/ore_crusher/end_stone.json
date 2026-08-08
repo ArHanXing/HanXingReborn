@@ -1,0 +1,16 @@
+{
+  "type": "techreborn:ore_crusher",
+  "ingredients": [
+    {
+      "item": "minecraft:end_stone"
+    }
+  ],
+  "outputs": [
+    {
+      "count": 16,
+      "id": "minecraft:end_stone"
+    }
+  ],
+  "power": 32,
+  "time": 200
+}
