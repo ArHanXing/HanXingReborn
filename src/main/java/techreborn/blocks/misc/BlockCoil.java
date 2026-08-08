@@ -60,7 +60,7 @@ public class BlockCoil extends BlockMultiblockBase implements BlockEntityProvide
 
 	public BlockCoil(int heat) {
 		super(TRBlockSettings.machineCasing()
-			.luminance(state -> state.get(ACTIVE) ? 12 : 0));
+			.luminance(state -> state.get(ACTIVE) ? 15 : 0));
 		this.heat = heat;
 		setDefaultState(getDefaultState().with(ACTIVE, false));
 	}
