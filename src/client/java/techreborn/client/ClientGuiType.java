@@ -55,6 +55,12 @@ import techreborn.blockentity.machine.multiblock.PrimitiveDistillationTowerBlock
 import techreborn.blockentity.machine.multiblock.RotaryHearthFurnaceBlockEntity;
 import techreborn.blockentity.machine.multiblock.VacuumFreezerBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeOreCrusherBlockEntity;
+import techreborn.blockentity.machine.multiblock.IndustrialAlloySmelterBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeCentrifugeBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeElectrolyzerBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeExtractorBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeGreenhouseBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeRanchBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockBreakerBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockPlacerBlockEntity;
 import techreborn.blockentity.machine.tier1.AlloySmelterBlockEntity;
@@ -164,6 +170,12 @@ public record ClientGuiType<T extends BlockEntity>(GuiType<T> guiType, GuiFactor
 	public static final ClientGuiType<LargeGrinderBlockEntity> LARGE_GRINDER = register(GuiType.LARGE_GRINDER, GuiLargeMachine::new);
 	public static final ClientGuiType<LargeLatheBlockEntity> LARGE_LATHE = register(GuiType.LARGE_LATHE, GuiLargeMachine::new);
 	public static final ClientGuiType<FurnaceProMaxBlockEntity> FURNACE_PRO_MAX = register(GuiType.FURNACE_PRO_MAX, GuiLargeMachine::new);
+	public static final ClientGuiType<IndustrialAlloySmelterBlockEntity> INDUSTRIAL_ALLOY_SMELTER = register(GuiType.INDUSTRIAL_ALLOY_SMELTER, GuiLargeMachine::new);
+	public static final ClientGuiType<LargeCentrifugeBlockEntity> LARGE_CENTRIFUGE = register(GuiType.LARGE_CENTRIFUGE, GuiLargeMachine::new);
+	public static final ClientGuiType<LargeElectrolyzerBlockEntity> LARGE_ELECTROLYZER = register(GuiType.LARGE_ELECTROLYZER, GuiLargeMachine::new);
+	public static final ClientGuiType<LargeExtractorBlockEntity> LARGE_EXTRACTOR = register(GuiType.LARGE_EXTRACTOR, GuiLargeMachine::new);
+	public static final ClientGuiType<LargeGreenhouseBlockEntity> LARGE_GREENHOUSE = register(GuiType.LARGE_GREENHOUSE, GuiLargeMachine::new);
+	public static final ClientGuiType<LargeRanchBlockEntity> LARGE_RANCH = register(GuiType.LARGE_RANCH, GuiLargeMachine::new);
 	public static final ClientGuiType<PreciseAssemblerBlockEntity> PRECISE_ASSEMBLER = register(GuiType.PRECISE_ASSEMBLER, GuiPreciseAssembler::new);
 	public static final ClientGuiType<PrimitiveDistillationTowerBlockEntity> PRIMITIVE_DISTILLATION_TOWER = register(GuiType.PRIMITIVE_DISTILLATION_TOWER, GuiDistillationTower::new);
 	public static final ClientGuiType<RotaryHearthFurnaceBlockEntity> ROTARY_HEARTH_FURNACE = register(GuiType.ROTARY_HEARTH_FURNACE, GuiRotaryHearthFurnace::new);

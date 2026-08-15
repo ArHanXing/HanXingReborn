@@ -1,0 +1,16 @@
+{
+  "type": "techreborn:ranch",
+  "ingredients": [
+    {
+      "item": "minecraft:cod"
+    }
+  ],
+  "outputs": [
+    {
+      "count": 3,
+      "id": "minecraft:cod"
+    }
+  ],
+  "power": 32,
+  "time": 200
+}

@@ -544,6 +544,42 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "precise_assembler", key = "PreciseAssemblerMaxEnergy", comment = "Precise Assembler Max Energy")
 	public static int preciseAssemblerMaxEnergy = 10_000;
 
+	@Config(config = "machines", category = "industrial_alloy_smelter", key = "IndustrialAlloySmelterMaxInput", comment = "Industrial Alloy Smelter Max Input (Energy per tick)")
+	public static int industrialAlloySmelterMaxInput = 128;
+
+	@Config(config = "machines", category = "industrial_alloy_smelter", key = "IndustrialAlloySmelterMaxEnergy", comment = "Industrial Alloy Smelter Max Energy")
+	public static int industrialAlloySmelterMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "large_centrifuge", key = "LargeCentrifugeMaxInput", comment = "Large Centrifuge Max Input (Energy per tick)")
+	public static int largeCentrifugeMaxInput = 128;
+
+	@Config(config = "machines", category = "large_centrifuge", key = "LargeCentrifugeMaxEnergy", comment = "Large Centrifuge Max Energy")
+	public static int largeCentrifugeMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "large_electrolyzer", key = "LargeElectrolyzerMaxInput", comment = "Large Electrolyzer Max Input (Energy per tick)")
+	public static int largeElectrolyzerMaxInput = 128;
+
+	@Config(config = "machines", category = "large_electrolyzer", key = "LargeElectrolyzerMaxEnergy", comment = "Large Electrolyzer Max Energy")
+	public static int largeElectrolyzerMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "large_extractor", key = "LargeExtractorMaxInput", comment = "Large Extractor Max Input (Energy per tick)")
+	public static int largeExtractorMaxInput = 128;
+
+	@Config(config = "machines", category = "large_extractor", key = "LargeExtractorMaxEnergy", comment = "Large Extractor Max Energy")
+	public static int largeExtractorMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "large_greenhouse", key = "LargeGreenhouseMaxInput", comment = "Large Greenhouse Max Input (Energy per tick)")
+	public static int largeGreenhouseMaxInput = 128;
+
+	@Config(config = "machines", category = "large_greenhouse", key = "LargeGreenhouseMaxEnergy", comment = "Large Greenhouse Max Energy")
+	public static int largeGreenhouseMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "large_ranch", key = "LargeRanchMaxInput", comment = "Large Ranch Max Input (Energy per tick)")
+	public static int largeRanchMaxInput = 128;
+
+	@Config(config = "machines", category = "large_ranch", key = "LargeRanchMaxEnergy", comment = "Large Ranch Max Energy")
+	public static int largeRanchMaxEnergy = 10_000;
+
 	@Config(config = "machines", category = "industrial_sawmill", key = "IndustrialSawmillMaxInput", comment = "Industrial Sawmill Max Input (Energy per tick)")
 	public static int industrialSawmillMaxInput = 128;
 

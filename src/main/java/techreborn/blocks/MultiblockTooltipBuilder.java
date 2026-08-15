@@ -55,6 +55,7 @@ public final class MultiblockTooltipBuilder {
 	 */
 	private static final Map<Identifier, String> NAME_OVERRIDES = Map.of(
 			Identifier.of("techreborn", "blast_furnace"), "block.techreborn.industrial_blast_furnace",
+			Identifier.of("techreborn", "centrifuge"), "block.techreborn.industrial_centrifuge",
 			Identifier.of("minecraft", "smelting"), "block.minecraft.furnace"
 	);
 

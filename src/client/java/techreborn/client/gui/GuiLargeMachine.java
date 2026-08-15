@@ -36,6 +36,11 @@ import techreborn.blockentity.machine.multiblock.LargeLatheBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeWireMillBlockEntity;
 import techreborn.blockentity.machine.multiblock.FurnaceProMaxBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeOreCrusherBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeExtractorBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeCentrifugeBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeElectrolyzerBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeGreenhouseBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeRanchBlockEntity;
 
 /**
  * Generic GUI for the "large" multiblock machines (Large Compressor, Large
@@ -60,12 +65,26 @@ public class GuiLargeMachine<T extends JsonMultiblockMachineBlockEntity & BuiltS
 		drawSlot(drawContext, 8, 72, layer);
 
 		if (blockEntity instanceof LargeWireMillBlockEntity || blockEntity instanceof LargeLatheBlockEntity
-				|| blockEntity instanceof FurnaceProMaxBlockEntity || blockEntity instanceof LargeOreCrusherBlockEntity) {
+				|| blockEntity instanceof FurnaceProMaxBlockEntity || blockEntity instanceof LargeOreCrusherBlockEntity
+				|| blockEntity instanceof LargeExtractorBlockEntity) {
 			// 1 input + 1 output
 			drawSlot(drawContext, 55, 45, layer);
 			drawSlot(drawContext, 101, 45, layer);
+		} else if (blockEntity instanceof LargeCentrifugeBlockEntity || blockEntity instanceof LargeElectrolyzerBlockEntity) {
+			// 2 stacked inputs + 4 outputs (Large Centrifuge / Large Electrolyzer)
+			drawSlot(drawContext, 55, 26, layer);
+			drawSlot(drawContext, 55, 45, layer);
+			drawSlot(drawContext, 100, 25, layer);
+			drawSlot(drawContext, 120, 25, layer);
+			drawSlot(drawContext, 100, 45, layer);
+			drawSlot(drawContext, 120, 45, layer);
+		} else if (blockEntity instanceof LargeGreenhouseBlockEntity || blockEntity instanceof LargeRanchBlockEntity) {
+			// 1 input + 2 outputs (Large Greenhouse / Large Ranch)
+			drawSlot(drawContext, 55, 45, layer);
+			drawSlot(drawContext, 101, 45, layer);
+			drawSlot(drawContext, 121, 45, layer);
 		} else {
-			// 2 stacked inputs + 1 output (Large Compressor / Large Grinder)
+			// 2 stacked inputs + 1 output (Large Compressor / Large Grinder / Industrial Alloy Smelter)
 			drawSlot(drawContext, 55, 26, layer);
 			drawSlot(drawContext, 55, 45, layer);
 			drawSlot(drawContext, 101, 45, layer);

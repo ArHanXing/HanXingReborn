@@ -1,0 +1,16 @@
+{
+  "type": "techreborn:ranch",
+  "ingredients": [
+    {
+      "item": "minecraft:ink_sac"
+    }
+  ],
+  "outputs": [
+    {
+      "count": 3,
+      "id": "minecraft:ink_sac"
+    }
+  ],
+  "power": 32,
+  "time": 200
+}

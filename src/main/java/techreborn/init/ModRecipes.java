@@ -83,4 +83,16 @@ public class ModRecipes {
 	public static final RecipeType<RebornRecipe> FURNACE_PRO_MAX = RecipeManager.newRecipeType(Identifier.of("techreborn:furnace_pro_max"));
 	public static final RecipeType<RebornRecipe> PRECISE_ASSEMBLER = RecipeManager.newRecipeType(Identifier.of("techreborn:precise_assembler"));
 	public static final RecipeType<RebornRecipe> LARGE_ORE_CRUSHER = RecipeManager.newRecipeType(Identifier.of("techreborn:large_ore_crusher"));
+
+	// Batch of improved (large) multiblock machines added together; each proxies
+	// its smaller counterpart's recipes (see ProxyRecipeCrafter in each BlockEntity).
+	public static final RecipeType<RebornRecipe> INDUSTRIAL_ALLOY_SMELTER = RecipeManager.newRecipeType(Identifier.of("techreborn:industrial_alloy_smelter"));
+	public static final RecipeType<RebornRecipe> LARGE_CENTRIFUGE = RecipeManager.newRecipeType(Identifier.of("techreborn:large_centrifuge"));
+	public static final RecipeType<RebornRecipe> LARGE_ELECTROLYZER = RecipeManager.newRecipeType(Identifier.of("techreborn:large_electrolyzer"));
+	public static final RecipeType<RebornRecipe> LARGE_EXTRACTOR = RecipeManager.newRecipeType(Identifier.of("techreborn:large_extractor"));
+
+	// Independent-recipe multiblock machines: they have recipes of their own
+	// and never consume their input (like the ore crusher).
+	public static final RecipeType<RebornRecipe> GREENHOUSE = RecipeManager.newRecipeType(Identifier.of("techreborn:greenhouse"));
+	public static final RecipeType<RebornRecipe> RANCH = RecipeManager.newRecipeType(Identifier.of("techreborn:ranch"));
 }

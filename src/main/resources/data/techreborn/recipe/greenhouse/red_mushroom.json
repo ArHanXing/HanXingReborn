@@ -1,0 +1,16 @@
+{
+  "type": "techreborn:greenhouse",
+  "ingredients": [
+    {
+      "item": "minecraft:red_mushroom"
+    }
+  ],
+  "outputs": [
+    {
+      "count": 3,
+      "id": "minecraft:red_mushroom"
+    }
+  ],
+  "power": 32,
+  "time": 200
+}

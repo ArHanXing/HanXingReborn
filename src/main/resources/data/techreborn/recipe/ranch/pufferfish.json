@@ -1,0 +1,16 @@
+{
+  "type": "techreborn:ranch",
+  "ingredients": [
+    {
+      "item": "minecraft:pufferfish"
+    }
+  ],
+  "outputs": [
+    {
+      "count": 3,
+      "id": "minecraft:pufferfish"
+    }
+  ],
+  "power": 32,
+  "time": 200
+}

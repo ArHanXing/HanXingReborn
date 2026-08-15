@@ -74,6 +74,12 @@ import techreborn.blockentity.machine.multiblock.PrimitiveDistillationTowerBlock
 import techreborn.blockentity.machine.multiblock.RotaryHearthFurnaceBlockEntity;
 import techreborn.blockentity.machine.multiblock.VacuumFreezerBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeOreCrusherBlockEntity;
+import techreborn.blockentity.machine.multiblock.IndustrialAlloySmelterBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeCentrifugeBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeElectrolyzerBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeExtractorBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeGreenhouseBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeRanchBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockBreakerBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockPlacerBlockEntity;
 import techreborn.blockentity.machine.tier1.AlloySmelterBlockEntity;
@@ -175,6 +181,12 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<ElevatorBlockEntity> ELEVATOR = register("elevator");
 	public static final GuiType<FishingStationBlockEntity> FISHING_STATION = register("fishing_station");
 	public static final GuiType<PumpBlockEntity> PUMP = register("pump");
+	public static final GuiType<IndustrialAlloySmelterBlockEntity> INDUSTRIAL_ALLOY_SMELTER = register("industrial_alloy_smelter");
+	public static final GuiType<LargeCentrifugeBlockEntity> LARGE_CENTRIFUGE = register("large_centrifuge");
+	public static final GuiType<LargeElectrolyzerBlockEntity> LARGE_ELECTROLYZER = register("large_electrolyzer");
+	public static final GuiType<LargeExtractorBlockEntity> LARGE_EXTRACTOR = register("large_extractor");
+	public static final GuiType<LargeGreenhouseBlockEntity> LARGE_GREENHOUSE = register("large_greenhouse");
+	public static final GuiType<LargeRanchBlockEntity> LARGE_RANCH = register("large_ranch");
 
 
 	private static <T extends BlockEntity> GuiType<T> register(String path) {

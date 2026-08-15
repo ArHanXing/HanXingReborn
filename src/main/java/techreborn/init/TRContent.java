@@ -83,6 +83,12 @@ import techreborn.blocks.PreciseAssemblerBlock;
 import techreborn.blocks.LargeWireMillBlock;
 import techreborn.blocks.LargeOreCrusherBlock;
 import techreborn.blocks.PrimitiveDistillationTowerBlock;
+import techreborn.blocks.IndustrialAlloySmelterBlock;
+import techreborn.blocks.LargeCentrifugeBlock;
+import techreborn.blocks.LargeElectrolyzerBlock;
+import techreborn.blocks.LargeExtractorBlock;
+import techreborn.blocks.LargeGreenhouseBlock;
+import techreborn.blocks.LargeRanchBlock;
 import techreborn.blocks.RotaryHearthFurnaceBlock;
 import techreborn.blocks.cable.CableBlock;
 import techreborn.blocks.generator.BlockFusionCoil;
@@ -790,6 +796,12 @@ public class TRContent {
 		FURNACE_PRO_MAX(new FurnaceProMaxBlock(GuiType.FURNACE_PRO_MAX, FurnaceProMaxBlockEntity::new)),
 		PRECISE_ASSEMBLER(new PreciseAssemblerBlock(GuiType.PRECISE_ASSEMBLER, PreciseAssemblerBlockEntity::new)),
 		PRIMITIVE_DISTILLATION_TOWER(new PrimitiveDistillationTowerBlock(GuiType.PRIMITIVE_DISTILLATION_TOWER, PrimitiveDistillationTowerBlockEntity::new)),
+		INDUSTRIAL_ALLOY_SMELTER(new IndustrialAlloySmelterBlock(GuiType.INDUSTRIAL_ALLOY_SMELTER, IndustrialAlloySmelterBlockEntity::new)),
+		LARGE_CENTRIFUGE(new LargeCentrifugeBlock(GuiType.LARGE_CENTRIFUGE, LargeCentrifugeBlockEntity::new)),
+		LARGE_ELECTROLYZER(new LargeElectrolyzerBlock(GuiType.LARGE_ELECTROLYZER, LargeElectrolyzerBlockEntity::new)),
+		LARGE_EXTRACTOR(new LargeExtractorBlock(GuiType.LARGE_EXTRACTOR, LargeExtractorBlockEntity::new)),
+		LARGE_GREENHOUSE(new LargeGreenhouseBlock(GuiType.LARGE_GREENHOUSE, LargeGreenhouseBlockEntity::new)),
+		LARGE_RANCH(new LargeRanchBlock(GuiType.LARGE_RANCH, LargeRanchBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),
 		GREENHOUSE_CONTROLLER(new GenericMachineBlock(GuiType.GREENHOUSE_CONTROLLER, GreenhouseControllerBlockEntity::new)),

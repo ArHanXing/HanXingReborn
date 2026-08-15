@@ -1,0 +1,16 @@
+{
+  "type": "techreborn:greenhouse",
+  "ingredients": [
+    {
+      "item": "minecraft:sweet_berries"
+    }
+  ],
+  "outputs": [
+    {
+      "count": 3,
+      "id": "minecraft:sweet_berries"
+    }
+  ],
+  "power": 32,
+  "time": 200
+}

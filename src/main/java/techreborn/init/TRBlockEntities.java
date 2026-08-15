@@ -122,6 +122,12 @@ public class TRBlockEntities {
 	public static final BlockEntityType<LargeCompressorBlockEntity> LARGE_COMPRESSOR = register(LargeCompressorBlockEntity::new, "large_compressor", TRContent.Machine.LARGE_COMPRESSOR);
 	public static final BlockEntityType<LargeWireMillBlockEntity> LARGE_WIRE_MILL = register(LargeWireMillBlockEntity::new, "large_wire_mill", TRContent.Machine.LARGE_WIRE_MILL);
 	public static final BlockEntityType<LargeOreCrusherBlockEntity> LARGE_ORE_CRUSHER = register(LargeOreCrusherBlockEntity::new, "large_ore_crusher", TRContent.Machine.LARGE_ORE_CRUSHER);
+	public static final BlockEntityType<IndustrialAlloySmelterBlockEntity> INDUSTRIAL_ALLOY_SMELTER = register(IndustrialAlloySmelterBlockEntity::new, "industrial_alloy_smelter", TRContent.Machine.INDUSTRIAL_ALLOY_SMELTER);
+	public static final BlockEntityType<LargeCentrifugeBlockEntity> LARGE_CENTRIFUGE = register(LargeCentrifugeBlockEntity::new, "large_centrifuge", TRContent.Machine.LARGE_CENTRIFUGE);
+	public static final BlockEntityType<LargeElectrolyzerBlockEntity> LARGE_ELECTROLYZER = register(LargeElectrolyzerBlockEntity::new, "large_electrolyzer", TRContent.Machine.LARGE_ELECTROLYZER);
+	public static final BlockEntityType<LargeExtractorBlockEntity> LARGE_EXTRACTOR = register(LargeExtractorBlockEntity::new, "large_extractor", TRContent.Machine.LARGE_EXTRACTOR);
+	public static final BlockEntityType<LargeGreenhouseBlockEntity> LARGE_GREENHOUSE = register(LargeGreenhouseBlockEntity::new, "large_greenhouse", TRContent.Machine.LARGE_GREENHOUSE);
+	public static final BlockEntityType<LargeRanchBlockEntity> LARGE_RANCH = register(LargeRanchBlockEntity::new, "large_ranch", TRContent.Machine.LARGE_RANCH);
 	public static final BlockEntityType<LargeGrinderBlockEntity> LARGE_GRINDER = register(LargeGrinderBlockEntity::new, "large_grinder", TRContent.Machine.LARGE_GRINDER);
 	public static final BlockEntityType<LargeLatheBlockEntity> LARGE_LATHE = register(LargeLatheBlockEntity::new, "large_lathe", TRContent.Machine.LARGE_LATHE);
 	public static final BlockEntityType<FurnaceProMaxBlockEntity> FURNACE_PRO_MAX = register(FurnaceProMaxBlockEntity::new, "furnace_pro_max", TRContent.Machine.FURNACE_PRO_MAX);

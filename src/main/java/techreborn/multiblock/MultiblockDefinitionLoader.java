@@ -80,7 +80,13 @@ public class MultiblockDefinitionLoader {
 			"primitive_distillation_tower",
 			"large_lathe",
 			"furnace_pro_max",
-			"precise_assembler"
+			"precise_assembler",
+			"industrial_alloy_smelter",
+			"large_centrifuge",
+			"large_electrolyzer",
+			"large_extractor",
+			"large_greenhouse",
+			"large_ranch"
 	};
 
 	private MultiblockDefinitionLoader() {

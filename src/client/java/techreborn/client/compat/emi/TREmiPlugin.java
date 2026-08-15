@@ -89,6 +89,12 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiStack LARGE_CHEMICAL_REACTOR_STACK = EmiStack.of(TRContent.Machine.LARGE_CHEMICAL_REACTOR);
 	public static final EmiStack ORE_CRUSHER_STACK = EmiStack.of(TRContent.Machine.ORE_CRUSHER);
 	public static final EmiStack LARGE_ORE_CRUSHER_STACK = EmiStack.of(TRContent.Machine.LARGE_ORE_CRUSHER);
+	public static final EmiStack INDUSTRIAL_ALLOY_SMELTER_STACK = EmiStack.of(TRContent.Machine.INDUSTRIAL_ALLOY_SMELTER);
+	public static final EmiStack LARGE_CENTRIFUGE_STACK = EmiStack.of(TRContent.Machine.LARGE_CENTRIFUGE);
+	public static final EmiStack LARGE_ELECTROLYZER_STACK = EmiStack.of(TRContent.Machine.LARGE_ELECTROLYZER);
+	public static final EmiStack LARGE_EXTRACTOR_STACK = EmiStack.of(TRContent.Machine.LARGE_EXTRACTOR);
+	public static final EmiStack LARGE_GREENHOUSE_STACK = EmiStack.of(TRContent.Machine.LARGE_GREENHOUSE);
+	public static final EmiStack LARGE_RANCH_STACK = EmiStack.of(TRContent.Machine.LARGE_RANCH);
 
 	public static final EmiRecipeCategory ALLOY_SMELTER_CATEGORY =
 		new EmiRecipeCategory(trId("alloy_smelter"), ALLOY_SMELTER_STACK, EmiTextures.ALLOY_SMELTING,
@@ -190,6 +196,13 @@ public class TREmiPlugin implements EmiPlugin {
 		new EmiRecipeCategory(trId("ore_crusher"), ORE_CRUSHER_STACK, EmiTextures.GRINDING,
 			EmiRecipeSorting.compareOutputThenInput());
 
+	public static final EmiRecipeCategory GREENHOUSE_CATEGORY =
+		new EmiRecipeCategory(trId("greenhouse"), LARGE_GREENHOUSE_STACK, EmiTextures.GREENHOUSE,
+			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiRecipeCategory RANCH_CATEGORY =
+		new EmiRecipeCategory(trId("ranch"), LARGE_RANCH_STACK, EmiTextures.RANCH,
+			EmiRecipeSorting.compareOutputThenInput());
+
 	public static final EmiRecipeCategory FLUID_FROM_CONTAINER_CATEGORY =
 		new EmiRecipeCategory(trId("fluid_from_container"), EmiStack.of(Items.BUCKET));
 	public static final EmiRecipeCategory FLUID_INTO_CONTAINER_CATEGORY =
@@ -219,7 +232,13 @@ public class TREmiPlugin implements EmiPlugin {
 		Map.entry("primitive_distillation_tower", TRContent.Machine.PRIMITIVE_DISTILLATION_TOWER),
 		Map.entry("large_lathe", TRContent.Machine.LARGE_LATHE),
 		Map.entry("furnace_pro_max", TRContent.Machine.FURNACE_PRO_MAX),
-		Map.entry("precise_assembler", TRContent.Machine.PRECISE_ASSEMBLER));
+		Map.entry("precise_assembler", TRContent.Machine.PRECISE_ASSEMBLER),
+		Map.entry("industrial_alloy_smelter", TRContent.Machine.INDUSTRIAL_ALLOY_SMELTER),
+		Map.entry("large_centrifuge", TRContent.Machine.LARGE_CENTRIFUGE),
+		Map.entry("large_electrolyzer", TRContent.Machine.LARGE_ELECTROLYZER),
+		Map.entry("large_extractor", TRContent.Machine.LARGE_EXTRACTOR),
+		Map.entry("large_greenhouse", TRContent.Machine.LARGE_GREENHOUSE),
+		Map.entry("large_ranch", TRContent.Machine.LARGE_RANCH));
 
 	@Override
 	public void register(EmiRegistry registry) {
@@ -227,6 +246,7 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addCategory(ALLOY_SMELTER_CATEGORY);
 		registry.addWorkstation(ALLOY_SMELTER_CATEGORY, ALLOY_SMELTER_STACK);
 		registry.addWorkstation(ALLOY_SMELTER_CATEGORY, IRON_ALLOY_FURNACE_STACK);
+		registry.addWorkstation(ALLOY_SMELTER_CATEGORY, INDUSTRIAL_ALLOY_SMELTER_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.ALLOY_SMELTER)) {
 			registry.addRecipe(new SimpleTwoInputEmiRecipe(recipe, ALLOY_SMELTER_CATEGORY, 1));
 		}
@@ -249,6 +269,7 @@ public class TREmiPlugin implements EmiPlugin {
 		// Centrifuge
 		registry.addCategory(CENTRIFUGE_CATEGORY);
 		registry.addWorkstation(CENTRIFUGE_CATEGORY, INDUSTRIAL_CENTRIFUGE_STACK);
+		registry.addWorkstation(CENTRIFUGE_CATEGORY, LARGE_CENTRIFUGE_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.CENTRIFUGE)) {
 			registry.addRecipe(new CentrifugeEmiRecipe(recipe));
 		}
@@ -276,6 +297,20 @@ public class TREmiPlugin implements EmiPlugin {
 			registry.addRecipe(new OreCrusherEmiRecipe(recipe));
 		}
 
+		// Greenhouse growing
+		registry.addCategory(GREENHOUSE_CATEGORY);
+		registry.addWorkstation(GREENHOUSE_CATEGORY, LARGE_GREENHOUSE_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.GREENHOUSE)) {
+			registry.addRecipe(new SimpleTwoOutputEmiRecipe(recipe, GREENHOUSE_CATEGORY, 32));
+		}
+
+		// Ranch breeding
+		registry.addCategory(RANCH_CATEGORY);
+		registry.addWorkstation(RANCH_CATEGORY, LARGE_RANCH_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.RANCH)) {
+			registry.addRecipe(new SimpleTwoOutputEmiRecipe(recipe, RANCH_CATEGORY, 32));
+		}
+
 		// Compressing
 		registry.addCategory(COMPRESSOR_CATEGORY);
 		registry.addWorkstation(COMPRESSOR_CATEGORY, COMPRESSOR_STACK);
@@ -295,6 +330,7 @@ public class TREmiPlugin implements EmiPlugin {
 		// Extracting
 		registry.addCategory(EXTRACTOR_CATEGORY);
 		registry.addWorkstation(EXTRACTOR_CATEGORY, EXTRACTOR_STACK);
+		registry.addWorkstation(EXTRACTOR_CATEGORY, LARGE_EXTRACTOR_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.EXTRACTOR)) {
 			registry.addRecipe(new SimpleOneInputEmiRecipe(recipe, EXTRACTOR_CATEGORY, 1));
 		}
@@ -318,6 +354,7 @@ public class TREmiPlugin implements EmiPlugin {
 		// Industrial Electrolyzing
 		registry.addCategory(INDUSTRIAL_ELECTROLYZER_CATEGORY);
 		registry.addWorkstation(INDUSTRIAL_ELECTROLYZER_CATEGORY, INDUSTRIAL_ELECTROLYZER_STACK);
+		registry.addWorkstation(INDUSTRIAL_ELECTROLYZER_CATEGORY, LARGE_ELECTROLYZER_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.INDUSTRIAL_ELECTROLYZER)) {
 			registry.addRecipe(new IndustrialElectrolyzerEmiRecipe(recipe));
 		}

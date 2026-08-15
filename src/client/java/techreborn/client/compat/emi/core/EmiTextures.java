@@ -56,6 +56,10 @@ public class EmiTextures {
 	public static final EmiTexture LATHE = new EmiTexture(SIMPLIFIED_ICONS, 48, 32, 16, 16);
 	public static final EmiTexture LARGE_CHEMICAL_REACTOR = new EmiTexture(SIMPLIFIED_ICONS, 32, 32, 16, 16);
 	public static final EmiTexture PRECISE_ASSEMBLER = new EmiTexture(SIMPLIFIED_ICONS, 64, 32, 16, 16);
+	// Reserved slots for the Large Greenhouse / Large Ranch icons (placeholder,
+	// replace once the icons are drawn)
+	public static final EmiTexture GREENHOUSE = new EmiTexture(SIMPLIFIED_ICONS, 64, 16, 16, 16);
+	public static final EmiTexture RANCH = new EmiTexture(SIMPLIFIED_ICONS, 80, 16, 16, 16);
 
 	public static final NinePatchTexture SLOT_BG = new NinePatchTexture(WIDGETS, 0, 0, 3, 3, 1, 1, 1, 1, false);
 }
