@@ -38,7 +38,6 @@ import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.blockentity.MultiblockWriter;
 import reborncore.common.fluid.FluidUtils;
 import reborncore.common.fluid.FluidValue;
-import reborncore.common.util.Tank;
 import techreborn.blockentity.generator.BaseFluidGeneratorBlockEntity;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.ModFluids;
