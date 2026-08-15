@@ -104,12 +104,13 @@ public abstract class BaseFluidGeneratorBlockEntity extends PowerAcceptorBlockEn
 				currentRecipe = getRecipeForFluid(tank.getFluid());
 
 			if (currentRecipe != null) {
+				final int currentEuTick = getEuPerTick();
 				final int euPerBucket = currentRecipe.power() * 1000;
 
 				// Make sure to calculate the fluid used per tick based on the underlying fluid unit (droplets)
-				final float fluidPerTick = (euTick / (euPerBucket / (float)FluidValue.BUCKET.getRawValue()));
+				final float fluidPerTick = (currentEuTick / (euPerBucket / (float)FluidValue.BUCKET.getRawValue()));
 
-				if (tryAddingEnergy(euTick)) {
+				if (tryAddingEnergy(currentEuTick)) {
 					pendingWithdraw += fluidPerTick;
 					final int currentWithdraw = (int) pendingWithdraw;
 					pendingWithdraw -= currentWithdraw;
@@ -124,6 +125,17 @@ public abstract class BaseFluidGeneratorBlockEntity extends PowerAcceptorBlockEn
 		} else if (world.getTime() - lastOutput > 30 && isActive()) {
 			world.setBlockState(pos, world.getBlockState(pos).with(BlockMachineBase.ACTIVE, false));
 		}
+	}
+
+	/**
+	 * Energy generated per tick. Base machines always return the static
+	 * configured value; subclasses (large multiblock generators) may apply
+	 * parallel and boost multipliers on top.
+	 *
+	 * @return {@code int} energy per tick
+	 */
+	protected int getEuPerTick() {
+		return euTick;
 	}
 
 	public int getProgressScaled(int scale) {
@@ -218,6 +230,6 @@ public abstract class BaseFluidGeneratorBlockEntity extends PowerAcceptorBlockEn
 
 	@Override
 	public long getCurrentOutputPerTick() {
-		return isActive() ? euTick : 0;
+		return isActive() ? getEuPerTick() : 0;
 	}
 }

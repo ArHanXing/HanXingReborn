@@ -53,6 +53,7 @@ import techreborn.blockentity.machine.misc.DrainBlockEntity;
 import techreborn.blockentity.machine.tier2.PumpBlockEntity;
 import techreborn.blockentity.machine.multiblock.*;
 import techreborn.blockentity.machine.multiblock.casing.MachineCasingBlockEntity;
+import techreborn.blockentity.generator.multiblock.*;
 import techreborn.blockentity.machine.tier0.block.BlockBreakerBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockPlacerBlockEntity;
 import techreborn.blockentity.machine.tier1.*;
@@ -128,6 +129,9 @@ public class TRBlockEntities {
 	public static final BlockEntityType<LargeExtractorBlockEntity> LARGE_EXTRACTOR = register(LargeExtractorBlockEntity::new, "large_extractor", TRContent.Machine.LARGE_EXTRACTOR);
 	public static final BlockEntityType<LargeGreenhouseBlockEntity> LARGE_GREENHOUSE = register(LargeGreenhouseBlockEntity::new, "large_greenhouse", TRContent.Machine.LARGE_GREENHOUSE);
 	public static final BlockEntityType<LargeRanchBlockEntity> LARGE_RANCH = register(LargeRanchBlockEntity::new, "large_ranch", TRContent.Machine.LARGE_RANCH);
+	public static final BlockEntityType<LargeGasTurbineBlockEntity> LARGE_GAS_TURBINE = register(LargeGasTurbineBlockEntity::new, "large_gas_turbine", TRContent.Machine.LARGE_GAS_TURBINE);
+	public static final BlockEntityType<LargeCombustionEngineBlockEntity> LARGE_COMBUSTION_ENGINE = register(LargeCombustionEngineBlockEntity::new, "large_combustion_engine", TRContent.Machine.LARGE_COMBUSTION_ENGINE);
+	public static final BlockEntityType<UniversalChemicalFuelEngineBlockEntity> UNIVERSAL_CHEMICAL_FUEL_ENGINE = register(UniversalChemicalFuelEngineBlockEntity::new, "universal_chemical_fuel_engine", TRContent.Machine.UNIVERSAL_CHEMICAL_FUEL_ENGINE);
 	public static final BlockEntityType<LargeGrinderBlockEntity> LARGE_GRINDER = register(LargeGrinderBlockEntity::new, "large_grinder", TRContent.Machine.LARGE_GRINDER);
 	public static final BlockEntityType<LargeLatheBlockEntity> LARGE_LATHE = register(LargeLatheBlockEntity::new, "large_lathe", TRContent.Machine.LARGE_LATHE);
 	public static final BlockEntityType<FurnaceProMaxBlockEntity> FURNACE_PRO_MAX = register(FurnaceProMaxBlockEntity::new, "furnace_pro_max", TRContent.Machine.FURNACE_PRO_MAX);

@@ -56,6 +56,7 @@ import techreborn.blockentity.GuiType;
 import techreborn.blockentity.generator.LightningRodBlockEntity;
 import techreborn.blockentity.generator.PlasmaGeneratorBlockEntity;
 import techreborn.blockentity.generator.advanced.*;
+import techreborn.blockentity.generator.multiblock.*;
 import techreborn.blockentity.generator.basic.SolidFuelGeneratorBlockEntity;
 import techreborn.blockentity.generator.basic.WaterMillBlockEntity;
 import techreborn.blockentity.generator.basic.WindMillBlockEntity;
@@ -89,6 +90,9 @@ import techreborn.blocks.LargeElectrolyzerBlock;
 import techreborn.blocks.LargeExtractorBlock;
 import techreborn.blocks.LargeGreenhouseBlock;
 import techreborn.blocks.LargeRanchBlock;
+import techreborn.blocks.LargeGasTurbineBlock;
+import techreborn.blocks.LargeCombustionEngineBlock;
+import techreborn.blocks.UniversalChemicalFuelEngineBlock;
 import techreborn.blocks.RotaryHearthFurnaceBlock;
 import techreborn.blocks.cable.CableBlock;
 import techreborn.blocks.generator.BlockFusionCoil;
@@ -802,6 +806,9 @@ public class TRContent {
 		LARGE_EXTRACTOR(new LargeExtractorBlock(GuiType.LARGE_EXTRACTOR, LargeExtractorBlockEntity::new)),
 		LARGE_GREENHOUSE(new LargeGreenhouseBlock(GuiType.LARGE_GREENHOUSE, LargeGreenhouseBlockEntity::new)),
 		LARGE_RANCH(new LargeRanchBlock(GuiType.LARGE_RANCH, LargeRanchBlockEntity::new)),
+		LARGE_GAS_TURBINE(new LargeGasTurbineBlock(GuiType.LARGE_GAS_TURBINE, LargeGasTurbineBlockEntity::new)),
+		LARGE_COMBUSTION_ENGINE(new LargeCombustionEngineBlock(GuiType.LARGE_COMBUSTION_ENGINE, LargeCombustionEngineBlockEntity::new)),
+		UNIVERSAL_CHEMICAL_FUEL_ENGINE(new UniversalChemicalFuelEngineBlock(GuiType.UNIVERSAL_CHEMICAL_FUEL_ENGINE, UniversalChemicalFuelEngineBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),
 		GREENHOUSE_CONTROLLER(new GenericMachineBlock(GuiType.GREENHOUSE_CONTROLLER, GreenhouseControllerBlockEntity::new)),

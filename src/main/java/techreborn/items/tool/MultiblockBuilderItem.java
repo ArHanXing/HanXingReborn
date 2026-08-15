@@ -39,7 +39,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import techreborn.blockentity.machine.multiblock.JsonMultiblockMachineBlockEntity;
+import techreborn.multiblock.IMultiblockStructureMember;
 import techreborn.multiblock.MultiblockDefinition;
 import techreborn.multiblock.MultiblockDefinitionLoader;
 
@@ -105,11 +105,11 @@ public class MultiblockBuilderItem extends Item {
 	 *
 	 * @param player {@link PlayerEntity} the acting player
 	 * @param world  {@link World} the world
-	 * @param machine {@link JsonMultiblockMachineBlockEntity} the clicked machine
+	 * @param machine {@link IMultiblockStructureMember} the clicked machine
 	 * @return {@code ActionResult.SUCCESS} when handled (also on the client, to
 	 *         prevent the machine GUI from opening)
 	 */
-	public static void handleUse(PlayerEntity player, World world, JsonMultiblockMachineBlockEntity machine) {
+	public static void handleUse(PlayerEntity player, World world, IMultiblockStructureMember machine) {
 		if (player.isSneaking()) {
 			startBuild(player, world, machine);
 		} else {
@@ -121,7 +121,7 @@ public class MultiblockBuilderItem extends Item {
 	 * Queues an automatic build of every unsatisfied structure position.
 	 * Positions whose predicate is already satisfied are skipped.
 	 */
-	private static void startBuild(PlayerEntity player, World world, JsonMultiblockMachineBlockEntity machine) {
+	private static void startBuild(PlayerEntity player, World world, IMultiblockStructureMember machine) {
 		List<Entry> todo = new ArrayList<>();
 		for (Entry entry : collectStructure(world, machine)) {
 			if (!entry.predicate().test(world, entry.pos())) {
@@ -142,7 +142,7 @@ public class MultiblockBuilderItem extends Item {
 	 * Reports every unsatisfied structure position with its absolute world
 	 * coordinates. The list is capped to avoid chat spam on huge structures.
 	 */
-	private static void reportMissing(PlayerEntity player, World world, JsonMultiblockMachineBlockEntity machine) {
+	private static void reportMissing(PlayerEntity player, World world, IMultiblockStructureMember machine) {
 		List<Entry> missing = new ArrayList<>();
 		for (Entry entry : collectStructure(world, machine)) {
 			if (!entry.predicate().test(world, entry.pos())) {
@@ -187,7 +187,7 @@ public class MultiblockBuilderItem extends Item {
 		if (player == null || !player.isAlive()) {
 			return true;
 		}
-		if (!(world.getBlockEntity(job.machinePos) instanceof JsonMultiblockMachineBlockEntity)) {
+		if (!(world.getBlockEntity(job.machinePos) instanceof IMultiblockStructureMember)) {
 			return true;
 		}
 
@@ -268,7 +268,7 @@ public class MultiblockBuilderItem extends Item {
 	 * full key definition (all candidate blocks), applying the same rotation as
 	 * validation.
 	 */
-	private static List<Entry> collectStructure(World world, JsonMultiblockMachineBlockEntity machine) {
+	private static List<Entry> collectStructure(World world, IMultiblockStructureMember machine) {
 		List<Entry> entries = new ArrayList<>();
 		MultiblockDefinition definition = MultiblockDefinitionLoader.get(machine.getMultiblockId());
 		if (definition == null) {
@@ -279,7 +279,7 @@ public class MultiblockBuilderItem extends Item {
 		return entries;
 	}
 
-	private static String machineName(World world, JsonMultiblockMachineBlockEntity machine) {
+	private static String machineName(World world, IMultiblockStructureMember machine) {
 		return world.getBlockState(machine.getPos()).getBlock().getName().getString();
 	}
 

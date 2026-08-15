@@ -86,7 +86,10 @@ public class MultiblockDefinitionLoader {
 			"large_electrolyzer",
 			"large_extractor",
 			"large_greenhouse",
-			"large_ranch"
+			"large_ranch",
+			"large_gas_turbine",
+			"large_combustion_engine",
+			"universal_chemical_fuel_engine"
 	};
 
 	private MultiblockDefinitionLoader() {

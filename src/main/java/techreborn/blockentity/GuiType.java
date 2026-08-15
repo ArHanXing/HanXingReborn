@@ -80,6 +80,9 @@ import techreborn.blockentity.machine.multiblock.LargeElectrolyzerBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeExtractorBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeGreenhouseBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeRanchBlockEntity;
+import techreborn.blockentity.generator.multiblock.LargeGasTurbineBlockEntity;
+import techreborn.blockentity.generator.multiblock.LargeCombustionEngineBlockEntity;
+import techreborn.blockentity.generator.multiblock.UniversalChemicalFuelEngineBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockBreakerBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockPlacerBlockEntity;
 import techreborn.blockentity.machine.tier1.AlloySmelterBlockEntity;
@@ -187,6 +190,9 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<LargeExtractorBlockEntity> LARGE_EXTRACTOR = register("large_extractor");
 	public static final GuiType<LargeGreenhouseBlockEntity> LARGE_GREENHOUSE = register("large_greenhouse");
 	public static final GuiType<LargeRanchBlockEntity> LARGE_RANCH = register("large_ranch");
+	public static final GuiType<LargeGasTurbineBlockEntity> LARGE_GAS_TURBINE = register("large_gas_turbine");
+	public static final GuiType<LargeCombustionEngineBlockEntity> LARGE_COMBUSTION_ENGINE = register("large_combustion_engine");
+	public static final GuiType<UniversalChemicalFuelEngineBlockEntity> UNIVERSAL_CHEMICAL_FUEL_ENGINE = register("universal_chemical_fuel_engine");
 
 
 	private static <T extends BlockEntity> GuiType<T> register(String path) {

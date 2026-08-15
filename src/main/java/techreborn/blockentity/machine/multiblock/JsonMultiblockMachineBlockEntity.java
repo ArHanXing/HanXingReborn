@@ -34,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import reborncore.common.blockentity.MultiblockWriter;
 import techreborn.TechReborn;
 import techreborn.blockentity.machine.GenericMachineBlockEntity;
+import techreborn.multiblock.IMultiblockStructureMember;
 import techreborn.multiblock.MultiblockDefinition;
 import techreborn.multiblock.MultiblockDefinitionLoader;
 import techreborn.multiblock.MultiblockStructureTracker;
@@ -54,7 +55,7 @@ import java.util.function.BiPredicate;
  * via {@link MultiblockStructureTracker}. This keeps large structures (e.g.
  * 9x9x9) cheap to check every tick.
  */
-public abstract class JsonMultiblockMachineBlockEntity extends GenericMachineBlockEntity {
+public abstract class JsonMultiblockMachineBlockEntity extends GenericMachineBlockEntity implements IMultiblockStructureMember {
 
 	/**
 	 * How many ticks a cached validation result stays fresh. Matches the

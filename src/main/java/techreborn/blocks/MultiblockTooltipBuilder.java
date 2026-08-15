@@ -56,6 +56,9 @@ public final class MultiblockTooltipBuilder {
 	private static final Map<Identifier, String> NAME_OVERRIDES = Map.of(
 			Identifier.of("techreborn", "blast_furnace"), "block.techreborn.industrial_blast_furnace",
 			Identifier.of("techreborn", "centrifuge"), "block.techreborn.industrial_centrifuge",
+			// The small gas generator's recipe type is "gas_generator" but its
+			// machine block is called "gas_turbine".
+			Identifier.of("techreborn", "gas_generator"), "block.techreborn.gas_turbine",
 			Identifier.of("minecraft", "smelting"), "block.minecraft.furnace"
 	);
 

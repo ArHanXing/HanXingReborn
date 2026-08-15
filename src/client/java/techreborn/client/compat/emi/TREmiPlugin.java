@@ -95,6 +95,9 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiStack LARGE_EXTRACTOR_STACK = EmiStack.of(TRContent.Machine.LARGE_EXTRACTOR);
 	public static final EmiStack LARGE_GREENHOUSE_STACK = EmiStack.of(TRContent.Machine.LARGE_GREENHOUSE);
 	public static final EmiStack LARGE_RANCH_STACK = EmiStack.of(TRContent.Machine.LARGE_RANCH);
+	public static final EmiStack LARGE_GAS_TURBINE_STACK = EmiStack.of(TRContent.Machine.LARGE_GAS_TURBINE);
+	public static final EmiStack LARGE_COMBUSTION_ENGINE_STACK = EmiStack.of(TRContent.Machine.LARGE_COMBUSTION_ENGINE);
+	public static final EmiStack UNIVERSAL_CHEMICAL_FUEL_ENGINE_STACK = EmiStack.of(TRContent.Machine.UNIVERSAL_CHEMICAL_FUEL_ENGINE);
 
 	public static final EmiRecipeCategory ALLOY_SMELTER_CATEGORY =
 		new EmiRecipeCategory(trId("alloy_smelter"), ALLOY_SMELTER_STACK, EmiTextures.ALLOY_SMELTING,
@@ -238,7 +241,10 @@ public class TREmiPlugin implements EmiPlugin {
 		Map.entry("large_electrolyzer", TRContent.Machine.LARGE_ELECTROLYZER),
 		Map.entry("large_extractor", TRContent.Machine.LARGE_EXTRACTOR),
 		Map.entry("large_greenhouse", TRContent.Machine.LARGE_GREENHOUSE),
-		Map.entry("large_ranch", TRContent.Machine.LARGE_RANCH));
+		Map.entry("large_ranch", TRContent.Machine.LARGE_RANCH),
+		Map.entry("large_gas_turbine", TRContent.Machine.LARGE_GAS_TURBINE),
+		Map.entry("large_combustion_engine", TRContent.Machine.LARGE_COMBUSTION_ENGINE),
+		Map.entry("universal_chemical_fuel_engine", TRContent.Machine.UNIVERSAL_CHEMICAL_FUEL_ENGINE));
 
 	@Override
 	public void register(EmiRegistry registry) {
@@ -450,18 +456,21 @@ public class TREmiPlugin implements EmiPlugin {
 
 		registry.addCategory(GAS_TURBINE_CATEGORY);
 		registry.addWorkstation(GAS_TURBINE_CATEGORY, GAS_TURBINE_STACK);
+		registry.addWorkstation(GAS_TURBINE_CATEGORY, LARGE_GAS_TURBINE_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.GAS_GENERATOR)) {
 			registry.addRecipe(new FluidGeneratorEmiRecipe(recipe, GAS_TURBINE_CATEGORY, 10, 1000000));
 		}
 
 		registry.addCategory(DIESEL_GENERATOR_CATEGORY);
 		registry.addWorkstation(DIESEL_GENERATOR_CATEGORY, DIESEL_GENERATOR_STACK);
+		registry.addWorkstation(DIESEL_GENERATOR_CATEGORY, LARGE_COMBUSTION_ENGINE_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.DIESEL_GENERATOR)) {
 			registry.addRecipe(new FluidGeneratorEmiRecipe(recipe, DIESEL_GENERATOR_CATEGORY, 10, 10000));
 		}
 
 		registry.addCategory(SEMI_FLUID_GENERATOR_CATEGORY);
 		registry.addWorkstation(SEMI_FLUID_GENERATOR_CATEGORY, SEMI_FLUID_GENERATOR_STACK);
+		registry.addWorkstation(SEMI_FLUID_GENERATOR_CATEGORY, UNIVERSAL_CHEMICAL_FUEL_ENGINE_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.SEMI_FLUID_GENERATOR)) {
 			registry.addRecipe(new FluidGeneratorEmiRecipe(recipe, SEMI_FLUID_GENERATOR_CATEGORY, 10, 1000000));
 		}

@@ -39,7 +39,6 @@ import reborncore.common.config.Configuration;
 import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.util.Torus;
 import techreborn.blockentity.GuiType;
-import techreborn.blockentity.machine.multiblock.JsonMultiblockMachineBlockEntity;
 import techreborn.component.TRDataComponentTypes;
 import techreborn.config.TechRebornConfig;
 import techreborn.events.ApplyArmorToDamageHandler;
@@ -56,6 +55,7 @@ import techreborn.init.TRDispenserBehavior;
 import techreborn.init.template.TechRebornTemplates;
 import techreborn.items.DynamicCellItem;
 import techreborn.items.tool.MultiblockBuilderItem;
+import techreborn.multiblock.IMultiblockStructureMember;
 import techreborn.multiblock.MultiblockDefinitionLoader;
 import techreborn.multiblock.MultiblockStructureTracker;
 import techreborn.packets.Packets;
@@ -108,7 +108,7 @@ public class TechReborn implements ModInitializer {
 			if (!player.getStackInHand(hand).isOf(TRContent.MULTIBLOCK_BUILDER)) {
 				return ActionResult.PASS;
 			}
-			if (!(world.getBlockEntity(hitResult.getBlockPos()) instanceof JsonMultiblockMachineBlockEntity machine)) {
+			if (!(world.getBlockEntity(hitResult.getBlockPos()) instanceof IMultiblockStructureMember machine)) {
 				return ActionResult.PASS;
 			}
 			if (!world.isClient) {

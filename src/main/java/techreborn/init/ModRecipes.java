@@ -95,4 +95,10 @@ public class ModRecipes {
 	// and never consume their input (like the ore crusher).
 	public static final RecipeType<RebornRecipe> GREENHOUSE = RecipeManager.newRecipeType(Identifier.of("techreborn:greenhouse"));
 	public static final RecipeType<RebornRecipe> RANCH = RecipeManager.newRecipeType(Identifier.of("techreborn:ranch"));
+
+	// Large multiblock generators: no recipes of their own, they proxy their
+	// smaller counterpart's fuel recipes (see each LargeFluidGeneratorBlockEntity).
+	public static final RecipeType<FluidGeneratorRecipe> LARGE_GAS_TURBINE = RecipeManager.newRecipeType(Identifier.of("techreborn:large_gas_turbine"), FluidGeneratorRecipe.CODEC, FluidGeneratorRecipe.PACKET_CODEC);
+	public static final RecipeType<FluidGeneratorRecipe> LARGE_COMBUSTION_ENGINE = RecipeManager.newRecipeType(Identifier.of("techreborn:large_combustion_engine"), FluidGeneratorRecipe.CODEC, FluidGeneratorRecipe.PACKET_CODEC);
+	public static final RecipeType<FluidGeneratorRecipe> UNIVERSAL_CHEMICAL_FUEL_ENGINE = RecipeManager.newRecipeType(Identifier.of("techreborn:universal_chemical_fuel_engine"), FluidGeneratorRecipe.CODEC, FluidGeneratorRecipe.PACKET_CODEC);
 }

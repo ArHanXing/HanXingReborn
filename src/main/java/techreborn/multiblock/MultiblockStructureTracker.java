@@ -26,14 +26,13 @@ package techreborn.multiblock;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import techreborn.blockentity.machine.multiblock.JsonMultiblockMachineBlockEntity;
 
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
- * Tracks every loaded {@link JsonMultiblockMachineBlockEntity} so that block
+ * Tracks every loaded {@link IMultiblockStructureMember} so that block
  * changes (e.g. a player breaking part of the structure) can invalidate the
  * cached multiblock validity instantly.
  * <p>
@@ -43,17 +42,17 @@ import java.util.WeakHashMap;
  */
 public final class MultiblockStructureTracker {
 
-	private static final Set<JsonMultiblockMachineBlockEntity> MACHINES =
+	private static final Set<IMultiblockStructureMember> MACHINES =
 			Collections.newSetFromMap(new WeakHashMap<>());
 
 	private MultiblockStructureTracker() {
 	}
 
-	public static void register(JsonMultiblockMachineBlockEntity machine) {
+	public static void register(IMultiblockStructureMember machine) {
 		MACHINES.add(machine);
 	}
 
-	public static void unregister(JsonMultiblockMachineBlockEntity machine) {
+	public static void unregister(IMultiblockStructureMember machine) {
 		MACHINES.remove(machine);
 	}
 
@@ -67,7 +66,7 @@ public final class MultiblockStructureTracker {
 	 * @param pos   {@link BlockPos} the changed block position
 	 */
 	public static void onBlockChanged(World world, BlockPos pos) {
-		for (JsonMultiblockMachineBlockEntity machine : MACHINES) {
+		for (IMultiblockStructureMember machine : MACHINES) {
 			if (machine.getWorld() == world && machine.isPositionInStructure(pos)) {
 				machine.invalidateStructureCache();
 			}
