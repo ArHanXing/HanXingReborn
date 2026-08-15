@@ -50,10 +50,14 @@ public class ModLoot {
 		LootPoolEntry basicFrame = makeEntry(TRContent.MachineBlocks.BASIC.frame.asItem());
 		LootPoolEntry basicCircuit = makeEntry(Parts.ELECTRONIC_CIRCUIT);
 		LootPoolEntry rubberSapling = makeEntry(TRContent.RUBBER_SAPLING, 25);
+		// Rare joke drop: furnace_pro_max has a very low weight compared to the
+		// regular entries (1 vs 5), so it only rarely appears in common chests.
+		LootPoolEntry furnaceProMax = makeEntry(TRContent.Machine.FURNACE_PRO_MAX.block.asItem(), 1);
 
 		LootPool poolBasic = LootPool.builder().with(copperIngot).with(tinIngot)
 			.with(leadIngot).with(silverIngot).with(refinedIronIngot).with(advancedAlloyIngot)
-			.with(basicFrame).with(basicCircuit).with(rubberSapling).rolls(UniformLootNumberProvider.create(1.0f, 2.0f))
+			.with(basicFrame).with(basicCircuit).with(rubberSapling).with(furnaceProMax)
+			.rolls(UniformLootNumberProvider.create(1.0f, 2.0f))
 			.build();
 
 		LootPoolEntry aluminumIngot = makeEntry(Ingots.ALUMINUM);

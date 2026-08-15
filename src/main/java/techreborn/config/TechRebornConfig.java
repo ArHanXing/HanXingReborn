@@ -329,10 +329,10 @@ public class TechRebornConfig {
 	public static long nanoArmorEnergyCost = 100;
 
 	@Config(config = "items", category = "upgrades", key = "overclocker_speed", comment = "Overclocker behavior speed multiplier")
-	public static double overclockerSpeed = 0.25;
+	public static double overclockerSpeed = 0.75;
 
 	@Config(config = "items", category = "upgrades", key = "overclocker_power", comment = "Overclocker behavior power multiplier")
-	public static double overclockerPower = 0.75;
+	public static double overclockerPower = 1.25;
 
 	@Config(config = "items", category = "upgrades", key = "energy_storage", comment = "Energy storage behavior extra power")
 	public static double energyStoragePower = 40_000;

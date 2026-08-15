@@ -26,12 +26,15 @@ package techreborn.multiblock;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import reborncore.common.blockentity.MultiblockWriter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * A JSON-driven definition of a custom multiblock structure.
@@ -91,6 +94,56 @@ public class MultiblockDefinition {
 	public void apply(MultiblockWriter writer) {
 		writer.translate(translateX, translateY, translateZ)
 				.pattern(layers, key -> keys.get(key).toPatternBlock());
+	}
+
+	/**
+	 * Iterates every non-empty pattern position as a world-space position with
+	 * its full key definition, applying the same translation and rotation as
+	 * {@link #apply(MultiblockWriter)} used with
+	 * {@code writer.rotate(direction)}. This lets tools (e.g. the multiblock
+	 * builder) access the whole key (all candidate blocks) instead of only the
+	 * first candidate's hologram state.
+	 *
+	 * @param origin   {@link BlockPos} the controller block position
+	 * @param rotation {@link Direction} the rotation to apply (same value used
+	 *                 for structure validation, e.g. {@code facing.getOpposite()})
+	 * @param consumer {@link BiConsumer} receives the world position and key
+	 */
+	public void forEachKey(BlockPos origin, Direction rotation, BiConsumer<BlockPos, MultiblockKeyDefinition> consumer) {
+		int rotations = switch (rotation) {
+			case NORTH -> 3;
+			case WEST -> 2;
+			case SOUTH -> 1;
+			default -> 0; // EAST
+		};
+		for (int y = 0; y < layers.size(); y++) {
+			List<String> layer = layers.get(y);
+			for (int z = 0; z < layer.size(); z++) {
+				String row = layer.get(z);
+				for (int x = 0; x < row.length(); x++) {
+					char c = row.charAt(x);
+					if (c == ' ') {
+						continue;
+					}
+					MultiblockKeyDefinition key = keys.get(c);
+					if (key == null) {
+						continue;
+					}
+					// Translate first, then rotate: matches the writer chain
+					// rotate(translate(collector)).pattern(...).
+					int ox = x + translateX;
+					int oy = y + translateY;
+					int oz = z + translateZ;
+					for (int i = 0; i < rotations; i++) {
+						int tmp = ox;
+						// rotate(): (x, y, z) -> (-z, y, x)
+						ox = -oz;
+						oz = tmp;
+					}
+					consumer.accept(origin.add(ox, oy, oz), key);
+				}
+			}
+		}
 	}
 
 	/**

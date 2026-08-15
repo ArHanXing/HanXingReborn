@@ -40,7 +40,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import techreborn.blockentity.machine.multiblock.JsonMultiblockMachineBlockEntity;
-import reborncore.common.blockentity.MultiblockWriter;
+import techreborn.multiblock.MultiblockDefinition;
+import techreborn.multiblock.MultiblockDefinitionLoader;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -70,7 +71,8 @@ import java.util.function.BiPredicate;
 public class MultiblockBuilderItem extends Item {
 
 	/** One structure position that still needs attention. */
-	private record Entry(BlockPos pos, BlockState target, BiPredicate<BlockView, BlockPos> predicate) {
+	private record Entry(BlockPos pos, BlockState target, BiPredicate<BlockView, BlockPos> predicate,
+			List<Block> candidates) {
 	}
 
 	/** A queued build job: the machine's structure to fill, 10 positions/tick. */
@@ -220,44 +222,60 @@ public class MultiblockBuilderItem extends Item {
 			job.placed++;
 			return;
 		}
-		if (!consumeFromInventory(player, targetBlock.asItem())) {
+		// Keys may accept several blocks (e.g. any coil type in the EBF): try
+		// every candidate from the inventory, not just the first one shown.
+		List<Block> candidates = entry.candidates().isEmpty()
+				? List.of(targetBlock)
+				: entry.candidates();
+		Block placedBlock = consumeAnyFromInventory(player, candidates);
+		if (placedBlock == null) {
 			// Report each missing block type once per job to avoid spam.
 			if (job.reportedMissing.add(targetBlock)) {
 				player.sendMessage(Text.literal("§c缺少 " + blockName(entry.target()) + "，跳过该位置§r"));
 			}
 			return;
 		}
-		world.setBlockState(entry.pos(), entry.target(), 3);
+		world.setBlockState(entry.pos(), placedBlock.getDefaultState(), 3);
 		job.placed++;
 	}
 
-	private static boolean consumeFromInventory(PlayerEntity player, Item item) {
+	/**
+	 * Finds the first candidate block the player has in their inventory and
+	 * consumes one item of it.
+	 *
+	 * @param player     {@link PlayerEntity} the player
+	 * @param candidates {@link List} candidate blocks to look for
+	 * @return the consumed block, or {@code null} if none is available
+	 */
+	private static Block consumeAnyFromInventory(PlayerEntity player, List<Block> candidates) {
 		for (int i = 0; i < player.getInventory().size(); i++) {
 			ItemStack stack = player.getInventory().getStack(i);
-			if (stack.isOf(item)) {
-				player.getInventory().removeStack(i, 1);
-				return true;
+			if (stack.isEmpty()) {
+				continue;
+			}
+			for (Block candidate : candidates) {
+				if (stack.isOf(candidate.asItem())) {
+					player.getInventory().removeStack(i, 1);
+					return candidate;
+				}
 			}
 		}
-		return false;
+		return null;
 	}
 
 	/**
-	 * Collects every structure position as a world-space {@link Entry} by
-	 * writing the machine's definition through a collecting
-	 * {@link MultiblockWriter}, applying the same rotation as validation.
+	 * Collects every structure position as a world-space {@link Entry} with the
+	 * full key definition (all candidate blocks), applying the same rotation as
+	 * validation.
 	 */
 	private static List<Entry> collectStructure(World world, JsonMultiblockMachineBlockEntity machine) {
 		List<Entry> entries = new ArrayList<>();
-		MultiblockWriter collector = new MultiblockWriter() {
-			@Override
-			public MultiblockWriter add(int x, int y, int z, BiPredicate<BlockView, BlockPos> predicate,
-					BlockState state) {
-				entries.add(new Entry(machine.getPos().add(x, y, z), state, predicate));
-				return this;
-			}
-		};
-		machine.writeMultiblock(collector.rotate(machine.getFacing().getOpposite()));
+		MultiblockDefinition definition = MultiblockDefinitionLoader.get(machine.getMultiblockId());
+		if (definition == null) {
+			return entries;
+		}
+		definition.forEachKey(machine.getPos(), machine.getFacing().getOpposite(), (pos, key) ->
+				entries.add(new Entry(pos, key.getHologramState(), key.getPredicate(), key.getCandidateBlocks())));
 		return entries;
 	}
 

@@ -131,7 +131,7 @@ public class GuiLargeMachine<T extends JsonMultiblockMachineBlockEntity & BuiltS
 		}
 		if (blockEntity instanceof LargeExtractorBlockEntity || blockEntity instanceof LargeGreenhouseBlockEntity
 				|| blockEntity instanceof LargeRanchBlockEntity || blockEntity instanceof LargeOreCrusherBlockEntity
-				|| blockEntity instanceof FurnaceProMaxBlockEntity) {
+				|| blockEntity instanceof FurnaceProMaxBlockEntity || blockEntity instanceof LargeLatheBlockEntity) {
 			return 76;
 		}
 		return 71;
@@ -145,7 +145,7 @@ public class GuiLargeMachine<T extends JsonMultiblockMachineBlockEntity & BuiltS
 		}
 		if (blockEntity instanceof LargeExtractorBlockEntity || blockEntity instanceof LargeGreenhouseBlockEntity
 				|| blockEntity instanceof LargeRanchBlockEntity || blockEntity instanceof LargeOreCrusherBlockEntity
-				|| blockEntity instanceof FurnaceProMaxBlockEntity) {
+				|| blockEntity instanceof FurnaceProMaxBlockEntity || blockEntity instanceof LargeLatheBlockEntity) {
 			return 48;
 		}
 		return 40;
