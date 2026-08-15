@@ -30,8 +30,6 @@ import reborncore.common.crafting.RebornRecipe;
 
 import net.minecraft.recipe.RecipeEntry;
 
-import techreborn.client.compat.emi.core.EmiTextures;
-import techreborn.client.compat.emi.core.NinePatchWidget;
 import techreborn.client.compat.emi.core.UIUtils;
 
 public class DistillationTowerEmiRecipe extends TREmiRecipe<RebornRecipe> {
@@ -64,15 +62,14 @@ public class DistillationTowerEmiRecipe extends TREmiRecipe<RebornRecipe> {
 		widgets.addSlot(getInput(2), inX, inY + 18 + 2);
 		widgets.addSlot(getInput(3), inX + 18, inY + 18 + 2);
 
-		// 6 outputs: 3 columns x 2 rows
+		// 6 outputs: 3 columns x 2 rows, each slot drawn with its own background
+		// (same style as the Large Chemical Reactor's output area)
 		int outX = inX + 18 * 2 + 24 + 4;
-		widgets.add(new NinePatchWidget(EmiTextures.SLOT_BG, outX - 4, (50 - 26) / 2, 4 + 18 * 3 + 2 * 2 + 4, 26));
-		widgets.addSlot(getOutput(0), outX, inY).drawBack(false).recipeContext(this);
-		widgets.addSlot(getOutput(1), outX + 18 + 2, inY).drawBack(false).recipeContext(this);
-		widgets.addSlot(getOutput(2), outX + 18 * 2 + 2 * 2, inY).drawBack(false).recipeContext(this);
-		widgets.addSlot(getOutput(3), outX, inY + 18 + 2).drawBack(false).recipeContext(this);
-		widgets.addSlot(getOutput(4), outX + 18 + 2, inY + 18 + 2).drawBack(false).recipeContext(this);
-		widgets.addSlot(getOutput(5), outX + 18 * 2 + 2 * 2, inY + 18 + 2).drawBack(false).recipeContext(this);
+		for (int i = 0; i < 6; i++) {
+			int col = i % 3;
+			int row = i / 3;
+			widgets.addSlot(getOutput(i), outX + col * (18 + 2), inY + row * (18 + 2)).recipeContext(this);
+		}
 
 		TRUIUtils.energyBar(widgets, recipe, 10, 0, 0);
 		TRUIUtils.arrowRight(widgets, recipe, inX + 18 * 2 + 4, (50 - 10) / 2);

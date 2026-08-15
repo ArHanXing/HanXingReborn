@@ -73,7 +73,7 @@ public class GuiDistillationTower<T extends JsonMultiblockMachineBlockEntity & B
 		super.drawForeground(drawContext, mouseX, mouseY);
 		final GuiBase.Layer layer = Layer.FOREGROUND;
 
-		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 67, 40, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
+		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 72, 40, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
 		if (blockEntity.isMultiblockValid()) {
 			addHologramButton(6, 4, 212, layer).clickHandler(this::onClick);
 			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, layer);

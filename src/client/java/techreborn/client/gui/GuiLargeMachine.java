@@ -41,6 +41,8 @@ import techreborn.blockentity.machine.multiblock.LargeCentrifugeBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeElectrolyzerBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeGreenhouseBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeRanchBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeGrinderBlockEntity;
+import techreborn.blockentity.machine.multiblock.IndustrialAlloySmelterBlockEntity;
 
 /**
  * Generic GUI for the "large" multiblock machines (Large Compressor, Large
@@ -100,7 +102,7 @@ public class GuiLargeMachine<T extends JsonMultiblockMachineBlockEntity & BuiltS
 		super.drawForeground(drawContext, mouseX, mouseY);
 		final GuiBase.Layer layer = Layer.FOREGROUND;
 
-		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 71, 40, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
+		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, getProgressBarX(), getProgressBarY(), mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
 		if (blockEntity.isMultiblockValid()) {
 			addHologramButton(6, 4, 212, layer).clickHandler(this::onClick);
 		} else {
@@ -113,5 +115,39 @@ public class GuiLargeMachine<T extends JsonMultiblockMachineBlockEntity & BuiltS
 
 	public void onClick(GuiButtonExtended button, Double mouseX, Double mouseY) {
 		blockEntity.renderMultiblock ^= !hideGuiElements();
+	}
+
+	/**
+	 * Progress arrow x position: the "large" batch machines used to sit at
+	 * (71, 40), which hugs the left edge of the input/output gap. Move the
+	 * arrow right and down so it sits centered between the input and output
+	 * columns (78, 44) or aligned with the small machines (76, 48).
+	 */
+	private int getProgressBarX() {
+		if (blockEntity instanceof IndustrialAlloySmelterBlockEntity || blockEntity instanceof LargeCentrifugeBlockEntity
+				|| blockEntity instanceof LargeElectrolyzerBlockEntity || blockEntity instanceof LargeGrinderBlockEntity
+				|| blockEntity instanceof LargeWireMillBlockEntity) {
+			return 78;
+		}
+		if (blockEntity instanceof LargeExtractorBlockEntity || blockEntity instanceof LargeGreenhouseBlockEntity
+				|| blockEntity instanceof LargeRanchBlockEntity || blockEntity instanceof LargeOreCrusherBlockEntity
+				|| blockEntity instanceof FurnaceProMaxBlockEntity) {
+			return 76;
+		}
+		return 71;
+	}
+
+	private int getProgressBarY() {
+		if (blockEntity instanceof IndustrialAlloySmelterBlockEntity || blockEntity instanceof LargeCentrifugeBlockEntity
+				|| blockEntity instanceof LargeElectrolyzerBlockEntity || blockEntity instanceof LargeGrinderBlockEntity
+				|| blockEntity instanceof LargeWireMillBlockEntity) {
+			return 44;
+		}
+		if (blockEntity instanceof LargeExtractorBlockEntity || blockEntity instanceof LargeGreenhouseBlockEntity
+				|| blockEntity instanceof LargeRanchBlockEntity || blockEntity instanceof LargeOreCrusherBlockEntity
+				|| blockEntity instanceof FurnaceProMaxBlockEntity) {
+			return 48;
+		}
+		return 40;
 	}
 }

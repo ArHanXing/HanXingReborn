@@ -79,7 +79,7 @@ public class GuiPreciseAssembler<T extends JsonMultiblockMachineBlockEntity & Bu
 		super.drawForeground(drawContext, mouseX, mouseY);
 		final Layer layer = Layer.FOREGROUND;
 
-		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 97, 44, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
+		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 108, 44, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
 		if (blockEntity.isMultiblockValid()) {
 			addHologramButton(6, 4, 212, layer).clickHandler(this::onClick);
 		} else {

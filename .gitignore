@@ -31,5 +31,7 @@ changelog.txt
 /RebornCore/.gradle
 /RebornCore/build
 /RebornCore/out
+/RebornCore/run
+/RebornCore/run_
 /.exmiSrc
 /.gtm1201Src
