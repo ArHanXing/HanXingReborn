@@ -110,10 +110,25 @@ public abstract class LargeFluidGeneratorBlockEntity extends BaseFluidGeneratorB
 	public LargeFluidGeneratorBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state,
 			RecipeType<FluidGeneratorRecipe> type, String blockEntityName, int baseEuPerTick,
 			int parallel, float heatValueMultiplier) {
-		super(blockEntityType, pos, state, type, blockEntityName, FluidValue.BUCKET.multiply(10),
+		super(blockEntityType, pos, state, type, blockEntityName, FluidValue.BUCKET.multiply(160),
 				(int) (baseEuPerTick * parallel * heatValueMultiplier));
 		this.parallel = parallel;
 		this.heatValueMultiplier = heatValueMultiplier;
+	}
+
+	// Explicitly re-declared even though BlockEntity already provides them:
+	// after yarn->intermediary remapping the interface methods (whose names
+	// are not remapped) no longer match the renamed BlockEntity methods, so
+	// calls through IMultiblockStructureMember would hit an AbstractMethodError.
+	@Override
+	public BlockPos getPos() {
+		return super.getPos();
+	}
+
+	@Override
+	@Nullable
+	public World getWorld() {
+		return super.getWorld();
 	}
 
 	/**

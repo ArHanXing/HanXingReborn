@@ -1,0 +1,26 @@
+{
+  "type": "techreborn:space_elevator_assembler",
+  "ingredients": [
+    {
+      "item": "techreborn:cell",
+      "components": {
+        "techreborn:fluid": "techreborn:diesel"
+      }
+    },
+    {
+      "item": "minecraft:cobblestone"
+    }
+  ],
+  "outputs": [
+    {
+      "count": 1,
+      "id": "minecraft:coal_ore"
+    },
+    {
+      "count": 1,
+      "id": "techreborn:cell"
+    }
+  ],
+  "power": 32,
+  "time": 200
+}

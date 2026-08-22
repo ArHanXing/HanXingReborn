@@ -101,4 +101,6 @@ public class ModRecipes {
 	public static final RecipeType<FluidGeneratorRecipe> LARGE_GAS_TURBINE = RecipeManager.newRecipeType(Identifier.of("techreborn:large_gas_turbine"), FluidGeneratorRecipe.CODEC, FluidGeneratorRecipe.PACKET_CODEC);
 	public static final RecipeType<FluidGeneratorRecipe> LARGE_COMBUSTION_ENGINE = RecipeManager.newRecipeType(Identifier.of("techreborn:large_combustion_engine"), FluidGeneratorRecipe.CODEC, FluidGeneratorRecipe.PACKET_CODEC);
 	public static final RecipeType<FluidGeneratorRecipe> UNIVERSAL_CHEMICAL_FUEL_ENGINE = RecipeManager.newRecipeType(Identifier.of("techreborn:universal_chemical_fuel_engine"), FluidGeneratorRecipe.CODEC, FluidGeneratorRecipe.PACKET_CODEC);
+	public static final RecipeType<RebornRecipe> SPACE_ELEVATOR_ASSEMBLER = RecipeManager.newRecipeType(Identifier.of("techreborn:space_elevator_assembler"));
+	public static final RecipeType<RebornRecipe> SPACE_ELEVATOR_MINER = RecipeManager.newRecipeType(Identifier.of("techreborn:space_elevator_miner"));
 }

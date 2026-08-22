@@ -1,0 +1,6 @@
+﻿{
+    "variants": {
+        "active=false": { "model": "techreborn:block/machines/structure/space_elevator_power_module" },
+        "active=true": { "model": "techreborn:block/machines/structure/space_elevator_power_module_active" }
+    }
+}

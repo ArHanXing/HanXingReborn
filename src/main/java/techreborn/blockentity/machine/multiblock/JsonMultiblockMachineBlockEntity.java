@@ -85,6 +85,21 @@ public abstract class JsonMultiblockMachineBlockEntity extends GenericMachineBlo
 		super(type, pos, state, name, maxInput, maxEnergy, toolDrop, energySlot);
 	}
 
+	// Explicitly re-declared even though BlockEntity already provides them:
+	// after yarn->intermediary remapping the interface methods (whose names
+	// are not remapped) no longer match the renamed BlockEntity methods, so
+	// calls through IMultiblockStructureMember would hit an AbstractMethodError.
+	@Override
+	public BlockPos getPos() {
+		return super.getPos();
+	}
+
+	@Override
+	@Nullable
+	public World getWorld() {
+		return super.getWorld();
+	}
+
 	/**
 	 * @return {@link String} the id used to look up this machine's JSON
 	 *         structure definition (matches the file name in

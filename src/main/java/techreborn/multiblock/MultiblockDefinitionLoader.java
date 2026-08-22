@@ -89,7 +89,10 @@ public class MultiblockDefinitionLoader {
 			"large_ranch",
 			"large_gas_turbine",
 			"large_combustion_engine",
-			"universal_chemical_fuel_engine"
+			"universal_chemical_fuel_engine",
+			"space_elevator",
+			"space_elevator_assembler",
+			"space_elevator_miner"
 	};
 
 	private MultiblockDefinitionLoader() {

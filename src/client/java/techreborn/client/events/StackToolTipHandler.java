@@ -32,12 +32,16 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -122,6 +126,20 @@ public class StackToolTipHandler implements ItemTooltipCallback {
 
 		if (block == TRContent.Machine.INDUSTRIAL_CENTRIFUGE.block && Screen.hasControlDown()) {
 			lines.add(Text.literal("Round and round it goes"));
+		}
+
+		// Space Elevator unit items: show which host they are bound to (the
+		// binding is stored on the item's block entity data before placement).
+		if (item == TRContent.Machine.SPACE_ELEVATOR_ASSEMBLER.asItem()
+				|| item == TRContent.Machine.SPACE_ELEVATOR_MINER.asItem()) {
+			NbtCompound nbt = stack.getOrDefault(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.DEFAULT).getNbt();
+			if (nbt != null && nbt.contains("hostPos", NbtElement.LONG_TYPE)) {
+				BlockPos hostPos = BlockPos.fromLong(nbt.getLong("hostPos"));
+				lines.add(Text.translatable("item.techreborn.space_elevator.bound_tooltip",
+						hostPos.getX(), hostPos.getY(), hostPos.getZ()).formatted(Formatting.YELLOW));
+			} else {
+				lines.add(Text.translatable("item.techreborn.space_elevator.unbound_tooltip").formatted(Formatting.GRAY));
+			}
 		}
 
 		if (UNOBTAINABLE_ORES.contains(block)) {

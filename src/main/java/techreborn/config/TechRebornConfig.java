@@ -544,6 +544,27 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "precise_assembler", key = "PreciseAssemblerMaxEnergy", comment = "Precise Assembler Max Energy")
 	public static int preciseAssemblerMaxEnergy = 10_000;
 
+	@Config(config = "machines", category = "space_elevator", key = "SpaceElevatorMaxInput", comment = "Space Elevator Max Input (Energy per tick)")
+	public static int spaceElevatorMaxInput = 2048;
+
+	@Config(config = "machines", category = "space_elevator", key = "SpaceElevatorMaxEnergy", comment = "Space Elevator Max Energy")
+	public static int spaceElevatorMaxEnergy = 10_000_000;
+
+	@Config(config = "machines", category = "space_elevator", key = "SpaceElevatorEnergyPerTick", comment = "Space Elevator energy consumption while running (Energy per tick)")
+	public static int spaceElevatorEnergyPerTick = 2048;
+
+	@Config(config = "machines", category = "space_elevator_assembler", key = "SpaceElevatorAssemblerMaxInput", comment = "Space Elevator Assembler Max Input (Energy per tick)")
+	public static int spaceElevatorAssemblerMaxInput = 128;
+
+	@Config(config = "machines", category = "space_elevator_assembler", key = "SpaceElevatorAssemblerMaxEnergy", comment = "Space Elevator Assembler Max Energy")
+	public static int spaceElevatorAssemblerMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "space_elevator_miner", key = "SpaceElevatorMinerMaxInput", comment = "Space Elevator Miner Max Input (Energy per tick)")
+	public static int spaceElevatorMinerMaxInput = 128;
+
+	@Config(config = "machines", category = "space_elevator_miner", key = "SpaceElevatorMinerMaxEnergy", comment = "Space Elevator Miner Max Energy")
+	public static int spaceElevatorMinerMaxEnergy = 10_000;
+
 	@Config(config = "machines", category = "industrial_alloy_smelter", key = "IndustrialAlloySmelterMaxInput", comment = "Industrial Alloy Smelter Max Input (Energy per tick)")
 	public static int industrialAlloySmelterMaxInput = 128;
 

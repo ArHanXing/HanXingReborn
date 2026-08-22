@@ -138,6 +138,8 @@ public class TRContent {
 	public static Block NUKE;
 	public static Block REFINED_IRON_FENCE;
 	public static Block REINFORCED_GLASS;
+	public static Block SPACE_ELEVATOR_CASING;
+	public static Block SPACE_ELEVATOR_POWER_MODULE;
 	public static Block RUBBER_LEAVES;
 	public static Block RUBBER_LOG;
 	public static Block RUBBER_SLAB;
@@ -809,6 +811,9 @@ public class TRContent {
 		LARGE_GAS_TURBINE(new LargeGasTurbineBlock(GuiType.LARGE_GAS_TURBINE, LargeGasTurbineBlockEntity::new)),
 		LARGE_COMBUSTION_ENGINE(new LargeCombustionEngineBlock(GuiType.LARGE_COMBUSTION_ENGINE, LargeCombustionEngineBlockEntity::new)),
 		UNIVERSAL_CHEMICAL_FUEL_ENGINE(new UniversalChemicalFuelEngineBlock(GuiType.UNIVERSAL_CHEMICAL_FUEL_ENGINE, UniversalChemicalFuelEngineBlockEntity::new)),
+		SPACE_ELEVATOR(new GenericMachineBlock(GuiType.SPACE_ELEVATOR, SpaceElevatorBlockEntity::new)),
+		SPACE_ELEVATOR_ASSEMBLER(new GenericMachineBlock(GuiType.SPACE_ELEVATOR_ASSEMBLER, SpaceElevatorAssemblerBlockEntity::new)),
+		SPACE_ELEVATOR_MINER(new GenericMachineBlock(GuiType.SPACE_ELEVATOR_MINER, SpaceElevatorMinerBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),
 		GREENHOUSE_CONTROLLER(new GenericMachineBlock(GuiType.GREENHOUSE_CONTROLLER, GreenhouseControllerBlockEntity::new)),

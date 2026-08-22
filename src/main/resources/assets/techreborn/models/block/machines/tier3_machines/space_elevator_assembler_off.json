@@ -1,0 +1,11 @@
+﻿{
+    "parent": "minecraft:block/orientable",
+    "textures": {
+        "up": "techreborn:block/machines/structure/space_elevator_mechanical_casing",
+        "down": "techreborn:block/machines/structure/space_elevator_mechanical_casing",
+        "west": "techreborn:block/machines/structure/space_elevator_mechanical_casing",
+        "east": "techreborn:block/machines/structure/space_elevator_mechanical_casing",
+        "south": "techreborn:block/machines/structure/space_elevator_mechanical_casing",
+        "front": "techreborn:block/machines/tier3_machines/space_elevator_off"
+    }
+}

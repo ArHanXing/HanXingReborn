@@ -29,8 +29,12 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.ComposterBlock;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +43,7 @@ import reborncore.common.config.Configuration;
 import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.util.Torus;
 import techreborn.blockentity.GuiType;
+import techreborn.blockentity.machine.multiblock.SpaceElevatorBlockEntity;
 import techreborn.component.TRDataComponentTypes;
 import techreborn.config.TechRebornConfig;
 import techreborn.events.ApplyArmorToDamageHandler;
@@ -117,6 +122,33 @@ public class TechReborn implements ModInitializer {
 			return ActionResult.SUCCESS;
 		});
 		ServerTickEvents.END_SERVER_TICK.register(MultiblockBuilderItem::tickJobs);
+
+		// Space Elevator binding: right-click the host with an assembler/miner
+		// unit item to store the host position on the item (as block entity
+		// data, so placing the machine transfers it into its NBT and binds it).
+		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+			if (!(world.getBlockEntity(hitResult.getBlockPos()) instanceof SpaceElevatorBlockEntity)) {
+				return ActionResult.PASS;
+			}
+			ItemStack stack = player.getStackInHand(hand);
+			if (!stack.isOf(TRContent.Machine.SPACE_ELEVATOR_ASSEMBLER.asItem())
+					&& !stack.isOf(TRContent.Machine.SPACE_ELEVATOR_MINER.asItem())) {
+				return ActionResult.PASS;
+			}
+			if (!world.isClient) {
+				NbtCompound nbt = new NbtCompound();
+				nbt.putLong("hostPos", hitResult.getBlockPos().asLong());
+				// BLOCK_ENTITY_DATA requires an "id" field to be encoded (the
+				// component codec validates it); it is ignored when the block
+				// entity NBT is applied on placement.
+				nbt.putString("id", stack.isOf(TRContent.Machine.SPACE_ELEVATOR_ASSEMBLER.asItem())
+						? "techreborn:space_elevator_assembler" : "techreborn:space_elevator_miner");
+				NbtComponent.set(DataComponentTypes.BLOCK_ENTITY_DATA, stack, nbt);
+				player.sendMessage(Text.translatable("item.techreborn.space_elevator.bound",
+						hitResult.getBlockPos().getX(), hitResult.getBlockPos().getY(), hitResult.getBlockPos().getZ()), true);
+			}
+			return ActionResult.SUCCESS;
+		});
 
 
 		Torus.genSizeMap(TechRebornConfig.fusionControlComputerMaxCoilSize);

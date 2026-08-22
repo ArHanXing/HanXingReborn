@@ -73,7 +73,7 @@ import java.util.Optional;
 public class DynamicCellItem extends Item implements ItemFluidInfo {
 
 	public DynamicCellItem() {
-		super(new Item.Settings().maxCount(16).component(TRDataComponentTypes.FLUID, Fluids.EMPTY.getRegistryEntry()));
+		super(new Item.Settings().maxCount(64).component(TRDataComponentTypes.FLUID, Fluids.EMPTY.getRegistryEntry()));
 	}
 
 	// Thanks vanilla :)

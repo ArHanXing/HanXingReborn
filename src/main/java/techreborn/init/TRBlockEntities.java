@@ -172,6 +172,9 @@ public class TRBlockEntities {
 	public static final BlockEntityType<ElevatorBlockEntity> ELEVATOR = register(ElevatorBlockEntity::new, "elevator", TRContent.Machine.ELEVATOR);
 	public static final BlockEntityType<FishingStationBlockEntity> FISHING_STATION = register(FishingStationBlockEntity::new, "fishing_station", TRContent.Machine.FISHING_STATION);
 	public static final BlockEntityType<PumpBlockEntity> PUMP = register(PumpBlockEntity::new, "pump", TRContent.Machine.PUMP);
+	public static final BlockEntityType<SpaceElevatorBlockEntity> SPACE_ELEVATOR = register(SpaceElevatorBlockEntity::new, "space_elevator", TRContent.Machine.SPACE_ELEVATOR);
+	public static final BlockEntityType<SpaceElevatorAssemblerBlockEntity> SPACE_ELEVATOR_ASSEMBLER = register(SpaceElevatorAssemblerBlockEntity::new, "space_elevator_assembler", TRContent.Machine.SPACE_ELEVATOR_ASSEMBLER);
+	public static final BlockEntityType<SpaceElevatorMinerBlockEntity> SPACE_ELEVATOR_MINER = register(SpaceElevatorMinerBlockEntity::new, "space_elevator_miner", TRContent.Machine.SPACE_ELEVATOR_MINER);
 
 	public static <T extends BlockEntity> BlockEntityType<T> register(BiFunction<BlockPos, BlockState, T> supplier, String name, ItemConvertible... items) {
 		return register(supplier, name, Arrays.stream(items).map(itemConvertible -> Block.getBlockFromItem(itemConvertible.asItem())).toArray(Block[]::new));
@@ -192,9 +195,13 @@ public class TRBlockEntities {
 	private static ItemConvertible[] getMachineCasingBlocks() {
 		ItemConvertible[] casings = TRContent.MachineBlocks.getCasings();
 		ItemConvertible[] coils = TRContent.Coils.values();
-		ItemConvertible[] all = new ItemConvertible[casings.length + coils.length];
+		ItemConvertible[] all = new ItemConvertible[casings.length + coils.length + 2];
 		System.arraycopy(casings, 0, all, 0, casings.length);
 		System.arraycopy(coils, 0, all, casings.length, coils.length);
+		// Space Elevator structural blocks share the machine casing block entity
+		// (they are created by BlockEntityProvider.createBlockEntity).
+		all[casings.length + coils.length] = TRContent.SPACE_ELEVATOR_CASING;
+		all[casings.length + coils.length + 1] = TRContent.SPACE_ELEVATOR_POWER_MODULE;
 		return all;
 	}
 }

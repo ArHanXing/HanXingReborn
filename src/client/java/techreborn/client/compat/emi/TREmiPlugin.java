@@ -98,6 +98,9 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiStack LARGE_GAS_TURBINE_STACK = EmiStack.of(TRContent.Machine.LARGE_GAS_TURBINE);
 	public static final EmiStack LARGE_COMBUSTION_ENGINE_STACK = EmiStack.of(TRContent.Machine.LARGE_COMBUSTION_ENGINE);
 	public static final EmiStack UNIVERSAL_CHEMICAL_FUEL_ENGINE_STACK = EmiStack.of(TRContent.Machine.UNIVERSAL_CHEMICAL_FUEL_ENGINE);
+	public static final EmiStack SPACE_ELEVATOR_STACK = EmiStack.of(TRContent.Machine.SPACE_ELEVATOR);
+	public static final EmiStack SPACE_ELEVATOR_ASSEMBLER_STACK = EmiStack.of(TRContent.Machine.SPACE_ELEVATOR_ASSEMBLER);
+	public static final EmiStack SPACE_ELEVATOR_MINER_STACK = EmiStack.of(TRContent.Machine.SPACE_ELEVATOR_MINER);
 
 	public static final EmiRecipeCategory ALLOY_SMELTER_CATEGORY =
 		new EmiRecipeCategory(trId("alloy_smelter"), ALLOY_SMELTER_STACK, EmiTextures.ALLOY_SMELTING,
@@ -191,6 +194,13 @@ public class TREmiPlugin implements EmiPlugin {
 		new EmiRecipeCategory(trId("plasma_generator"), PLASMA_GENERATOR_STACK, PLASMA_GENERATOR_STACK,
 			EmiRecipeSorting.compareInputThenOutput());
 
+	public static final EmiRecipeCategory SPACE_ELEVATOR_ASSEMBLER_CATEGORY =
+		new EmiRecipeCategory(trId("space_elevator_assembler"), SPACE_ELEVATOR_ASSEMBLER_STACK, SPACE_ELEVATOR_ASSEMBLER_STACK,
+			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiRecipeCategory SPACE_ELEVATOR_MINER_CATEGORY =
+		new EmiRecipeCategory(trId("space_elevator_miner"), SPACE_ELEVATOR_MINER_STACK, SPACE_ELEVATOR_MINER_STACK,
+			EmiRecipeSorting.compareOutputThenInput());
+
 	public static final EmiRecipeCategory LARGE_CHEMICAL_REACTOR_CATEGORY =
 		new EmiRecipeCategory(trId("large_chemical_reactor"), LARGE_CHEMICAL_REACTOR_STACK,
 			EmiTextures.LARGE_CHEMICAL_REACTOR, EmiRecipeSorting.compareOutputThenInput());
@@ -244,7 +254,10 @@ public class TREmiPlugin implements EmiPlugin {
 		Map.entry("large_ranch", TRContent.Machine.LARGE_RANCH),
 		Map.entry("large_gas_turbine", TRContent.Machine.LARGE_GAS_TURBINE),
 		Map.entry("large_combustion_engine", TRContent.Machine.LARGE_COMBUSTION_ENGINE),
-		Map.entry("universal_chemical_fuel_engine", TRContent.Machine.UNIVERSAL_CHEMICAL_FUEL_ENGINE));
+		Map.entry("universal_chemical_fuel_engine", TRContent.Machine.UNIVERSAL_CHEMICAL_FUEL_ENGINE),
+		Map.entry("space_elevator", TRContent.Machine.SPACE_ELEVATOR),
+		Map.entry("space_elevator_assembler", TRContent.Machine.SPACE_ELEVATOR_ASSEMBLER),
+		Map.entry("space_elevator_miner", TRContent.Machine.SPACE_ELEVATOR_MINER));
 
 	@Override
 	public void register(EmiRegistry registry) {
@@ -457,6 +470,7 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addCategory(GAS_TURBINE_CATEGORY);
 		registry.addWorkstation(GAS_TURBINE_CATEGORY, GAS_TURBINE_STACK);
 		registry.addWorkstation(GAS_TURBINE_CATEGORY, LARGE_GAS_TURBINE_STACK);
+		registry.addWorkstation(GAS_TURBINE_CATEGORY, UNIVERSAL_CHEMICAL_FUEL_ENGINE_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.GAS_GENERATOR)) {
 			registry.addRecipe(new FluidGeneratorEmiRecipe(recipe, GAS_TURBINE_CATEGORY, 10, 1000000));
 		}
@@ -464,6 +478,7 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addCategory(DIESEL_GENERATOR_CATEGORY);
 		registry.addWorkstation(DIESEL_GENERATOR_CATEGORY, DIESEL_GENERATOR_STACK);
 		registry.addWorkstation(DIESEL_GENERATOR_CATEGORY, LARGE_COMBUSTION_ENGINE_STACK);
+		registry.addWorkstation(DIESEL_GENERATOR_CATEGORY, UNIVERSAL_CHEMICAL_FUEL_ENGINE_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.DIESEL_GENERATOR)) {
 			registry.addRecipe(new FluidGeneratorEmiRecipe(recipe, DIESEL_GENERATOR_CATEGORY, 10, 10000));
 		}
@@ -473,6 +488,19 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(SEMI_FLUID_GENERATOR_CATEGORY, UNIVERSAL_CHEMICAL_FUEL_ENGINE_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.SEMI_FLUID_GENERATOR)) {
 			registry.addRecipe(new FluidGeneratorEmiRecipe(recipe, SEMI_FLUID_GENERATOR_CATEGORY, 10, 1000000));
+		}
+
+		// Space Elevator units
+		registry.addCategory(SPACE_ELEVATOR_ASSEMBLER_CATEGORY);
+		registry.addWorkstation(SPACE_ELEVATOR_ASSEMBLER_CATEGORY, SPACE_ELEVATOR_ASSEMBLER_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.SPACE_ELEVATOR_ASSEMBLER)) {
+			registry.addRecipe(new SpaceElevatorAssemblerEmiRecipe(recipe));
+		}
+
+		registry.addCategory(SPACE_ELEVATOR_MINER_CATEGORY);
+		registry.addWorkstation(SPACE_ELEVATOR_MINER_CATEGORY, SPACE_ELEVATOR_MINER_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.SPACE_ELEVATOR_MINER)) {
+			registry.addRecipe(new SpaceElevatorMinerEmiRecipe(recipe));
 		}
 
 		registry.addCategory(PLASMA_GENERATOR_CATEGORY);

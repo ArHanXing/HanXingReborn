@@ -1,0 +1,32 @@
+{
+	"translate": [
+		2,
+		0,
+		-1
+	],
+	"layers": [
+		[
+			"CCCCC",
+			"CCCCC",
+			"CCCCC"
+		],
+		[
+			"CPPPC",
+			"PP PP",
+			"CPPPC"
+		],
+		[
+			"CCCCC",
+			"CCCCC",
+			"CCCCC"
+		]
+	],
+	"keys": {
+		"C": {
+			"block": "techreborn:space_elevator_casing"
+		},
+		"P": {
+			"block": "techreborn:space_elevator_power_module"
+		}
+	}
+}

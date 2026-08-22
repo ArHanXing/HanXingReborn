@@ -47,7 +47,7 @@ import techreborn.init.TRContent;
 
 public class IndustrialSawmillBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
-	public static final FluidValue TANK_CAPACITY = FluidValue.BUCKET.multiply(16);
+	public static final FluidValue TANK_CAPACITY = FluidValue.BUCKET.multiply(256);
 	public final Tank tank;
 	int ticksSinceLastChange;
 
