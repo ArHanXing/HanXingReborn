@@ -29,7 +29,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import reborncore.client.gui.GuiBase;
-import reborncore.client.gui.GuiBuilder;
 import reborncore.client.gui.widget.GuiButtonExtended;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;

@@ -26,9 +26,6 @@ package techreborn.client.gui;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorMinerBlockEntity;
 
 /**
