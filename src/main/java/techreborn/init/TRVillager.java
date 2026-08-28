@@ -86,8 +86,7 @@ public class TRVillager {
 		);
 		TradeUtils.registerTradesForLevel(METALLURGIST_PROFESSION, TradeUtils.Level.APPRENTICE, false,
 			TradeUtils.createSell(TRContent.Ingots.BRONZE, 2, 1, 12, 10),
-			TradeUtils.createSell(TRContent.Ingots.BRASS, 5, 1, 12, 10),
-			TradeUtils.createSell(TRContent.Parts.ELECTRONIC_CIRCUIT, 3, 2, 12, 10)
+			TradeUtils.createSell(TRContent.Ingots.BRASS, 5, 1, 12, 10)
 		);
 		TradeUtils.registerTradesForLevel(METALLURGIST_PROFESSION, TradeUtils.Level.JOURNEYMAN, false,
 			TradeUtils.createSell(TRContent.Ingots.ELECTRUM, 7, 3, 12, 20),
@@ -97,9 +96,6 @@ public class TRVillager {
 			TradeUtils.createSell(TRContent.Ingots.ADVANCED_ALLOY, 7, 4, 12, 20),
 			TradeUtils.createBuy(TRContent.Ingots.NICKEL, 1, 1, 12, 30)
 		);
-		TradeUtils.registerTradesForLevel(METALLURGIST_PROFESSION, TradeUtils.Level.MASTER, false,
-			TradeUtils.createSell(TRContent.Parts.ADVANCED_CIRCUIT, 7, 3, 12, 30)
-		);
 		// electrician
 		TradeUtils.registerTradesForLevel(ELECTRICIAN_PROFESSION, TradeUtils.Level.NOVICE, false,
 			TradeUtils.createBuy(TRContent.Parts.RUBBER, 1, 6, 12, 2),
@@ -108,8 +104,7 @@ public class TRVillager {
 		);
 		TradeUtils.registerTradesForLevel(ELECTRICIAN_PROFESSION, TradeUtils.Level.APPRENTICE, false,
 			TradeUtils.createBuy(Items.GOLD_INGOT, 1, 4, 12, 10),
-			TradeUtils.createSell(TRContent.Cables.INSULATED_GOLD, 5, 3, 12, 10),
-			TradeUtils.createSell(TRContent.Parts.ELECTRONIC_CIRCUIT, 3, 2, 12, 10)
+			TradeUtils.createSell(TRContent.Cables.INSULATED_GOLD, 5, 3, 12, 10)
 		);
 		TradeUtils.registerTradesForLevel(ELECTRICIAN_PROFESSION, TradeUtils.Level.JOURNEYMAN, false,
 			TradeUtils.createBuy(TRContent.RED_CELL_BATTERY, 1, 1, 12, 20),
@@ -117,7 +112,6 @@ public class TRVillager {
 			TradeUtils.createSell(TRContent.Machine.SOLID_FUEL_GENERATOR, 8, 1, 12, 20)
 		);
 		TradeUtils.registerTradesForLevel(ELECTRICIAN_PROFESSION, TradeUtils.Level.EXPERT, false,
-			TradeUtils.createSell(TRContent.Parts.ADVANCED_CIRCUIT, 7, 3, 12, 20),
 			TradeUtils.createBuy(TRContent.Gems.RUBY, 1, 6, 12, 20),
 			TradeUtils.createSell(TRContent.Cables.GLASSFIBER, 4, 1, 8, 30)
 		);
