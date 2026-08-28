@@ -111,7 +111,7 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 		}
 		data.put("outputs", outputs);
 
-		data.putInt("power", recipe.power());
+		data.putInt("power", (int) crafter.getEuPerTick(recipe.power()));
 		data.putInt("parallel", crafter.getCurrentParallelCount());
 		data.putInt("maxParallel", crafter.getMaxParallel());
 		data.putInt("tickTime", crafter.currentTickTime);

@@ -29,7 +29,6 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import reborncore.common.blockentity.MachineBaseBlockEntity;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.TRContent;
 
@@ -59,12 +58,16 @@ public class ToolTipAssistUtils {
 
 		switch (upgradeType) {
 			case OVERCLOCKER -> {
-				tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.speed_increase"), calculateSpeed(TechRebornConfig.overclockerSpeed * 100, count, shiftHeld), "%", true));
-				tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.energy_increase"), calculateEnergyIncrease(TechRebornConfig.overclockerPower + 1, count, shiftHeld), "x", false));
+				tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.speed_increase"),
+						calculateTimeDecrease(TechRebornConfig.overclockerSpeed, count, shiftHeld), "%", true));
+				tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.energy_increase"),
+						calculateEnergyIncrease(TechRebornConfig.overclockerPower + 1, count, shiftHeld), "x", false));
 			}
 			case TRANSFORMER -> shouldStackCalculate = false;
-			case ENERGY_STORAGE -> tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.storage_increase"), calculateValue(TechRebornConfig.energyStoragePower, count, shiftHeld), " E", true));
-			case SUPERCONDUCTOR -> tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.flow_increase"), calculateValue(Math.pow(2, (TechRebornConfig.superConductorCount + 2)) * 100, count, shiftHeld), "%", true));
+			case ENERGY_STORAGE -> tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.storage_increase"),
+					calculateEnergyIncrease(2, count, shiftHeld), "x", true));
+			case SUPERCONDUCTOR -> tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.flow_increase"),
+					calculateValue(Math.pow(2, (TechRebornConfig.superConductorCount + 2)) * 100, count, shiftHeld), "%", true));
 		}
 
 		// Add reminder that they can use shift to calculate the entire stack
@@ -107,23 +110,18 @@ public class ToolTipAssistUtils {
 		return calculatedVal;
 	}
 
+	private static double calculateTimeDecrease(double timeMultiplier, int count, boolean shiftHeld) {
+		int n = shiftHeld ? Math.min(count, 4) : 1;
+		// Each upgrade multiplies the craft time by timeMultiplier (e.g. 0.5),
+		// so n upgrades reduce the time by (1 - timeMultiplier^n) * 100 percent.
+		return (1 - Math.pow(timeMultiplier, n)) * 100;
+	}
+
 	private static double calculateEnergyIncrease(double value, int count, boolean shiftHeld) {
 		double calculatedVal;
 
 		if (shiftHeld) {
 			calculatedVal = Math.pow(value, Math.min(count, 4));
-		} else {
-			calculatedVal = value;
-		}
-
-		return calculatedVal;
-	}
-
-	private static double calculateSpeed(double value, int count, boolean shiftHeld) {
-		double calculatedVal;
-
-		if (shiftHeld) {
-			calculatedVal = Math.min(value * Math.min(count, 4), MachineBaseBlockEntity.SPEED_CAP * 100);
 		} else {
 			calculatedVal = value;
 		}

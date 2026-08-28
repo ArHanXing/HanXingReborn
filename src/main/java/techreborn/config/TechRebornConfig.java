@@ -355,14 +355,11 @@ public class TechRebornConfig {
 	@Config(config = "items", category = "power", key = "nanoArmorEnergyCost", comment = "Nano Suit Energy Cost")
 	public static long nanoArmorEnergyCost = 100;
 
-	@Config(config = "items", category = "upgrades", key = "overclocker_speed", comment = "Overclocker behavior speed multiplier")
-	public static double overclockerSpeed = 0.75;
+	@Config(config = "items", category = "upgrades", key = "overclocker_speed", comment = "Overclocker craft time multiplier per upgrade (0.5 = half the time, stacks multiplicatively)")
+	public static double overclockerSpeed = 0.5;
 
-	@Config(config = "items", category = "upgrades", key = "overclocker_power", comment = "Overclocker behavior power multiplier")
-	public static double overclockerPower = 1.25;
-
-	@Config(config = "items", category = "upgrades", key = "energy_storage", comment = "Energy storage behavior extra power")
-	public static double energyStoragePower = 40_000;
+	@Config(config = "items", category = "upgrades", key = "overclocker_power", comment = "Overclocker power usage increase as a fraction per upgrade (0.25 = 1.25x power, stacks multiplicatively)")
+	public static double overclockerPower = 0.25;
 
 	@Config(config = "items", category = "upgrades", key = "super_conductor", comment = "Energy flow power increase")
 	public static double superConductorCount = 1;

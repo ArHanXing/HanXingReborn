@@ -46,6 +46,8 @@ public class CrawlerRecipeCrafter extends RecipeCrafter {
 
 	@Override
 	public double getSpeedMultiplier() {
-		return Math.min(0.5 + super.getSpeedMultiplier(), 0.99);
+		// Built-in 0.5x craft time, stacked multiplicatively with upgrade speed
+		// bonuses: total craft time = time * 0.5 * (1 - upgradeSpeed).
+		return Math.min(1 - (1 - 0.5) * (1 - super.getSpeedMultiplier()), 0.99);
 	}
 }

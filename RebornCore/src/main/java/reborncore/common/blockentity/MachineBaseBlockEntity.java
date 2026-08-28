@@ -365,11 +365,11 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 
 	@Override
 	public void addSpeedMultiplier(double amount) {
-		if (speedMultiplier + amount <= SPEED_CAP) {
-			speedMultiplier += amount;
-		} else {
-			speedMultiplier = SPEED_CAP;
-		}
+		// The amount is the per-upgrade craft-time multiplier (e.g. 0.5 = half
+		// the time): upgrades stack multiplicatively, so the total craft time
+		// becomes time * (1-amount)^n instead of a linear subtraction.
+		double newMultiplier = 1 - (1 - speedMultiplier) * (1 - amount);
+		speedMultiplier = Math.min(newMultiplier, SPEED_CAP);
 	}
 
 	@Override

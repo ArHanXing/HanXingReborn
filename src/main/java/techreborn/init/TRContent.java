@@ -1588,17 +1588,9 @@ public class TRContent {
 
 	public enum Upgrades implements ItemConvertible {
 		OVERCLOCKER((blockEntity, handler, stack) -> {
-			PowerAcceptorBlockEntity powerAcceptor = null;
-			if (blockEntity instanceof PowerAcceptorBlockEntity) {
-				powerAcceptor = (PowerAcceptorBlockEntity) blockEntity;
-			}
 			if (handler != null) {
 				handler.addSpeedMultiplier(TechRebornConfig.overclockerSpeed);
 				handler.addPowerMultiplier(TechRebornConfig.overclockerPower);
-			}
-			if (powerAcceptor != null) {
-				powerAcceptor.extraPowerInput += powerAcceptor.getMaxInput(null);
-				powerAcceptor.extraPowerStorage += powerAcceptor.getBaseMaxPower();
 			}
 		}),
 		TRANSFORMER((blockEntity, handler, stack) -> {
@@ -1616,7 +1608,9 @@ public class TRContent {
 				powerAcceptor = (PowerAcceptorBlockEntity) blockEntity;
 			}
 			if (powerAcceptor != null) {
-				powerAcceptor.extraPowerStorage += TechRebornConfig.energyStoragePower;
+				// Each upgrade doubles the machine's total energy buffer:
+				// extra = base + 2 * oldExtra (so base + extra doubles every card).
+				powerAcceptor.extraPowerStorage = powerAcceptor.getBaseMaxPower() + powerAcceptor.extraPowerStorage * 2;
 			}
 		}),
 		SUPERCONDUCTOR((blockEntity, handler, stack) -> {
