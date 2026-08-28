@@ -61,16 +61,13 @@ import java.util.function.BiPredicate;
  * <p>
  * Common mechanics:
  * <ul>
- *   <li>{@code parallel} - the generator burns {@code parallel} fuel streams at
- *       once, multiplying both energy output and fuel consumption.</li>
- *   <li>{@code heatValueMultiplier} - optional fuel efficiency bonus (e.g.
- *       1.25x: same fuel produces more energy).</li>
  *   <li>Oxygen cells - an oxygen cell in the input slot boosts the output by
  *       {@value #OXYGEN_POWER_MULTIPLIER}x for {@value #OXYGEN_DURATION_TICKS}
  *       ticks, then the empty cell is ejected into the output slot.</li>
  * </ul>
- * The max output/power are not hard-coded: they are derived from the small gas
- * and diesel generator configs (min value x parallel).
+ * The max output, energy buffer and energy per tick of each generator are
+ * configured through {@code generators.json} (see the per-machine config
+ * entries in {@link TechRebornConfig}).
  */
 public abstract class LargeFluidGeneratorBlockEntity extends BaseFluidGeneratorBlockEntity implements IMultiblockStructureMember {
 
@@ -83,10 +80,6 @@ public abstract class LargeFluidGeneratorBlockEntity extends BaseFluidGeneratorB
 	/** How often the compressed air cell input is checked (ticks). */
 	private static final int OXYGEN_CHECK_INTERVAL = 10;
 
-	/** Parallel fuel streams. */
-	protected final int parallel;
-	/** Fuel efficiency bonus applied to the base energy per tick. */
-	protected final float heatValueMultiplier;
 	/** Remaining ticks of the oxygen boost. */
 	private int oxygenTicks = 0;
 	private int oxygenCheckCounter = 0;
@@ -108,12 +101,8 @@ public abstract class LargeFluidGeneratorBlockEntity extends BaseFluidGeneratorB
 	private int structureMaxZ = Integer.MIN_VALUE;
 
 	public LargeFluidGeneratorBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state,
-			RecipeType<FluidGeneratorRecipe> type, String blockEntityName, int baseEuPerTick,
-			int parallel, float heatValueMultiplier) {
-		super(blockEntityType, pos, state, type, blockEntityName, FluidValue.BUCKET.multiply(160),
-				(int) (baseEuPerTick * parallel * heatValueMultiplier));
-		this.parallel = parallel;
-		this.heatValueMultiplier = heatValueMultiplier;
+			RecipeType<FluidGeneratorRecipe> type, String blockEntityName, int euTick) {
+		super(blockEntityType, pos, state, type, blockEntityName, FluidValue.BUCKET.multiply(160), euTick);
 	}
 
 	// Explicitly re-declared even though BlockEntity already provides them:
@@ -138,30 +127,25 @@ public abstract class LargeFluidGeneratorBlockEntity extends BaseFluidGeneratorB
 	public abstract String getMultiblockId();
 
 	/**
-	 * Shared "small generator output" reference: min of the small gas turbine
-	 * and small diesel generator max outputs, so the large generators are
-	 * balanced against both small machines without hard-coding values.
+	 * @return the configured max output (EU/t) of this generator, from
+	 *         {@code generators.json}
 	 */
-	protected static int baseMaxOutput() {
-		return Math.min(TechRebornConfig.gasTurbineMaxOutput, TechRebornConfig.dieselGeneratorMaxOutput);
-	}
+	protected abstract int getConfiguredMaxOutput();
 
-	protected static int baseMaxEnergy() {
-		return Math.min(TechRebornConfig.gasTurbineMaxEnergy, TechRebornConfig.dieselGeneratorMaxEnergy);
-	}
-
-	protected static int baseEuPerTick() {
-		return Math.min(TechRebornConfig.gasTurbineEnergyPerTick, TechRebornConfig.dieselGeneratorEnergyPerTick);
-	}
+	/**
+	 * @return the configured energy buffer (EU) of this generator, from
+	 *         {@code generators.json}
+	 */
+	protected abstract int getConfiguredMaxEnergy();
 
 	@Override
 	public long getBaseMaxOutput() {
-		return (long) baseMaxOutput() * parallel;
+		return getConfiguredMaxOutput();
 	}
 
 	@Override
 	public long getBaseMaxPower() {
-		return (long) baseMaxEnergy() * parallel;
+		return getConfiguredMaxEnergy();
 	}
 
 	@Override

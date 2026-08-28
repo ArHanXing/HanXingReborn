@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 /**
- * Large Combustion Engine block: 8 parallel fuel streams, 1.25x fuel heat
- * value, oxygen cell boost support.
+ * Large Combustion Engine block: all power values come from
+ * {@code generators.json}, oxygen cell boost support.
  */
 public class LargeCombustionEngineBlock extends GenericMachineBlock {
 
@@ -48,7 +48,6 @@ public class LargeCombustionEngineBlock extends GenericMachineBlock {
 	protected void appendMachineTooltip(List<Text> tooltip) {
 		MultiblockTooltipBuilder.create()
 				.recipeTypes(ModRecipes.LARGE_COMBUSTION_ENGINE, List.of(ModRecipes.DIESEL_GENERATOR))
-				.maxParallel(8)
 				.note("item.techreborn.large_generator.heat_bonus")
 				.note("item.techreborn.large_generator.oxygen")
 				.appendTo(tooltip);

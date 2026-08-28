@@ -101,6 +101,11 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiStack SPACE_ELEVATOR_STACK = EmiStack.of(TRContent.Machine.SPACE_ELEVATOR);
 	public static final EmiStack SPACE_ELEVATOR_ASSEMBLER_STACK = EmiStack.of(TRContent.Machine.SPACE_ELEVATOR_ASSEMBLER);
 	public static final EmiStack SPACE_ELEVATOR_MINER_STACK = EmiStack.of(TRContent.Machine.SPACE_ELEVATOR_MINER);
+	public static final EmiStack HUNTER_PROCESS_REACTOR_STACK = EmiStack.of(TRContent.Machine.HUNTER_PROCESS_REACTOR);
+	public static final EmiStack KROLL_REDUCTION_VESSEL_STACK = EmiStack.of(TRContent.Machine.KROLL_REDUCTION_VESSEL);
+	public static final EmiStack CULTIVATION_VESSEL_STACK = EmiStack.of(TRContent.Machine.CULTIVATION_VESSEL);
+	public static final EmiStack IRRADIATED_MUTAGENSIS_CHAMBER_STACK = EmiStack.of(TRContent.Machine.IRRADIATED_MUTAGENSIS_CHAMBER);
+	public static final EmiStack SUPERCRITICAL_POLYMERIZATION_CHAMBER_STACK = EmiStack.of(TRContent.Machine.SUPERCRITICAL_POLYMERIZATION_CHAMBER);
 
 	public static final EmiRecipeCategory ALLOY_SMELTER_CATEGORY =
 		new EmiRecipeCategory(trId("alloy_smelter"), ALLOY_SMELTER_STACK, EmiTextures.ALLOY_SMELTING,
@@ -201,6 +206,22 @@ public class TREmiPlugin implements EmiPlugin {
 		new EmiRecipeCategory(trId("space_elevator_miner"), SPACE_ELEVATOR_MINER_STACK, SPACE_ELEVATOR_MINER_STACK,
 			EmiRecipeSorting.compareOutputThenInput());
 
+	public static final EmiRecipeCategory HUNTER_PROCESS_REACTOR_CATEGORY =
+		new EmiRecipeCategory(trId("hunter_process_reactor"), HUNTER_PROCESS_REACTOR_STACK, HUNTER_PROCESS_REACTOR_STACK,
+			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiRecipeCategory KROLL_REDUCTION_VESSEL_CATEGORY =
+		new EmiRecipeCategory(trId("kroll_reduction_vessel"), KROLL_REDUCTION_VESSEL_STACK, KROLL_REDUCTION_VESSEL_STACK,
+			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiRecipeCategory CULTIVATION_VESSEL_CATEGORY =
+		new EmiRecipeCategory(trId("cultivation_vessel"), CULTIVATION_VESSEL_STACK, CULTIVATION_VESSEL_STACK,
+			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiRecipeCategory IRRADIATED_MUTAGENSIS_CHAMBER_CATEGORY =
+		new EmiRecipeCategory(trId("irradiated_mutagensis_chamber"), IRRADIATED_MUTAGENSIS_CHAMBER_STACK, IRRADIATED_MUTAGENSIS_CHAMBER_STACK,
+			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiRecipeCategory SUPERCRITICAL_POLYMERIZATION_CHAMBER_CATEGORY =
+		new EmiRecipeCategory(trId("supercritical_polymerization_chamber"), SUPERCRITICAL_POLYMERIZATION_CHAMBER_STACK, SUPERCRITICAL_POLYMERIZATION_CHAMBER_STACK,
+			EmiRecipeSorting.compareOutputThenInput());
+
 	public static final EmiRecipeCategory LARGE_CHEMICAL_REACTOR_CATEGORY =
 		new EmiRecipeCategory(trId("large_chemical_reactor"), LARGE_CHEMICAL_REACTOR_STACK,
 			EmiTextures.LARGE_CHEMICAL_REACTOR, EmiRecipeSorting.compareOutputThenInput());
@@ -257,7 +278,12 @@ public class TREmiPlugin implements EmiPlugin {
 		Map.entry("universal_chemical_fuel_engine", TRContent.Machine.UNIVERSAL_CHEMICAL_FUEL_ENGINE),
 		Map.entry("space_elevator", TRContent.Machine.SPACE_ELEVATOR),
 		Map.entry("space_elevator_assembler", TRContent.Machine.SPACE_ELEVATOR_ASSEMBLER),
-		Map.entry("space_elevator_miner", TRContent.Machine.SPACE_ELEVATOR_MINER));
+		Map.entry("space_elevator_miner", TRContent.Machine.SPACE_ELEVATOR_MINER),
+		Map.entry("hunter_process_reactor", TRContent.Machine.HUNTER_PROCESS_REACTOR),
+		Map.entry("kroll_reduction_vessel", TRContent.Machine.KROLL_REDUCTION_VESSEL),
+		Map.entry("cultivation_vessel", TRContent.Machine.CULTIVATION_VESSEL),
+		Map.entry("irradiated_mutagensis_chamber", TRContent.Machine.IRRADIATED_MUTAGENSIS_CHAMBER),
+		Map.entry("supercritical_polymerization_chamber", TRContent.Machine.SUPERCRITICAL_POLYMERIZATION_CHAMBER));
 
 	@Override
 	public void register(EmiRegistry registry) {
@@ -501,6 +527,37 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(SPACE_ELEVATOR_MINER_CATEGORY, SPACE_ELEVATOR_MINER_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.SPACE_ELEVATOR_MINER)) {
 			registry.addRecipe(new SpaceElevatorMinerEmiRecipe(recipe));
+		}
+
+		// Misc multiblock machines
+		registry.addCategory(HUNTER_PROCESS_REACTOR_CATEGORY);
+		registry.addWorkstation(HUNTER_PROCESS_REACTOR_CATEGORY, HUNTER_PROCESS_REACTOR_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.HUNTER_PROCESS_REACTOR)) {
+			registry.addRecipe(new SixInFourOutEmiRecipe(recipe, HUNTER_PROCESS_REACTOR_CATEGORY));
+		}
+
+		registry.addCategory(KROLL_REDUCTION_VESSEL_CATEGORY);
+		registry.addWorkstation(KROLL_REDUCTION_VESSEL_CATEGORY, KROLL_REDUCTION_VESSEL_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.KROLL_REDUCTION_VESSEL)) {
+			registry.addRecipe(new SixInFourOutEmiRecipe(recipe, KROLL_REDUCTION_VESSEL_CATEGORY));
+		}
+
+		registry.addCategory(CULTIVATION_VESSEL_CATEGORY);
+		registry.addWorkstation(CULTIVATION_VESSEL_CATEGORY, CULTIVATION_VESSEL_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.CULTIVATION_VESSEL)) {
+			registry.addRecipe(new FourInTwoOutEmiRecipe(recipe, CULTIVATION_VESSEL_CATEGORY));
+		}
+
+		registry.addCategory(IRRADIATED_MUTAGENSIS_CHAMBER_CATEGORY);
+		registry.addWorkstation(IRRADIATED_MUTAGENSIS_CHAMBER_CATEGORY, IRRADIATED_MUTAGENSIS_CHAMBER_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.IRRADIATED_MUTAGENSIS_CHAMBER)) {
+			registry.addRecipe(new FourInTwoOutEmiRecipe(recipe, IRRADIATED_MUTAGENSIS_CHAMBER_CATEGORY));
+		}
+
+		registry.addCategory(SUPERCRITICAL_POLYMERIZATION_CHAMBER_CATEGORY);
+		registry.addWorkstation(SUPERCRITICAL_POLYMERIZATION_CHAMBER_CATEGORY, SUPERCRITICAL_POLYMERIZATION_CHAMBER_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.SUPERCRITICAL_POLYMERIZATION_CHAMBER)) {
+			registry.addRecipe(new FourInTwoOutEmiRecipe(recipe, SUPERCRITICAL_POLYMERIZATION_CHAMBER_CATEGORY));
 		}
 
 		registry.addCategory(PLASMA_GENERATOR_CATEGORY);

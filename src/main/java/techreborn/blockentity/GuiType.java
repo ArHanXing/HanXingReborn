@@ -83,6 +83,11 @@ import techreborn.blockentity.machine.multiblock.LargeRanchBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorAssemblerBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorMinerBlockEntity;
+import techreborn.blockentity.machine.multiblock.HunterProcessReactorBlockEntity;
+import techreborn.blockentity.machine.multiblock.KrollReductionVesselBlockEntity;
+import techreborn.blockentity.machine.multiblock.CultivationVesselBlockEntity;
+import techreborn.blockentity.machine.multiblock.IrradiatedMutagensisChamberBlockEntity;
+import techreborn.blockentity.machine.multiblock.SupercriticalPolymerizationChamberBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeGasTurbineBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeCombustionEngineBlockEntity;
 import techreborn.blockentity.generator.multiblock.UniversalChemicalFuelEngineBlockEntity;
@@ -199,6 +204,11 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<SpaceElevatorBlockEntity> SPACE_ELEVATOR = register("space_elevator");
 	public static final GuiType<SpaceElevatorAssemblerBlockEntity> SPACE_ELEVATOR_ASSEMBLER = register("space_elevator_assembler");
 	public static final GuiType<SpaceElevatorMinerBlockEntity> SPACE_ELEVATOR_MINER = register("space_elevator_miner");
+	public static final GuiType<HunterProcessReactorBlockEntity> HUNTER_PROCESS_REACTOR = register("hunter_process_reactor");
+	public static final GuiType<KrollReductionVesselBlockEntity> KROLL_REDUCTION_VESSEL = register("kroll_reduction_vessel");
+	public static final GuiType<CultivationVesselBlockEntity> CULTIVATION_VESSEL = register("cultivation_vessel");
+	public static final GuiType<IrradiatedMutagensisChamberBlockEntity> IRRADIATED_MUTAGENSIS_CHAMBER = register("irradiated_mutagensis_chamber");
+	public static final GuiType<SupercriticalPolymerizationChamberBlockEntity> SUPERCRITICAL_POLYMERIZATION_CHAMBER = register("supercritical_polymerization_chamber");
 
 
 	private static <T extends BlockEntity> GuiType<T> register(String path) {

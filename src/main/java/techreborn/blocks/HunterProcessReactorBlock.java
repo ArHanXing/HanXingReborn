@@ -35,21 +35,19 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 /**
- * Large Gas Turbine block: all power values come from
- * {@code generators.json}, oxygen cell boost support.
+ * HunterProcessReactor block: independent recipe type, up to 16 parallels.
  */
-public class LargeGasTurbineBlock extends GenericMachineBlock {
+public class HunterProcessReactorBlock extends GenericMachineBlock {
 
-	public LargeGasTurbineBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass) {
+	public HunterProcessReactorBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass) {
 		super(gui, blockEntityClass);
 	}
 
 	@Override
 	protected void appendMachineTooltip(List<Text> tooltip) {
 		MultiblockTooltipBuilder.create()
-				.recipeTypes(ModRecipes.LARGE_GAS_TURBINE, List.of(ModRecipes.GAS_GENERATOR))
-				.note("item.techreborn.large_generator.heat_bonus")
-				.note("item.techreborn.large_generator.oxygen")
+				.recipeTypes(ModRecipes.HUNTER_PROCESS_REACTOR, List.of())
+				.maxParallel(16)
 				.appendTo(tooltip);
 	}
 }

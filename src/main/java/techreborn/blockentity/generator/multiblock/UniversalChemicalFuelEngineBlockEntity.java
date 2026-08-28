@@ -34,6 +34,7 @@ import reborncore.common.fluid.FluidValue;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
+import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
@@ -44,18 +45,24 @@ import java.util.List;
 
 /**
  * Universal Chemical Fuel Engine: burns every semi-fluid, gas and diesel
- * generator recipe with 16 parallel fuel streams (16x the small machines' max
- * output, derived from the small gas and diesel generator configs). Oxygen
- * cells boost the output by 1.5x.
+ * generator recipe with 16 parallel fuel streams. Oxygen cells boost the
+ * output by 1.5x. All power values come from {@code generators.json}.
  */
 public class UniversalChemicalFuelEngineBlockEntity extends LargeFluidGeneratorBlockEntity implements BuiltScreenHandlerProvider {
 
-	public static final int PARALLEL = 16;
-	public static final float HEAT_VALUE_MULTIPLIER = 1.0F;
-
 	public UniversalChemicalFuelEngineBlockEntity(BlockPos pos, BlockState state) {
 		super(TRBlockEntities.UNIVERSAL_CHEMICAL_FUEL_ENGINE, pos, state, ModRecipes.SEMI_FLUID_GENERATOR,
-				"UniversalChemicalFuelEngineBlockEntity", baseEuPerTick(), PARALLEL, HEAT_VALUE_MULTIPLIER);
+				"UniversalChemicalFuelEngineBlockEntity", TechRebornConfig.universalChemicalFuelEngineEnergyPerTick);
+	}
+
+	@Override
+	protected int getConfiguredMaxOutput() {
+		return TechRebornConfig.universalChemicalFuelEngineMaxOutput;
+	}
+
+	@Override
+	protected int getConfiguredMaxEnergy() {
+		return TechRebornConfig.universalChemicalFuelEngineMaxEnergy;
 	}
 
 	/**

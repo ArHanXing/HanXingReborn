@@ -35,21 +35,18 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 /**
- * Large Gas Turbine block: all power values come from
- * {@code generators.json}, oxygen cell boost support.
+ * CultivationVessel block: independent recipe type, single-parallel.
  */
-public class LargeGasTurbineBlock extends GenericMachineBlock {
+public class CultivationVesselBlock extends GenericMachineBlock {
 
-	public LargeGasTurbineBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass) {
+	public CultivationVesselBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass) {
 		super(gui, blockEntityClass);
 	}
 
 	@Override
 	protected void appendMachineTooltip(List<Text> tooltip) {
 		MultiblockTooltipBuilder.create()
-				.recipeTypes(ModRecipes.LARGE_GAS_TURBINE, List.of(ModRecipes.GAS_GENERATOR))
-				.note("item.techreborn.large_generator.heat_bonus")
-				.note("item.techreborn.large_generator.oxygen")
+				.recipeTypes(ModRecipes.CULTIVATION_VESSEL, List.of())
 				.appendTo(tooltip);
 	}
 }

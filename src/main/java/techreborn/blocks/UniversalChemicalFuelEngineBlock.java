@@ -35,8 +35,9 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 /**
- * Universal Chemical Fuel Engine block: 16 parallel fuel streams burning every
- * semi-fluid, gas and diesel recipe, oxygen cell boost support.
+ * Universal Chemical Fuel Engine block: burns every semi-fluid, gas and
+ * diesel recipe, oxygen cell boost support. All power values come from
+ * {@code generators.json}.
  */
 public class UniversalChemicalFuelEngineBlock extends GenericMachineBlock {
 
@@ -49,7 +50,6 @@ public class UniversalChemicalFuelEngineBlock extends GenericMachineBlock {
 		MultiblockTooltipBuilder.create()
 				.recipeTypes(ModRecipes.UNIVERSAL_CHEMICAL_FUEL_ENGINE,
 						List.of(ModRecipes.SEMI_FLUID_GENERATOR, ModRecipes.GAS_GENERATOR, ModRecipes.DIESEL_GENERATOR))
-				.maxParallel(16)
 				.note("item.techreborn.large_generator.oxygen")
 				.appendTo(tooltip);
 	}

@@ -22,34 +22,30 @@
  * SOFTWARE.
  */
 
-package techreborn.blocks;
+package techreborn.recipe;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import reborncore.api.blockentity.IMachineGuiHandler;
-import techreborn.init.ModRecipes;
-
-import java.util.List;
-import java.util.function.BiFunction;
+import net.minecraft.recipe.RecipeType;
+import reborncore.common.crafting.RebornRecipe;
+import reborncore.common.recipes.RecipeCrafter;
+import reborncore.common.util.RebornInventory;
 
 /**
- * Large Gas Turbine block: all power values come from
- * {@code generators.json}, oxygen cell boost support.
+ * Recipe crafter with a built-in 0.5x crafting time (the machine itself is
+ * twice as fast, on top of any overclocker upgrades).
+ * <p>
+ * Used by the Crawler Reactor. The speed multiplier is clamped so upgrades
+ * cannot push the total beyond the usual cap.
  */
-public class LargeGasTurbineBlock extends GenericMachineBlock {
+public class CrawlerRecipeCrafter extends RecipeCrafter {
 
-	public LargeGasTurbineBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass) {
-		super(gui, blockEntityClass);
+	public CrawlerRecipeCrafter(RecipeType<? extends RebornRecipe> recipeType, BlockEntity blockEntity, int inputs,
+			int outputs, RebornInventory<?> inventory, int[] inputSlots, int[] outputSlots) {
+		super(recipeType, blockEntity, inputs, outputs, inventory, inputSlots, outputSlots);
 	}
 
 	@Override
-	protected void appendMachineTooltip(List<Text> tooltip) {
-		MultiblockTooltipBuilder.create()
-				.recipeTypes(ModRecipes.LARGE_GAS_TURBINE, List.of(ModRecipes.GAS_GENERATOR))
-				.note("item.techreborn.large_generator.heat_bonus")
-				.note("item.techreborn.large_generator.oxygen")
-				.appendTo(tooltip);
+	public double getSpeedMultiplier() {
+		return Math.min(0.5 + super.getSpeedMultiplier(), 0.99);
 	}
 }

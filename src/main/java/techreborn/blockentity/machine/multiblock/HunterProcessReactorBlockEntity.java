@@ -22,62 +22,59 @@
  * SOFTWARE.
  */
 
-package techreborn.blockentity.generator.multiblock;
+package techreborn.blockentity.machine.multiblock;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockPos;
-import reborncore.common.fluid.FluidValue;
+import reborncore.common.crafting.RebornRecipe;
+import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
+import reborncore.common.util.RebornInventory;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
 
 /**
- * Large Gas Turbine: runs every small gas turbine (gas generator) recipe with
- * 8 parallel fuel streams and a 1.25x fuel heat value bonus. Oxygen cells
- * boost the output by 1.5x. All power values come from
- * {@code generators.json}.
+ * HunterProcessReactor
+ * <p>
+ * Independent-recipe multiblock with its own slot layout, up to 16 parallels.
  */
-public class LargeGasTurbineBlockEntity extends LargeFluidGeneratorBlockEntity implements BuiltScreenHandlerProvider {
+public class HunterProcessReactorBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
-	public LargeGasTurbineBlockEntity(BlockPos pos, BlockState state) {
-		super(TRBlockEntities.LARGE_GAS_TURBINE, pos, state, ModRecipes.GAS_GENERATOR,
-				"LargeGasTurbineBlockEntity", TechRebornConfig.largeGasTurbineEnergyPerTick);
-	}
-
-	@Override
-	protected int getConfiguredMaxOutput() {
-		return TechRebornConfig.largeGasTurbineMaxOutput;
-	}
-
-	@Override
-	protected int getConfiguredMaxEnergy() {
-		return TechRebornConfig.largeGasTurbineMaxEnergy;
+	public HunterProcessReactorBlockEntity(BlockPos pos, BlockState state) {
+		super(TRBlockEntities.HUNTER_PROCESS_REACTOR, pos, state, "HunterProcessReactor",
+				TechRebornConfig.hunterProcessReactorMaxInput, TechRebornConfig.hunterProcessReactorMaxEnergy,
+				TRContent.Machine.HUNTER_PROCESS_REACTOR.block, 10);
+		final int[] inputs = new int[]{0, 1, 2, 3, 4, 5};
+		final int[] outputs = new int[]{6, 7, 8, 9};
+		this.inventory = new RebornInventory<>(11, "HunterProcessReactorBlockEntity", 64, this);
+		this.crafter = new RecipeCrafter(ModRecipes.HUNTER_PROCESS_REACTOR, this, 6, 4, this.inventory, inputs, outputs);
+		this.crafter.setMaxParallel(16);
 	}
 
 	@Override
 	public String getMultiblockId() {
-		return "large_gas_turbine";
+		return "hunter_process_reactor";
 	}
 
 	@Override
-	public ItemStack getToolDrop(PlayerEntity entityPlayer) {
-		return TRContent.Machine.LARGE_GAS_TURBINE.getStack();
+	public boolean canCraft(RebornRecipe rebornRecipe) {
+		return isMultiblockValid();
 	}
 
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, final PlayerEntity player) {
-		return new ScreenHandlerBuilder("largegasturbine").player(player.getInventory()).inventory().hotbar()
-				.addInventory().blockEntity(this).slot(0, 25, 35).outputSlot(1, 25, 55).syncEnergyValue()
-				.sync(PacketCodecs.INTEGER, this::getTicksSinceLastChange, this::setTicksSinceLastChange)
-				.sync(FluidValue.PACKET_CODEC, this::getTankAmount, this::setTankAmount)
-				.sync(tank)
+		return new ScreenHandlerBuilder("hunterprocessreactor").player(player.getInventory()).inventory().hotbar().addInventory()
+				.blockEntity(this)
+				.slot(0, 35, 26).slot(1, 53, 26).slot(2, 71, 26)
+				.slot(3, 35, 44).slot(4, 53, 44).slot(5, 71, 44)
+				.outputSlot(6, 107, 26).outputSlot(7, 125, 26)
+				.outputSlot(8, 107, 44).outputSlot(9, 125, 44)
+				.energySlot(10, 8, 72).syncEnergyValue().syncCrafterValue()
 				.addInventory().create(this, syncID);
 	}
 }

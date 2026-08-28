@@ -76,6 +76,11 @@ import techreborn.blockentity.storage.energy.AdjustableSUBlockEntity;
 import techreborn.blocks.GenericMachineBlock;
 import techreborn.blocks.IndustrialGrinderBlock;
 import techreborn.blocks.LargeChemicalReactorBlock;
+import techreborn.blocks.HunterProcessReactorBlock;
+import techreborn.blocks.KrollReductionVesselBlock;
+import techreborn.blocks.CultivationVesselBlock;
+import techreborn.blocks.IrradiatedMutagensisChamberBlock;
+import techreborn.blocks.SupercriticalPolymerizationChamberBlock;
 import techreborn.blocks.LargeCompressorBlock;
 import techreborn.blocks.LargeGrinderBlock;
 import techreborn.blocks.LargeLatheBlock;
@@ -814,6 +819,11 @@ public class TRContent {
 		SPACE_ELEVATOR(new GenericMachineBlock(GuiType.SPACE_ELEVATOR, SpaceElevatorBlockEntity::new)),
 		SPACE_ELEVATOR_ASSEMBLER(new GenericMachineBlock(GuiType.SPACE_ELEVATOR_ASSEMBLER, SpaceElevatorAssemblerBlockEntity::new)),
 		SPACE_ELEVATOR_MINER(new GenericMachineBlock(GuiType.SPACE_ELEVATOR_MINER, SpaceElevatorMinerBlockEntity::new)),
+		HUNTER_PROCESS_REACTOR(new HunterProcessReactorBlock(GuiType.HUNTER_PROCESS_REACTOR, HunterProcessReactorBlockEntity::new)),
+		KROLL_REDUCTION_VESSEL(new KrollReductionVesselBlock(GuiType.KROLL_REDUCTION_VESSEL, KrollReductionVesselBlockEntity::new)),
+		CULTIVATION_VESSEL(new CultivationVesselBlock(GuiType.CULTIVATION_VESSEL, CultivationVesselBlockEntity::new)),
+		IRRADIATED_MUTAGENSIS_CHAMBER(new IrradiatedMutagensisChamberBlock(GuiType.IRRADIATED_MUTAGENSIS_CHAMBER, IrradiatedMutagensisChamberBlockEntity::new)),
+		SUPERCRITICAL_POLYMERIZATION_CHAMBER(new SupercriticalPolymerizationChamberBlock(GuiType.SUPERCRITICAL_POLYMERIZATION_CHAMBER, SupercriticalPolymerizationChamberBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),
 		GREENHOUSE_CONTROLLER(new GenericMachineBlock(GuiType.GREENHOUSE_CONTROLLER, GreenhouseControllerBlockEntity::new)),

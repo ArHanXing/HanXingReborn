@@ -103,4 +103,9 @@ public class ModRecipes {
 	public static final RecipeType<FluidGeneratorRecipe> UNIVERSAL_CHEMICAL_FUEL_ENGINE = RecipeManager.newRecipeType(Identifier.of("techreborn:universal_chemical_fuel_engine"), FluidGeneratorRecipe.CODEC, FluidGeneratorRecipe.PACKET_CODEC);
 	public static final RecipeType<RebornRecipe> SPACE_ELEVATOR_ASSEMBLER = RecipeManager.newRecipeType(Identifier.of("techreborn:space_elevator_assembler"));
 	public static final RecipeType<RebornRecipe> SPACE_ELEVATOR_MINER = RecipeManager.newRecipeType(Identifier.of("techreborn:space_elevator_miner"));
+	public static final RecipeType<RebornRecipe> HUNTER_PROCESS_REACTOR = RecipeManager.newRecipeType(Identifier.of("techreborn:hunter_process_reactor"));
+	public static final RecipeType<RebornRecipe> KROLL_REDUCTION_VESSEL = RecipeManager.newRecipeType(Identifier.of("techreborn:kroll_reduction_vessel"));
+	public static final RecipeType<RebornRecipe> CULTIVATION_VESSEL = RecipeManager.newRecipeType(Identifier.of("techreborn:cultivation_vessel"));
+	public static final RecipeType<RebornRecipe> IRRADIATED_MUTAGENSIS_CHAMBER = RecipeManager.newRecipeType(Identifier.of("techreborn:irradiated_mutagensis_chamber"));
+	public static final RecipeType<RebornRecipe> SUPERCRITICAL_POLYMERIZATION_CHAMBER = RecipeManager.newRecipeType(Identifier.of("techreborn:supercritical_polymerization_chamber"));
 }

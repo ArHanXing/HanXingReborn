@@ -175,6 +175,11 @@ public class TRBlockEntities {
 	public static final BlockEntityType<SpaceElevatorBlockEntity> SPACE_ELEVATOR = register(SpaceElevatorBlockEntity::new, "space_elevator", TRContent.Machine.SPACE_ELEVATOR);
 	public static final BlockEntityType<SpaceElevatorAssemblerBlockEntity> SPACE_ELEVATOR_ASSEMBLER = register(SpaceElevatorAssemblerBlockEntity::new, "space_elevator_assembler", TRContent.Machine.SPACE_ELEVATOR_ASSEMBLER);
 	public static final BlockEntityType<SpaceElevatorMinerBlockEntity> SPACE_ELEVATOR_MINER = register(SpaceElevatorMinerBlockEntity::new, "space_elevator_miner", TRContent.Machine.SPACE_ELEVATOR_MINER);
+	public static final BlockEntityType<HunterProcessReactorBlockEntity> HUNTER_PROCESS_REACTOR = register(HunterProcessReactorBlockEntity::new, "hunter_process_reactor", TRContent.Machine.HUNTER_PROCESS_REACTOR);
+	public static final BlockEntityType<KrollReductionVesselBlockEntity> KROLL_REDUCTION_VESSEL = register(KrollReductionVesselBlockEntity::new, "kroll_reduction_vessel", TRContent.Machine.KROLL_REDUCTION_VESSEL);
+	public static final BlockEntityType<CultivationVesselBlockEntity> CULTIVATION_VESSEL = register(CultivationVesselBlockEntity::new, "cultivation_vessel", TRContent.Machine.CULTIVATION_VESSEL);
+	public static final BlockEntityType<IrradiatedMutagensisChamberBlockEntity> IRRADIATED_MUTAGENSIS_CHAMBER = register(IrradiatedMutagensisChamberBlockEntity::new, "irradiated_mutagensis_chamber", TRContent.Machine.IRRADIATED_MUTAGENSIS_CHAMBER);
+	public static final BlockEntityType<SupercriticalPolymerizationChamberBlockEntity> SUPERCRITICAL_POLYMERIZATION_CHAMBER = register(SupercriticalPolymerizationChamberBlockEntity::new, "supercritical_polymerization_chamber", TRContent.Machine.SUPERCRITICAL_POLYMERIZATION_CHAMBER);
 
 	public static <T extends BlockEntity> BlockEntityType<T> register(BiFunction<BlockPos, BlockState, T> supplier, String name, ItemConvertible... items) {
 		return register(supplier, name, Arrays.stream(items).map(itemConvertible -> Block.getBlockFromItem(itemConvertible.asItem())).toArray(Block[]::new));

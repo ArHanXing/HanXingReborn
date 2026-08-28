@@ -1,4 +1,4 @@
-/*
+ /*
  * This file is part of TechReborn, licensed under the MIT License (MIT).
  *
  * Copyright (c) 2020 TechReborn
@@ -143,6 +143,33 @@ public class TechRebornConfig {
 
 	@Config(config = "generators", category = "diesel_generator", key = "DieselGeneratorEnergyPerTick", comment = "Diesel Generator Energy Per Tick")
 	public static int dieselGeneratorEnergyPerTick = 20;
+
+	@Config(config = "generators", category = "large_gas_turbine", key = "LargeGasTurbineMaxOutput", comment = "Large Gas Turbine Max Output (Energy per tick)")
+	public static int largeGasTurbineMaxOutput = 256;
+
+	@Config(config = "generators", category = "large_gas_turbine", key = "LargeGasTurbineMaxEnergy", comment = "Large Gas Turbine Max Energy")
+	public static int largeGasTurbineMaxEnergy = 80_000;
+
+	@Config(config = "generators", category = "large_gas_turbine", key = "LargeGasTurbineEnergyPerTick", comment = "Large Gas Turbine Energy Per Tick")
+	public static int largeGasTurbineEnergyPerTick = 160;
+
+	@Config(config = "generators", category = "large_combustion_engine", key = "LargeCombustionEngineMaxOutput", comment = "Large Combustion Engine Max Output (Energy per tick)")
+	public static int largeCombustionEngineMaxOutput = 256;
+
+	@Config(config = "generators", category = "large_combustion_engine", key = "LargeCombustionEngineMaxEnergy", comment = "Large Combustion Engine Max Energy")
+	public static int largeCombustionEngineMaxEnergy = 80_000;
+
+	@Config(config = "generators", category = "large_combustion_engine", key = "LargeCombustionEngineEnergyPerTick", comment = "Large Combustion Engine Energy Per Tick")
+	public static int largeCombustionEngineEnergyPerTick = 160;
+
+	@Config(config = "generators", category = "universal_chemical_fuel_engine", key = "UniversalChemicalFuelEngineMaxOutput", comment = "Universal Chemical Fuel Engine Max Output (Energy per tick)")
+	public static int universalChemicalFuelEngineMaxOutput = 512;
+
+	@Config(config = "generators", category = "universal_chemical_fuel_engine", key = "UniversalChemicalFuelEngineMaxEnergy", comment = "Universal Chemical Fuel Engine Max Energy")
+	public static int universalChemicalFuelEngineMaxEnergy = 160_000;
+
+	@Config(config = "generators", category = "universal_chemical_fuel_engine", key = "UniversalChemicalFuelEngineEnergyPerTick", comment = "Universal Chemical Fuel Engine Energy Per Tick")
+	public static int universalChemicalFuelEngineEnergyPerTick = 256;
 
 	@Config(config = "generators", category = "dragon_egg_siphoner", key = "DragonEggSiphonerMaxOutput", comment = "Dragon Egg Siphoner Max Output (Energy per tick)")
 	public static int dragonEggSyphonMaxOutput = 128;
@@ -564,6 +591,36 @@ public class TechRebornConfig {
 
 	@Config(config = "machines", category = "space_elevator_miner", key = "SpaceElevatorMinerMaxEnergy", comment = "Space Elevator Miner Max Energy")
 	public static int spaceElevatorMinerMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "hunter_process_reactor", key = "HunterProcessReactorMaxInput", comment = "Hunter Process Reactor Max Input (Energy per tick)")
+	public static int hunterProcessReactorMaxInput = 256;
+
+	@Config(config = "machines", category = "hunter_process_reactor", key = "HunterProcessReactorMaxEnergy", comment = "Hunter Process Reactor Max Energy")
+	public static int hunterProcessReactorMaxEnergy = 80_000;
+
+	@Config(config = "machines", category = "kroll_reduction_vessel", key = "KrollReductionVesselMaxInput", comment = "Kroll Reduction Vessel Max Input (Energy per tick)")
+	public static int krollReductionVesselMaxInput = 256;
+
+	@Config(config = "machines", category = "kroll_reduction_vessel", key = "KrollReductionVesselMaxEnergy", comment = "Kroll Reduction Vessel Max Energy")
+	public static int krollReductionVesselMaxEnergy = 80_000;
+
+	@Config(config = "machines", category = "cultivation_vessel", key = "CultivationVesselMaxInput", comment = "Cultivation Vessel Max Input (Energy per tick)")
+	public static int cultivationVesselMaxInput = 128;
+
+	@Config(config = "machines", category = "cultivation_vessel", key = "CultivationVesselMaxEnergy", comment = "Cultivation Vessel Max Energy")
+	public static int cultivationVesselMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "irradiated_mutagensis_chamber", key = "IrradiatedMutagensisChamberMaxInput", comment = "Irradiated Mutagensis Chamber Max Input (Energy per tick)")
+	public static int irradiatedMutagensisChamberMaxInput = 128;
+
+	@Config(config = "machines", category = "irradiated_mutagensis_chamber", key = "IrradiatedMutagensisChamberMaxEnergy", comment = "Irradiated Mutagensis Chamber Max Energy")
+	public static int irradiatedMutagensisChamberMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "supercritical_polymerization_chamber", key = "SupercriticalPolymerizationChamberMaxInput", comment = "Supercritical Polymerization Chamber Max Input (Energy per tick)")
+	public static int supercriticalPolymerizationChamberMaxInput = 128;
+
+	@Config(config = "machines", category = "supercritical_polymerization_chamber", key = "SupercriticalPolymerizationChamberMaxEnergy", comment = "Supercritical Polymerization Chamber Max Energy")
+	public static int supercriticalPolymerizationChamberMaxEnergy = 10_000;
 
 	@Config(config = "machines", category = "industrial_alloy_smelter", key = "IndustrialAlloySmelterMaxInput", comment = "Industrial Alloy Smelter Max Input (Energy per tick)")
 	public static int industrialAlloySmelterMaxInput = 128;

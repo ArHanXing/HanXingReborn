@@ -33,23 +33,31 @@ import reborncore.common.fluid.FluidValue;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
+import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
 
 /**
  * Large Combustion Engine: runs every small diesel generator recipe with 8
- * parallel fuel streams (8x the small machines' max output) and a 1.25x fuel
- * heat value bonus. Oxygen cells boost the output by 1.5x.
+ * parallel fuel streams and a 1.25x fuel heat value bonus. Oxygen cells boost
+ * the output by 1.5x. All power values come from {@code generators.json}.
  */
 public class LargeCombustionEngineBlockEntity extends LargeFluidGeneratorBlockEntity implements BuiltScreenHandlerProvider {
 
-	public static final int PARALLEL = 8;
-	public static final float HEAT_VALUE_MULTIPLIER = 1.25F;
-
 	public LargeCombustionEngineBlockEntity(BlockPos pos, BlockState state) {
 		super(TRBlockEntities.LARGE_COMBUSTION_ENGINE, pos, state, ModRecipes.DIESEL_GENERATOR,
-				"LargeCombustionEngineBlockEntity", baseEuPerTick(), PARALLEL, HEAT_VALUE_MULTIPLIER);
+				"LargeCombustionEngineBlockEntity", TechRebornConfig.largeCombustionEngineEnergyPerTick);
+	}
+
+	@Override
+	protected int getConfiguredMaxOutput() {
+		return TechRebornConfig.largeCombustionEngineMaxOutput;
+	}
+
+	@Override
+	protected int getConfiguredMaxEnergy() {
+		return TechRebornConfig.largeCombustionEngineMaxEnergy;
 	}
 
 	@Override

@@ -92,7 +92,12 @@ public class MultiblockDefinitionLoader {
 			"universal_chemical_fuel_engine",
 			"space_elevator",
 			"space_elevator_assembler",
-			"space_elevator_miner"
+			"space_elevator_miner",
+			"hunter_process_reactor",
+			"kroll_reduction_vessel",
+			"cultivation_vessel",
+			"irradiated_mutagensis_chamber",
+			"supercritical_polymerization_chamber"
 	};
 
 	private MultiblockDefinitionLoader() {
