@@ -36,7 +36,7 @@ import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
-import techreborn.recipe.CrawlerRecipeCrafter;
+import techreborn.recipe.KrollRecipeCrafter;
 
 /**
  * KrollReductionVessel
@@ -52,7 +52,7 @@ public class KrollReductionVesselBlockEntity extends JsonMultiblockMachineBlockE
 		final int[] inputs = new int[]{0, 1, 2, 3, 4, 5};
 		final int[] outputs = new int[]{6, 7, 8, 9};
 		this.inventory = new RebornInventory<>(11, "KrollReductionVesselBlockEntity", 64, this);
-		this.crafter = new CrawlerRecipeCrafter(ModRecipes.KROLL_REDUCTION_VESSEL, this, 6, 4, this.inventory, inputs, outputs);
+		this.crafter = new KrollRecipeCrafter(ModRecipes.KROLL_REDUCTION_VESSEL, this, 6, 4, this.inventory, inputs, outputs);
 		this.crafter.setMaxParallel(32);
 	}
 

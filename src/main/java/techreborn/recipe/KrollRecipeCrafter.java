@@ -34,12 +34,12 @@ import reborncore.common.util.RebornInventory;
  * Recipe crafter with a built-in 0.5x crafting time (the machine itself is
  * twice as fast, on top of any overclocker upgrades).
  * <p>
- * Used by the Crawler Reactor. The speed multiplier is clamped so upgrades
+ * Used by the Kroll reactor. The speed multiplier is clamped so upgrades
  * cannot push the total beyond the usual cap.
  */
-public class CrawlerRecipeCrafter extends RecipeCrafter {
+public class KrollRecipeCrafter extends RecipeCrafter {
 
-	public CrawlerRecipeCrafter(RecipeType<? extends RebornRecipe> recipeType, BlockEntity blockEntity, int inputs,
+	public KrollRecipeCrafter(RecipeType<? extends RebornRecipe> recipeType, BlockEntity blockEntity, int inputs,
 			int outputs, RebornInventory<?> inventory, int[] inputSlots, int[] outputSlots) {
 		super(recipeType, blockEntity, inputs, outputs, inventory, inputSlots, outputSlots);
 	}

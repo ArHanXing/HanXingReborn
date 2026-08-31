@@ -33,7 +33,7 @@ import techreborn.client.compat.emi.core.UIUtils;
 /**
  * EMI recipe for machines with the Large Chemical Reactor layout: 6 inputs
  * (2 columns x 3 rows) and 4 outputs (2x2 grid). Used by the Hunter and
- * Crawler reactors with their own categories.
+ * Kroll reactors with their own categories.
  */
 public class SixInFourOutEmiRecipe extends TREmiRecipe<RebornRecipe> {
 

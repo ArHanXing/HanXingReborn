@@ -36,7 +36,7 @@ import techreborn.blockentity.machine.multiblock.JsonMultiblockMachineBlockEntit
 /**
  * GUI for machines with the Large Chemical Reactor layout: 6 inputs (3x2
  * grid), 4 outputs (2x2 grid), progress bar, energy bar and the multiblock
- * hologram button. Used by the Hunter and Crawler reactors.
+ * hologram button. Used by the Hunter and Kroll reactors.
  */
 public class GuiSixInFourOut<T extends JsonMultiblockMachineBlockEntity & BuiltScreenHandlerProvider> extends GuiBase<BuiltScreenHandler> {
 
