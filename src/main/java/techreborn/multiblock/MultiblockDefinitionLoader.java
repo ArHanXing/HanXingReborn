@@ -97,7 +97,9 @@ public class MultiblockDefinitionLoader {
 			"kroll_reduction_vessel",
 			"cultivation_vessel",
 			"irradiated_mutagensis_chamber",
-			"supercritical_polymerization_chamber"
+			"supercritical_polymerization_chamber",
+			"dyson_swarm_host",
+			"dyson_swarm_receiver"
 	};
 
 	private MultiblockDefinitionLoader() {

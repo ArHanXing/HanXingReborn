@@ -87,6 +87,8 @@ import techreborn.blockentity.machine.multiblock.HunterProcessReactorBlockEntity
 import techreborn.blockentity.machine.multiblock.KrollReductionVesselBlockEntity;
 import techreborn.blockentity.machine.multiblock.CultivationVesselBlockEntity;
 import techreborn.blockentity.machine.multiblock.IrradiatedMutagensisChamberBlockEntity;
+import techreborn.blockentity.machine.multiblock.DysonSwarmHostBlockEntity;
+import techreborn.blockentity.machine.multiblock.DysonSwarmReceiverBlockEntity;
 import techreborn.blockentity.machine.multiblock.SupercriticalPolymerizationChamberBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeGasTurbineBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeCombustionEngineBlockEntity;
@@ -209,6 +211,8 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<CultivationVesselBlockEntity> CULTIVATION_VESSEL = register("cultivation_vessel");
 	public static final GuiType<IrradiatedMutagensisChamberBlockEntity> IRRADIATED_MUTAGENSIS_CHAMBER = register("irradiated_mutagensis_chamber");
 	public static final GuiType<SupercriticalPolymerizationChamberBlockEntity> SUPERCRITICAL_POLYMERIZATION_CHAMBER = register("supercritical_polymerization_chamber");
+	public static final GuiType<DysonSwarmHostBlockEntity> DYSON_SWARM_HOST = register("dyson_swarm_host");
+	public static final GuiType<DysonSwarmReceiverBlockEntity> DYSON_SWARM_RECEIVER = register("dyson_swarm_receiver");
 
 
 	private static <T extends BlockEntity> GuiType<T> register(String path) {

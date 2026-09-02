@@ -180,6 +180,8 @@ public class TRBlockEntities {
 	public static final BlockEntityType<CultivationVesselBlockEntity> CULTIVATION_VESSEL = register(CultivationVesselBlockEntity::new, "cultivation_vessel", TRContent.Machine.CULTIVATION_VESSEL);
 	public static final BlockEntityType<IrradiatedMutagensisChamberBlockEntity> IRRADIATED_MUTAGENSIS_CHAMBER = register(IrradiatedMutagensisChamberBlockEntity::new, "irradiated_mutagensis_chamber", TRContent.Machine.IRRADIATED_MUTAGENSIS_CHAMBER);
 	public static final BlockEntityType<SupercriticalPolymerizationChamberBlockEntity> SUPERCRITICAL_POLYMERIZATION_CHAMBER = register(SupercriticalPolymerizationChamberBlockEntity::new, "supercritical_polymerization_chamber", TRContent.Machine.SUPERCRITICAL_POLYMERIZATION_CHAMBER);
+	public static final BlockEntityType<DysonSwarmHostBlockEntity> DYSON_SWARM_HOST = register(DysonSwarmHostBlockEntity::new, "dyson_swarm_host", TRContent.Machine.DYSON_SWARM_HOST);
+	public static final BlockEntityType<DysonSwarmReceiverBlockEntity> DYSON_SWARM_RECEIVER = register(DysonSwarmReceiverBlockEntity::new, "dyson_swarm_receiver", TRContent.Machine.DYSON_SWARM_RECEIVER);
 
 	public static <T extends BlockEntity> BlockEntityType<T> register(BiFunction<BlockPos, BlockState, T> supplier, String name, ItemConvertible... items) {
 		return register(supplier, name, Arrays.stream(items).map(itemConvertible -> Block.getBlockFromItem(itemConvertible.asItem())).toArray(Block[]::new));
@@ -200,13 +202,15 @@ public class TRBlockEntities {
 	private static ItemConvertible[] getMachineCasingBlocks() {
 		ItemConvertible[] casings = TRContent.MachineBlocks.getCasings();
 		ItemConvertible[] coils = TRContent.Coils.values();
-		ItemConvertible[] all = new ItemConvertible[casings.length + coils.length + 2];
+		ItemConvertible[] all = new ItemConvertible[casings.length + coils.length + 3];
 		System.arraycopy(casings, 0, all, 0, casings.length);
 		System.arraycopy(coils, 0, all, casings.length, coils.length);
-		// Space Elevator structural blocks share the machine casing block entity
-		// (they are created by BlockEntityProvider.createBlockEntity).
+		// Space Elevator and Dyson Swarm structural blocks share the machine
+		// casing block entity (they are created by
+		// BlockEntityProvider.createBlockEntity).
 		all[casings.length + coils.length] = TRContent.SPACE_ELEVATOR_CASING;
 		all[casings.length + coils.length + 1] = TRContent.SPACE_ELEVATOR_POWER_MODULE;
+		all[casings.length + coils.length + 2] = TRContent.ECHO_CASING;
 		return all;
 	}
 }

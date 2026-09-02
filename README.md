@@ -68,3 +68,5 @@ Tech Reborn is licensed under the MIT license. Full license is  in **LICENSE.md*
 EMI 兼容使用的代码来自 [ExMI](https://github.com/Kneelawk/extra-mod-integrations) under CC0 License.
 
 材质依旧来源于 GT Modern.
+
+部分材质来源于 Dyson Cube Project mod.

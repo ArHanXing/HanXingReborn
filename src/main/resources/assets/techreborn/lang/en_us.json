@@ -1306,5 +1306,21 @@
   "tooltip.techreborn.ore_prospector.cost": "Energy per Scan: %s E",
   "tooltip.techreborn.ore_prospector.no_energy": "Not enough energy to scan!",
   "tooltip.techreborn.ore_prospector.no_ores": "No ores found in scanned area.",
-  "tooltip.techreborn.ore_prospector.header": "Ore Prospecting Results (%s closest chunks):"
+  "tooltip.techreborn.ore_prospector.header": "Ore Prospecting Results (%s closest chunks):",
+
+  "block.techreborn.echo_casing": "Echo Alloy Casing",
+  "block.techreborn.dyson_swarm_host": "Dyson Swarm Host",
+  "block.techreborn.dyson_swarm_receiver": "Dyson Swarm Receiver",
+  "item.techreborn.solar_sail": "Solar Sail",
+
+  "gui.techreborn.dyson.bound_to": "Bound to: %s",
+  "gui.techreborn.dyson.unbound": "Unbound",
+  "gui.techreborn.dyson.sails": "Sails: %s",
+  "gui.techreborn.dyson.receiver_output": "Output: %s EU/t",
+  "gui.techreborn.dyson.btn_bind": "Bind",
+  "gui.techreborn.dyson.btn_unbind": "Unbind",
+
+  "message.techreborn.dyson.bound_to_other": "This Dyson machine is already bound to another player.",
+  "message.techreborn.dyson.already_bound_elsewhere": "You already have a bound Dyson Swarm machine of this type.",
+  "message.techreborn.dyson.not_bound": "This Dyson machine is not bound."
 }

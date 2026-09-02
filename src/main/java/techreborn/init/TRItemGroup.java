@@ -150,6 +150,7 @@ public class TRItemGroup {
 		entries.add(TRContent.FREQUENCY_TRANSMITTER);
 		entries.add(TRContent.REINFORCED_GLASS);
 		entries.addAfter(TRContent.Parts.SCRAP, TRContent.SCRAP_BOX);
+		entries.addAfter(TRContent.SCRAP_BOX, TRContent.SOLAR_SAIL);
 
 		// machines
 		entries.add(TRContent.WRENCH);
@@ -158,6 +159,7 @@ public class TRItemGroup {
 			entries.add(machineBlock.frame);
 			entries.add(machineBlock.casing);
 		}
+		entries.add(TRContent.ECHO_CASING);
 		addContent(TRContent.Cables.values(), entries);
 		addContent(TRContent.Machine.values(), entries);
 		addContent(TRContent.SolarPanels.values(), entries);

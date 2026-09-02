@@ -1248,5 +1248,21 @@
   "tooltip.techreborn.ore_prospector.cost": "单次扫描能耗: %s E",
   "tooltip.techreborn.ore_prospector.no_energy": "能量不足，无法扫描！",
   "tooltip.techreborn.ore_prospector.no_ores": "扫描区域内未发现矿石。",
-  "tooltip.techreborn.ore_prospector.header": "探矿结果 (最近的 %s 个区块):"
+  "tooltip.techreborn.ore_prospector.header": "探矿结果 (最近的 %s 个区块):",
+
+  "block.techreborn.echo_casing": "回响合金外壳",
+  "block.techreborn.dyson_swarm_host": "戴森云主机",
+  "block.techreborn.dyson_swarm_receiver": "戴森云接收器",
+  "item.techreborn.solar_sail": "太阳帆",
+
+  "gui.techreborn.dyson.bound_to": "已绑定: %s",
+  "gui.techreborn.dyson.unbound": "未绑定",
+  "gui.techreborn.dyson.sails": "太阳帆: %s",
+  "gui.techreborn.dyson.receiver_output": "产出: %s EU/t",
+  "gui.techreborn.dyson.btn_bind": "绑定",
+  "gui.techreborn.dyson.btn_unbind": "解绑",
+
+  "message.techreborn.dyson.bound_to_other": "这台戴森云机器已被其他玩家绑定。",
+  "message.techreborn.dyson.already_bound_elsewhere": "你已绑定了同类型的戴森云机器。",
+  "message.techreborn.dyson.not_bound": "这台戴森云机器未绑定。"
 }

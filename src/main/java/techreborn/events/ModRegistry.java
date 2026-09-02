@@ -92,6 +92,7 @@ public class ModRegistry {
 		RebornRegistry.registerBlock(TRContent.REINFORCED_GLASS = InitUtils.setup(new BlockReinforcedGlass(), "reinforced_glass"), itemGroup);
 		RebornRegistry.registerBlock(TRContent.SPACE_ELEVATOR_CASING = InitUtils.setup(new BlockSpaceElevatorCasing(), "space_elevator_casing"), itemGroup);
 		RebornRegistry.registerBlock(TRContent.SPACE_ELEVATOR_POWER_MODULE = InitUtils.setup(new BlockSpaceElevatorPowerModule(), "space_elevator_power_module"), itemGroup);
+		RebornRegistry.registerBlock(TRContent.ECHO_CASING = InitUtils.setup(new BlockEchoCasing(), "echo_casing"), itemGroup);
 		RebornRegistry.registerBlock(TRContent.RUBBER_LEAVES = InitUtils.setup(new BlockRubberLeaves(), "rubber_leaves"), itemGroup);
 		RebornRegistry.registerBlock(TRContent.RUBBER_LOG = InitUtils.setup(new BlockRubberLog(), "rubber_log"), itemGroup);
 		RebornRegistry.registerBlock(TRContent.RUBBER_LOG_STRIPPED = InitUtils.setup(new PillarBlock(TRBlockSettings.rubberLogStripped()), "rubber_log_stripped"), itemGroup);
@@ -243,6 +244,7 @@ public class ModRegistry {
 		RebornRegistry.registerItem(TRContent.MULTIBLOCK_BUILDER = InitUtils.setup(new MultiblockBuilderItem(), "multiblock_builder"));
 		RebornRegistry.registerItem(TRContent.CELL = InitUtils.setup(new DynamicCellItem(), "cell"));
 		TRContent.CELL.registerFluidApi();
+		RebornRegistry.registerItem(TRContent.SOLAR_SAIL = InitUtils.setup(new Item(new Item.Settings()), "solar_sail"));
 
 		TechReborn.LOGGER.debug("TechReborn's Items Loaded");
 	}

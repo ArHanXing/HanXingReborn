@@ -619,6 +619,18 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "supercritical_polymerization_chamber", key = "SupercriticalPolymerizationChamberMaxEnergy", comment = "Supercritical Polymerization Chamber Max Energy")
 	public static int supercriticalPolymerizationChamberMaxEnergy = 10_000;
 
+	@Config(config = "machines", category = "dyson_swarm_host", key = "DysonHostLaunchIntervalTicks", comment = "Dyson Swarm Host: ticks between two launched solar sails")
+	public static int dysonHostLaunchIntervalTicks = 20;
+
+	@Config(config = "machines", category = "dyson_swarm_receiver", key = "DysonReceiverMaxEnergy", comment = "Dyson Swarm Receiver Max Energy")
+	public static int dysonReceiverMaxEnergy = 10_000_000;
+
+	@Config(config = "machines", category = "dyson_swarm_receiver", key = "DysonReceiverMaxOutput", comment = "Dyson Swarm Receiver Max Output (Energy per tick)")
+	public static int dysonReceiverMaxOutput = 2048;
+
+	@Config(config = "machines", category = "dyson_swarm_receiver", key = "DysonReceiverEuPerSail", comment = "Dyson Swarm Receiver: energy per tick generated per solar sail of the bound player")
+	public static int dysonReceiverEuPerSail = 4;
+
 	@Config(config = "machines", category = "industrial_alloy_smelter", key = "IndustrialAlloySmelterMaxInput", comment = "Industrial Alloy Smelter Max Input (Energy per tick)")
 	public static int industrialAlloySmelterMaxInput = 128;
 

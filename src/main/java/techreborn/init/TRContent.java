@@ -145,6 +145,7 @@ public class TRContent {
 	public static Block REINFORCED_GLASS;
 	public static Block SPACE_ELEVATOR_CASING;
 	public static Block SPACE_ELEVATOR_POWER_MODULE;
+	public static Block ECHO_CASING;
 	public static Block RUBBER_LEAVES;
 	public static Block RUBBER_LOG;
 	public static Block RUBBER_SLAB;
@@ -210,6 +211,7 @@ public class TRContent {
 	public static Item SCRAP_BOX;
 	public static Item MANUAL;
 	public static DynamicCellItem CELL;
+	public static Item SOLAR_SAIL;
 
 	//Quantum Suit
 	public static QuantumSuitItem QUANTUM_HELMET;
@@ -824,6 +826,8 @@ public class TRContent {
 		CULTIVATION_VESSEL(new CultivationVesselBlock(GuiType.CULTIVATION_VESSEL, CultivationVesselBlockEntity::new)),
 		IRRADIATED_MUTAGENSIS_CHAMBER(new IrradiatedMutagensisChamberBlock(GuiType.IRRADIATED_MUTAGENSIS_CHAMBER, IrradiatedMutagensisChamberBlockEntity::new)),
 		SUPERCRITICAL_POLYMERIZATION_CHAMBER(new SupercriticalPolymerizationChamberBlock(GuiType.SUPERCRITICAL_POLYMERIZATION_CHAMBER, SupercriticalPolymerizationChamberBlockEntity::new)),
+		DYSON_SWARM_HOST(new GenericMachineBlock(GuiType.DYSON_SWARM_HOST, DysonSwarmHostBlockEntity::new)),
+		DYSON_SWARM_RECEIVER(new GenericMachineBlock(GuiType.DYSON_SWARM_RECEIVER, DysonSwarmReceiverBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),
 		GREENHOUSE_CONTROLLER(new GenericMachineBlock(GuiType.GREENHOUSE_CONTROLLER, GreenhouseControllerBlockEntity::new)),

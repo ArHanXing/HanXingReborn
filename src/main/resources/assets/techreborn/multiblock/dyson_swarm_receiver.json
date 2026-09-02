@@ -1,0 +1,32 @@
+{
+	"translate": [
+		1,
+		-1,
+		-1
+	],
+	"layers": [
+		[
+			"XXX",
+			"XXX",
+			"XXX"
+		],
+		[
+			"XXX",
+			"XCX",
+			"XXX"
+		],
+		[
+			"XXX",
+			"XXX",
+			"XXX"
+		]
+	],
+	"keys": {
+		"X": {
+			"block": "techreborn:echo_casing"
+		},
+		"C": {
+			"air": true
+		}
+	}
+}

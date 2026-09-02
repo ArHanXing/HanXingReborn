@@ -1,0 +1,11 @@
+{
+    "parent": "minecraft:block/orientable",
+    "textures": {
+        "up": "techreborn:block/machines/structure/echo_casing",
+        "down": "techreborn:block/machines/structure/echo_casing",
+        "west": "techreborn:block/machines/structure/echo_casing",
+        "east": "techreborn:block/machines/structure/echo_casing",
+        "south": "techreborn:block/machines/structure/echo_casing",
+        "front": "techreborn:block/machines/tier3_machines/dyson_swarm_multiblock_on"
+    }
+}

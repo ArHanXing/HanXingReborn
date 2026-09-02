@@ -39,6 +39,8 @@ import techreborn.packets.serverbound.AESUConfigPayload;
 import techreborn.packets.serverbound.AutoCraftingLockPayload;
 import techreborn.packets.serverbound.ChunkloaderPayload;
 import techreborn.packets.serverbound.DetectorRadiusPayload;
+import techreborn.packets.serverbound.DysonHostBindingPayload;
+import techreborn.packets.serverbound.DysonReceiverBindingPayload;
 import techreborn.packets.serverbound.ExperiencePayload;
 import techreborn.packets.serverbound.FusionControlSizePayload;
 import techreborn.packets.serverbound.JumpPayload;
@@ -108,6 +110,16 @@ public class ServerboundPackets {
 		ServerPlayNetworking.registerGlobalReceiver(DetectorRadiusPayload.ID, (payload, context) -> {
 			var playerDetector = GuiType.PLAYER_DETECTOR.getBlockEntity(context, payload, TRBlockEntities.PLAYER_DETECTOR);
 			playerDetector.handleGuiInputFromClient(payload.buttonAmount());
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(DysonHostBindingPayload.ID, (payload, context) -> {
+			var host = GuiType.DYSON_SWARM_HOST.getBlockEntity(context, payload, TRBlockEntities.DYSON_SWARM_HOST);
+			host.handleBindingAction(payload.bind(), context.player());
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(DysonReceiverBindingPayload.ID, (payload, context) -> {
+			var receiver = GuiType.DYSON_SWARM_RECEIVER.getBlockEntity(context, payload, TRBlockEntities.DYSON_SWARM_RECEIVER);
+			receiver.handleBindingAction(payload.bind(), context.player());
 		});
 
 		ServerPlayNetworking.registerGlobalReceiver(LaunchSpeedPayload.ID, (payload, context) -> {
