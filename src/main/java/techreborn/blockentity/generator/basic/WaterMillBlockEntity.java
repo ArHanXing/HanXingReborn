@@ -37,6 +37,10 @@ import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.blocks.BlockMachineBase;
 import reborncore.common.powerSystem.PowerAcceptorBlockEntity;
 import techreborn.api.IEnergyProducerProvider;
+import net.minecraft.text.Text;
+import java.util.List;
+import techreborn.blockentity.generator.GeneratorTooltipHelper;
+
 import techreborn.config.TechRebornConfig;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
@@ -105,6 +109,12 @@ public class WaterMillBlockEntity extends PowerAcceptorBlockEntity implements IT
 	@Override
 	public long getBaseMaxInput() {
 		return 0;
+	}
+
+	@Override
+	public void addInfo(List<Text> info, boolean isReal, boolean hasData) {
+		super.addInfo(info, isReal, hasData);
+		GeneratorTooltipHelper.addGenerationRate(info, TechRebornConfig.waterMillMaxOutput);
 	}
 
 	@Override

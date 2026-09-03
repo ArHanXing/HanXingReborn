@@ -116,7 +116,7 @@ public final class MultiblockTooltipBuilder {
 	 * Adds a custom line via a translation key (e.g. a special parallel rule).
 	 */
 	public MultiblockTooltipBuilder note(String translationKey) {
-		lines.add(Text.translatable(translationKey));
+		lines.add(Text.translatable(translationKey).formatted(Formatting.GREEN));
 		return this;
 	}
 

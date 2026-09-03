@@ -43,7 +43,7 @@ public class ToolTipAssistUtils {
 
 	// Colour constants
 	private static final Formatting infoColour = Formatting.GOLD;
-	private static final Formatting statColour = Formatting.GOLD;
+	private static final Formatting statColour = Formatting.YELLOW;
 
 	private static final Formatting posColour = Formatting.GREEN;
 	private static final Formatting negColour = Formatting.RED;
@@ -83,9 +83,47 @@ public class ToolTipAssistUtils {
 		if (I18n.hasTranslation(key)) {
 			String info = I18n.translate(key);
 			List<MutableText> infoLines = java.util.Arrays.stream(info.split("\\r?\\n"))
-					.map(infoLine -> Text.literal(infoColour + infoLine)).toList();
+					.map(ToolTipAssistUtils::highlight)
+					.toList();
 			list.addAll(1, infoLines);
 		}
+	}
+
+	/**
+	 * Applies inline colour markers in a translated description string:
+	 * {@code &e} gold (default description colour), {@code &b} aqua for
+	 * cautions, {@code &a} green for machine specialties. Unmarked text
+	 * keeps the description gold. Also converts the legacy {@code §} codes
+	 * of vanilla formatting so lang files can use either form.
+	 */
+	public static MutableText highlight(String line) {
+		MutableText result = Text.literal("");
+		Formatting current = infoColour;
+		int i = 0;
+		while (i < line.length()) {
+			char c = line.charAt(i);
+			boolean isMarker = (c == '&' || c == '§') && i + 1 < line.length();
+			if (isMarker) {
+				Formatting parsed = Formatting.byCode(line.charAt(i + 1));
+				if (parsed != null) {
+					current = parsed;
+					i += 2;
+					continue;
+				}
+			}
+			int next = i;
+			while (next < line.length()) {
+				char nc = line.charAt(next);
+				if ((nc == '&' || nc == '§') && next + 1 < line.length()
+						&& Formatting.byCode(line.charAt(next + 1)) != null) {
+					break;
+				}
+				next++;
+			}
+			result.append(Text.literal(line.substring(i, next)).formatted(current));
+			i = next;
+		}
+		return result;
 	}
 
 	/**

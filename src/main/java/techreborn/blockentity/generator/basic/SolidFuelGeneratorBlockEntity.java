@@ -49,6 +49,10 @@ import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
 import techreborn.api.IEnergyProducerProvider;
+import net.minecraft.text.Text;
+import java.util.List;
+import techreborn.blockentity.generator.GeneratorTooltipHelper;
+
 import techreborn.config.TechRebornConfig;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
@@ -184,6 +188,12 @@ public class SolidFuelGeneratorBlockEntity extends PowerAcceptorBlockEntity impl
 	@Override
 	public RebornInventory<SolidFuelGeneratorBlockEntity> getInventory() {
 		return inventory;
+	}
+
+	@Override
+	public void addInfo(List<Text> info, boolean isReal, boolean hasData) {
+		super.addInfo(info, isReal, hasData);
+		GeneratorTooltipHelper.addGenerationRate(info, TechRebornConfig.solidFuelGeneratorOutputAmount);
 	}
 
 	@Override

@@ -40,8 +40,8 @@ public class GuiDysonSwarmHost extends GuiDysonSwarmBase<DysonSwarmHostBlockEnti
 	/** Left edge of the info text column. */
 	private static final int TEXT_X = 35;
 	/** Solar sail input slot (must match the ScreenHandler slot position). */
-	private static final int SLOT_X = 8;
-	private static final int SLOT_Y = 44;
+	private static final int SLOT_X = 44;
+	private static final int SLOT_Y = 34;
 
 	public GuiDysonSwarmHost(int syncID, final PlayerEntity player, DysonSwarmHostBlockEntity blockEntity) {
 		super(syncID, player, blockEntity, TEXT_X);

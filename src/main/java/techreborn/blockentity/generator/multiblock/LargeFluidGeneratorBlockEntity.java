@@ -45,6 +45,10 @@ import techreborn.multiblock.IMultiblockStructureMember;
 import techreborn.multiblock.MultiblockDefinition;
 import techreborn.multiblock.MultiblockDefinitionLoader;
 import techreborn.multiblock.MultiblockStructureTracker;
+import net.minecraft.text.Text;
+import java.util.List;
+import techreborn.blockentity.generator.GeneratorTooltipHelper;
+
 import techreborn.recipe.recipes.FluidGeneratorRecipe;
 
 import java.util.function.BiPredicate;
@@ -139,6 +143,12 @@ public abstract class LargeFluidGeneratorBlockEntity extends BaseFluidGeneratorB
 	protected abstract int getConfiguredMaxEnergy();
 
 	@Override
+	public void addInfo(List<Text> info, boolean isReal, boolean hasData) {
+		super.addInfo(info, isReal, hasData);
+		GeneratorTooltipHelper.addGenerationRate(info, super.getEuPerTick());
+	}
+
+	@Override
 	public long getBaseMaxOutput() {
 		return getConfiguredMaxOutput();
 	}
@@ -152,6 +162,14 @@ public abstract class LargeFluidGeneratorBlockEntity extends BaseFluidGeneratorB
 	protected int getEuPerTick() {
 		float multiplier = oxygenTicks > 0 ? OXYGEN_POWER_MULTIPLIER : 1.0F;
 		return (int) (super.getEuPerTick() * multiplier);
+	}
+
+	/**
+	 * @return {@code true} while a compressed air cell boost is active,
+	 *         multiplying the EU/t output by {@link #OXYGEN_POWER_MULTIPLIER}.
+	 */
+	public boolean isOxygenBoosted() {
+		return oxygenTicks > 0;
 	}
 
 	/**

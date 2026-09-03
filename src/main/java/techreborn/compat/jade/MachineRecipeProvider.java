@@ -33,6 +33,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import reborncore.api.recipe.IRecipeCrafterProvider;
 import reborncore.common.crafting.RebornRecipe;
 import reborncore.common.crafting.SizedIngredient;
@@ -45,6 +46,10 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 import techreborn.api.IEnergyProducerProvider;
+import techreborn.blockentity.generator.multiblock.LargeFluidGeneratorBlockEntity;
+import techreborn.blockentity.machine.multiblock.DysonSwarmMachineBlockEntity;
+import techreborn.blockentity.machine.multiblock.SpaceElevatorAssemblerBlockEntity;
+import techreborn.blockentity.machine.multiblock.SpaceElevatorMinerBlockEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +86,24 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 		// Generator output (EU/t)
 		if (accessor.getBlockEntity() instanceof IEnergyProducerProvider producer) {
 			data.putLong("output", producer.getCurrentOutputPerTick());
+		}
+
+		// Compressed air boost of the large multiblock generators
+		if (accessor.getBlockEntity() instanceof LargeFluidGeneratorBlockEntity fluidGenerator
+				&& fluidGenerator.isOxygenBoosted()) {
+			data.putBoolean("oxygen_boosted", true);
+		}
+
+		// Dyson Swarm binding (host and receiver)
+		if (accessor.getBlockEntity() instanceof DysonSwarmMachineBlockEntity dyson) {
+			data.putString("dyson_bound", dyson.getBoundPlayerName());
+		}
+
+		// Space Elevator unit -> host binding
+		if (accessor.getBlockEntity() instanceof SpaceElevatorAssemblerBlockEntity assembler) {
+			data.putLong("elevator_host", assembler.getSyncedHostPos());
+		} else if (accessor.getBlockEntity() instanceof SpaceElevatorMinerBlockEntity miner) {
+			data.putLong("elevator_host", miner.getSyncedHostPos());
 		}
 
 		if (!(accessor.getBlockEntity() instanceof IRecipeCrafterProvider provider)) {
@@ -141,6 +164,36 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 			tooltip.add(Text.translatable("jade.techreborn.generation",
 					Text.literal(String.valueOf(output)).formatted(Formatting.YELLOW),
 					formatVoltage(output)));
+		}
+
+		// Compressed air boost state of the large multiblock generators
+		if (data.getBoolean("oxygen_boosted")) {
+			tooltip.add(Text.translatable("jade.techreborn.oxygen_boosted").formatted(Formatting.GREEN));
+		}
+
+		// Dyson Swarm binding line (host and receiver)
+		if (data.contains("dyson_bound")) {
+			String boundPlayer = data.getString("dyson_bound");
+			if (boundPlayer.isEmpty()) {
+				tooltip.add(Text.translatable("gui.techreborn.dyson.unbound").formatted(Formatting.GRAY));
+			} else {
+				tooltip.add(Text.translatable("gui.techreborn.dyson.bound_to",
+						Text.literal(boundPlayer).formatted(Formatting.YELLOW)));
+			}
+		}
+
+		// Space Elevator unit -> host binding line
+		if (data.contains("elevator_host")) {
+			long hostPos = data.getLong("elevator_host");
+			if (hostPos == Long.MIN_VALUE) {
+				tooltip.add(Text.translatable("gui.techreborn.space_elevator.unbound").formatted(Formatting.GRAY));
+			} else {
+				BlockPos host = BlockPos.fromLong(hostPos);
+				tooltip.add(Text.translatable("gui.techreborn.space_elevator.bound_to",
+						Text.literal(String.valueOf(host.getX())).formatted(Formatting.YELLOW),
+						Text.literal(String.valueOf(host.getY())).formatted(Formatting.YELLOW),
+						Text.literal(String.valueOf(host.getZ())).formatted(Formatting.YELLOW)));
+			}
 		}
 
 		// Recipe lines (machines with an active crafter)

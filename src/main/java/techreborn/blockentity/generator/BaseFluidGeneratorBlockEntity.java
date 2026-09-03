@@ -46,6 +46,8 @@ import reborncore.common.powerSystem.PowerAcceptorBlockEntity;
 import reborncore.common.util.RebornInventory;
 import reborncore.common.util.Tank;
 import techreborn.api.IEnergyProducerProvider;
+import net.minecraft.text.Text;
+
 import techreborn.recipe.recipes.FluidGeneratorRecipe;
 
 import java.util.List;
@@ -226,6 +228,12 @@ public abstract class BaseFluidGeneratorBlockEntity extends PowerAcceptorBlockEn
 	@Override
 	public Tank getTank() {
 		return tank;
+	}
+
+	@Override
+	public void addInfo(List<Text> info, boolean isReal, boolean hasData) {
+		super.addInfo(info, isReal, hasData);
+		GeneratorTooltipHelper.addGenerationRate(info, getEuPerTick());
 	}
 
 	@Override

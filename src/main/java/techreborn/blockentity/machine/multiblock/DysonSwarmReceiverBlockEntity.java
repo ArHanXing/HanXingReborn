@@ -35,6 +35,7 @@ import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
+import techreborn.api.IEnergyProducerProvider;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
@@ -47,7 +48,7 @@ import techreborn.init.TRContent;
  * output only depends on how many sails its player fed into a Dyson Swarm
  * Host. While producing, the front texture switches to its active variant.
  */
-public class DysonSwarmReceiverBlockEntity extends DysonSwarmMachineBlockEntity implements BuiltScreenHandlerProvider {
+public class DysonSwarmReceiverBlockEntity extends DysonSwarmMachineBlockEntity implements BuiltScreenHandlerProvider, IEnergyProducerProvider {
 
 	public DysonSwarmReceiverBlockEntity(BlockPos pos, BlockState state) {
 		super(TRBlockEntities.DYSON_SWARM_RECEIVER, pos, state, "DysonSwarmReceiver",
@@ -89,6 +90,16 @@ public class DysonSwarmReceiverBlockEntity extends DysonSwarmMachineBlockEntity 
 	@Override
 	public long getBaseMaxOutput() {
 		return TechRebornConfig.dysonReceiverMaxOutput;
+	}
+
+	// IEnergyProducerProvider: live EU/t of the bound swarm (0 while idle).
+	@Override
+	public long getCurrentOutputPerTick() {
+		if (!isMultiblockValid() || !isBound() || displaySailCount <= 0) {
+			return 0;
+		}
+		return Math.min(displaySailCount * TechRebornConfig.dysonReceiverEuPerSail,
+				(long) TechRebornConfig.dysonReceiverMaxOutput);
 	}
 
 	@Override

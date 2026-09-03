@@ -2,7 +2,7 @@
     "parent": "minecraft:block/orientable",
     "textures": {
         "top": "techreborn:block/machines/tier0_machines/crude_storage_unit_top",
-        "front": "techreborn:block/machines/tier0_machines/crude_tank_unit_front",
+        "front": "techreborn:block/machines/tier0_machines/crude_storage_tank_front",
         "bottom": "techreborn:block/machines/tier0_machines/crude_storage_unit_bottom",
         "side": "techreborn:block/machines/tier0_machines/crude_storage_unit_side"
     }

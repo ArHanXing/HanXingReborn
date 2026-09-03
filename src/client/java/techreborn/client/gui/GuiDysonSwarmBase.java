@@ -130,8 +130,8 @@ public abstract class GuiDysonSwarmBase<T extends DysonSwarmMachineBlockEntity &
 		GuiButtonExtended unbindButton = new GuiButtonExtended(this.x + textX + BTN_WIDTH + 4, this.y + BTN_Y,
 				BTN_WIDTH, BTN_HEIGHT, Text.translatable("gui.techreborn.dyson.btn_unbind"), button -> {
 				}).clickHandler((button, mouseX, mouseY) -> sendBinding(false));
-		addSelectableChild(bindButton);
-		addSelectableChild(unbindButton);
+		addDrawableChild(bindButton);
+		addDrawableChild(unbindButton);
 	}
 
 	public void onClick(GuiButtonExtended button, Double mouseX, Double mouseY) {

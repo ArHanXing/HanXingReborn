@@ -47,7 +47,7 @@ public class PrimitiveDistillationTowerBlock extends GenericMachineBlock {
 	@Override
 	protected void appendMachineTooltip(List<Text> tooltip) {
 		MultiblockTooltipBuilder.create()
-				.recipeTypes(ModRecipes.PRIMITIVE_DISTILLATION_TOWER, List.of(ModRecipes.DISTILLATION_TOWER))
+				.note("techreborn.tooltip.machine.primitive_distillation_tower")
 				.multipliers(List.of(ModRecipes.DISTILLATION_TOWER), 0.8F, 1.5F)
 				.maxParallel(1)
 				.appendTo(tooltip);

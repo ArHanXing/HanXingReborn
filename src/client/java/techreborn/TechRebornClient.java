@@ -238,6 +238,8 @@ public class TechRebornClient implements ClientModInitializer {
 		BlockEntityRendererFactories.register(TRBlockEntities.SPACE_ELEVATOR, MultiblockRenderer::new);
 		BlockEntityRendererFactories.register(TRBlockEntities.SPACE_ELEVATOR_ASSEMBLER, MultiblockRenderer::new);
 		BlockEntityRendererFactories.register(TRBlockEntities.SPACE_ELEVATOR_MINER, MultiblockRenderer::new);
+		BlockEntityRendererFactories.register(TRBlockEntities.DYSON_SWARM_HOST, MultiblockRenderer::new);
+		BlockEntityRendererFactories.register(TRBlockEntities.DYSON_SWARM_RECEIVER, MultiblockRenderer::new);
 		BlockEntityRendererFactories.register(TRBlockEntities.STORAGE_UNIT, StorageUnitRenderer::new);
 		BlockEntityRendererFactories.register(TRBlockEntities.CABLE, CableCoverRenderer::new);
 		BlockEntityRendererFactories.register(TRBlockEntities.WIND_MILL, TurbineRenderer::new);

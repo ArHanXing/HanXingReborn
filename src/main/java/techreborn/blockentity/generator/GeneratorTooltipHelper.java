@@ -22,32 +22,32 @@
  * SOFTWARE.
  */
 
-package techreborn.blocks;
+package techreborn.blockentity.generator;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import reborncore.api.blockentity.IMachineGuiHandler;
+import net.minecraft.util.Formatting;
+import reborncore.common.powerSystem.PowerSystem;
 
 import java.util.List;
-import java.util.function.BiFunction;
 
 /**
- * The Large Greenhouse block. Runs its own greenhouse recipes (crops are
- * duplicated, the input seed/crop is never consumed) with up to 16 parallels.
+ * Shared tooltip lines of generators. The nominal generation rate is kept
+ * apart from the energy block's {@code Max Output} line: burn- or fuel-based
+ * generators often run below their output cap.
  */
-public class LargeGreenhouseBlock extends GenericMachineBlock {
+public final class GeneratorTooltipHelper {
 
-	public LargeGreenhouseBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass) {
-		super(gui, blockEntityClass);
+	private GeneratorTooltipHelper() {
 	}
 
-	@Override
-	protected void appendMachineTooltip(List<Text> tooltip) {
-		MultiblockTooltipBuilder.create()
-				.note("techreborn.tooltip.machine.large_greenhouse")
-				.maxParallel(16)
-				.appendTo(tooltip);
+	/**
+	 * Appends the "Generation rate (nominal)" line showing how much energy
+	 * the generator produces per tick while it is actually generating.
+	 */
+	public static void addGenerationRate(List<Text> info, long euPerTick) {
+		info.add(Text.translatable("techreborn.tooltip.generationRate.nominal")
+				.formatted(Formatting.GRAY)
+				.append(": ")
+				.append(Text.literal(PowerSystem.getLocalizedPower(euPerTick)).formatted(Formatting.GOLD)));
 	}
 }
