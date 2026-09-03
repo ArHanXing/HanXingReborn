@@ -82,7 +82,6 @@ public class TankUnitBlock extends BlockMachineBase {
 			Fluid fluid = itemFluid.getFluid(stackInHand);
 			int amount = stackInHand.getCount();
 
-			FluidValue fluidValue = FluidValue.BUCKET.multiply(amount);
 			Tank tankInstance = tankUnitEntity.getTank();
 
 			if(new FluidInstance(fluid).isEmptyFluid()){
@@ -130,18 +129,34 @@ public class TankUnitBlock extends BlockMachineBase {
 					return ActionResult.FAIL;
 				}
 			}else{
-				// If tank can fit fluid and amount, add it
-				if (tankInstance.canFit(fluid, fluidValue)) {
-					if (tankInstance.getFluidInstance().isEmpty()) {
-						tankInstance.setFluidInstance(new FluidInstance(fluid, fluidValue));
-					} else {
-						tankInstance.modifyFluid(fluidInstance -> fluidInstance.withAmount(fluidValue));
-					}
+				// Cells are indivisible 1-bucket units: transfer as many whole
+				// buckets as the tank can take and leave the rest of the stack
+				// in the player's hand. Nothing is lost when the tank fills up
+				// mid-stack, or when the remaining free space is under a bucket.
+				if (!tankInstance.canFit(fluid, FluidValue.BUCKET)) {
+					return ActionResult.FAIL;
+				}
 
-					// Give players the empty stuff back
-					ItemStack returnStack = itemFluid.getEmpty();
-					returnStack.setCount(amount);
+				long transferableBuckets = Math.min(amount,
+						tankInstance.getFreeSpace().getRawValue() / FluidValue.BUCKET.getRawValue());
+				FluidValue transferValue = FluidValue.BUCKET.multiply(transferableBuckets);
+
+				// Add to the tank's current content instead of replacing it
+				if (tankInstance.getFluidInstance().isEmpty()) {
+					tankInstance.setFluidInstance(new FluidInstance(fluid, transferValue));
+				} else {
+					tankInstance.modifyFluid(fluidInstance ->
+							fluidInstance.withAmount(fluidInstance.getAmount().add(transferValue)));
+				}
+
+				// Consume the used cells and hand the empty ones back
+				stackInHand.decrement((int) transferableBuckets);
+				ItemStack returnStack = itemFluid.getEmpty();
+				returnStack.setCount((int) transferableBuckets);
+				if (stackInHand.isEmpty()) {
 					playerIn.setStackInHand(Hand.MAIN_HAND, returnStack);
+				} else if (!playerIn.getInventory().insertStack(returnStack)) {
+					WorldUtils.dropItem(returnStack, worldIn, playerIn.getBlockPos());
 				}
 			}
 
