@@ -386,20 +386,23 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "storage", key = "BasicStorageUnitMaxStorage", comment = "Maximum amount of items a Basic Storage Unit can store")
 	public static int basicStorageUnitMaxStorage = 1 << 13; // 2^13, around 8,000, holds 2^7=128 64-stacks
 
+	@Config(config = "machines", category = "storage", key = "CrudeTankUnitCapacity", comment = "How much liquid a Crude Tank Unit can take (Value in buckets, 1000 Mb)")
+	public static int crudeTankUnitCapacity = 1 << 4; // 2^4=16, holds a single 16-stack of cells (content only)
+
 	@Config(config = "machines", category = "storage", key = "BasicTankUnitCapacity", comment = "How much liquid a Basic Tank Unit can take (Value in buckets, 1000 Mb)")
-	public static int basicTankUnitCapacity = 1 << 7; // 2^7=128, holds 2^3=8 16-stacks cells (content only)
+	public static int basicTankUnitCapacity = 1 << 8; // 2^8=256, holds 2^4=16 16-stacks cells (content only)
 
 	@Config(config = "machines", category = "storage", key = "AdvancedStorageMaxStorage", comment = "Maximum amount of items an Advanced Storage Unit can store")
 	public static int advancedStorageUnitMaxStorage = 1 << 15; // 2^15, around 32,000, holds 2^9=512 64-stacks
 
 	@Config(config = "machines", category = "storage", key = "AdvancedTankUnitMaxStorage", comment = "How much liquid an Advanced Tank Unit can take (Value in buckets, 1000 Mb)")
-	public static int advancedTankUnitMaxStorage = 1 << 9; // 2^9=512, holds 2^5=32 16-stacks cells (content only)
+	public static int advancedTankUnitMaxStorage = 1 << 10; // 2^10=1024, holds 2^6=64 16-stacks cells (content only)
 
 	@Config(config = "machines", category = "storage", key = "IndustrialStorageMaxStorage", comment = "Maximum amount of items an Industrial Storage Unit can store (Compat: >= 32768)")
 	public static int industrialStorageUnitMaxStorage = 1 << 16; // 2^16, around 65,000, holds 2^10=1024 64-stacks
 
 	@Config(config = "machines", category = "storage", key = "IndustrialTankUnitCapacity", comment = "How much liquid an Industrial Tank Unit can take (Value in buckets, 1000 Mb)")
-	public static int industrialTankUnitCapacity = 1 << 10; // 2^10, around 1,000, holds 2^6=64 16-stacks cells (content only)
+	public static int industrialTankUnitCapacity = 1 << 11; // 2^11, around 2,000, holds 2^7=128 16-stacks cells (content only)
 
 	@Config(config = "machines", category = "storage", key = "QuantumStorageUnitMaxStorage", comment = "Maximum amount of items a Quantum Storage Unit can store (Compat: == MAX_VALUE)")
 	public static int quantumStorageUnitMaxStorage = Integer.MAX_VALUE;

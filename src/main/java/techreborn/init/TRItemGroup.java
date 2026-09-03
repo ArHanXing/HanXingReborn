@@ -500,6 +500,7 @@ public class TRItemGroup {
 			TRContent.StorageUnit.INDUSTRIAL,
 			TRContent.StorageUnit.QUANTUM,
 			TRContent.StorageUnit.CREATIVE,
+			TRContent.TankUnit.CRUDE,
 			TRContent.TankUnit.BASIC,
 			TRContent.TankUnit.ADVANCED,
 			TRContent.TankUnit.INDUSTRIAL,

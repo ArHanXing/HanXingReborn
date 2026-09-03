@@ -395,6 +395,9 @@ public class TRContent {
 	}
 
 	public enum TankUnit implements ItemConvertible {
+		// Must stay first: the crude unit upgrader upgrades it to BASIC
+		// via ordinal()+1 (sister block of the crude storage unit).
+		CRUDE(TechRebornConfig.crudeTankUnitCapacity),
 		BASIC(TechRebornConfig.basicTankUnitCapacity),
 		ADVANCED(TechRebornConfig.advancedTankUnitMaxStorage),
 		INDUSTRIAL(TechRebornConfig.industrialTankUnitCapacity),
