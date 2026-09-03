@@ -324,7 +324,7 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(CHEMICAL_REACTOR_CATEGORY, CHEMICAL_REACTOR_STACK);
 		registry.addWorkstation(CHEMICAL_REACTOR_CATEGORY, LARGE_CHEMICAL_REACTOR_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.CHEMICAL_REACTOR)) {
-			registry.addRecipe(new SimpleTwoInputEmiRecipe(recipe, CHEMICAL_REACTOR_CATEGORY, 10));
+			registry.addRecipe(new TwoInTwoOutEmiRecipe(recipe, CHEMICAL_REACTOR_CATEGORY, 10));
 		}
 
 		// Large Chemical Reactor

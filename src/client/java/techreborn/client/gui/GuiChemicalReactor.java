@@ -47,9 +47,11 @@ public class GuiChemicalReactor extends GuiBase<BuiltScreenHandler> {
 
 		drawSlot(drawContext, 8, 72, layer);
 
-		drawSlot(drawContext, 34, 47, layer);
-		drawSlot(drawContext, 126, 47, layer);
-		drawOutputSlot(drawContext, 80, 47, layer);
+		// 2 inputs stacked vertically on the left, 2 outputs on the right
+		drawSlot(drawContext, 44, 29, layer);
+		drawSlot(drawContext, 44, 47, layer);
+		drawOutputSlot(drawContext, 114, 29, layer);
+		drawOutputSlot(drawContext, 114, 47, layer);
 	}
 
 	@Override
@@ -57,8 +59,8 @@ public class GuiChemicalReactor extends GuiBase<BuiltScreenHandler> {
 		super.drawForeground(drawContext, mouseX, mouseY);
 		final GuiBase.Layer layer = GuiBase.Layer.FOREGROUND;
 
-		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 55, 51, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
-		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 105, 51, mouseX, mouseY, GuiBuilder.ProgressDirection.LEFT, layer);
+		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 65, 38, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
+		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 95, 38, mouseX, mouseY, GuiBuilder.ProgressDirection.LEFT, layer);
 		builder.drawMultiEnergyBar(drawContext, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 	}
 }
