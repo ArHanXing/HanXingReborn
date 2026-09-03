@@ -24,7 +24,6 @@
 
 package techreborn.client.events;
 
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -36,7 +35,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -44,8 +42,6 @@ import java.util.Locale;
 public class ToolTipAssistUtils {
 
 	// Colour constants
-	private static final Formatting instructColour = Formatting.BLUE;
-
 	private static final Formatting infoColour = Formatting.GOLD;
 	private static final Formatting statColour = Formatting.GOLD;
 
@@ -54,7 +50,6 @@ public class ToolTipAssistUtils {
 
 	public static List<Text> getUpgradeStats(TRContent.Upgrades upgradeType, int count, boolean shiftHeld) {
 		List<Text> tips = new ArrayList<>();
-		boolean shouldStackCalculate = count > 1;
 
 		switch (upgradeType) {
 			case OVERCLOCKER -> {
@@ -63,21 +58,21 @@ public class ToolTipAssistUtils {
 				tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.energy_increase"),
 						calculateEnergyIncrease(TechRebornConfig.overclockerPower + 1, count, shiftHeld), "x", false));
 			}
-			case TRANSFORMER -> shouldStackCalculate = false;
+			case TRANSFORMER -> {
+			}
 			case ENERGY_STORAGE -> tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.storage_increase"),
 					calculateEnergyIncrease(2, count, shiftHeld), "x", true));
 			case SUPERCONDUCTOR -> tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.flow_increase"),
 					calculateValue(Math.pow(2, (TechRebornConfig.superConductorCount + 2)) * 100, count, shiftHeld), "%", true));
 		}
 
-		// Add reminder that they can use shift to calculate the entire stack
-		if (shouldStackCalculate && !shiftHeld) {
-			tips.add(Text.literal(instructColour + I18n.translate("techreborn.tooltip.stack_info")));
-		}
-
 		return tips;
 	}
 
+	/**
+	 * Appends the machine's description lines ("techreborn.message.info.*")
+	 * in gold. Descriptions are always visible; no shift required.
+	 */
 	public static void addInfo(String inKey, List<Text> list) {
 		addInfo(inKey, list, true);
 	}
@@ -86,17 +81,20 @@ public class ToolTipAssistUtils {
 		String key = ("techreborn.message.info." + inKey);
 
 		if (I18n.hasTranslation(key)) {
-			if (!hidden || Screen.hasShiftDown()) {
-				String info = I18n.translate(key);
-				List<MutableText> infoLines = Arrays.stream(info.split("\\r?\\n"))
+			String info = I18n.translate(key);
+			List<MutableText> infoLines = java.util.Arrays.stream(info.split("\\r?\\n"))
 					.map(infoLine -> Text.literal(infoColour + infoLine)).toList();
-				list.addAll(1, infoLines);
-			} else {
-				list.add(Text.literal(instructColour + I18n.translate("techreborn.tooltip.more_info")));
-			}
+			list.addAll(1, infoLines);
 		}
 	}
 
+	/**
+	 * Appends a gray "label: value" line; value strings are gold.
+	 */
+	public static void addStat(List<Text> list, String labelKey, String value) {
+		list.add(Text.translatable(labelKey).formatted(Formatting.GRAY)
+				.append(": ").append(Text.literal(value).formatted(statColour)));
+	}
 
 	private static int calculateValue(double value, int count, boolean shiftHeld) {
 		int calculatedVal;

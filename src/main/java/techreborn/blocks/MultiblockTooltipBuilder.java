@@ -132,12 +132,6 @@ public final class MultiblockTooltipBuilder {
 		tooltip.addAll(lines);
 	}
 
-	/**
-	 * Resolves the display name of a machine from its recipe type id, e.g.
-	 * {@code techreborn:chemical_reactor} -> {@code block.techreborn.chemical_reactor}.
-	 * Falls back to {@link #NAME_OVERRIDES} for recipe types whose machine block
-	 * uses a different name (e.g. {@code blast_furnace} -> {@code industrial_blast_furnace}).
-	 */
 	private static Text machineName(RecipeType<?> type) {
 		Identifier id = Registries.RECIPE_TYPE.getId(type);
 		String key = NAME_OVERRIDES.getOrDefault(id, "block." + id.getNamespace() + "." + id.getPath());

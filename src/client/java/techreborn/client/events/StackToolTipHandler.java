@@ -98,6 +98,10 @@ public class StackToolTipHandler implements ItemTooltipCallback {
 			ToolTipAssistUtils.addInfo(item.getTranslationKey(), lines);
 		}
 
+		// Always-visible machine stats: energy capacity, max input/output
+		// and the built-in time multiplier where applicable.
+		StackTooltips.addMachineStats(stack, tooltipContext, lines);
+
 		if (block instanceof CableBlock cable) {
 			BlockEntity blockEntity = cable.createBlockEntity(BlockPos.ORIGIN, block.getDefaultState());
 			if (blockEntity != null) {
@@ -107,7 +111,8 @@ public class StackToolTipHandler implements ItemTooltipCallback {
 
 		if (item instanceof UpgradeItem upgrade) {
 			ToolTipAssistUtils.addInfo(item.getTranslationKey(), lines, false);
-			lines.addAll(ToolTipAssistUtils.getUpgradeStats(TRContent.Upgrades.valueOf(upgrade.name.toUpperCase()), stack.getCount(), Screen.hasShiftDown()));
+			// Stats of a full stack are always shown; no shift required.
+			lines.addAll(ToolTipAssistUtils.getUpgradeStats(TRContent.Upgrades.valueOf(upgrade.name.toUpperCase()), stack.getCount(), true));
 		}
 
 		if (item instanceof DynamicCellItem cell) {
@@ -151,9 +156,9 @@ public class StackToolTipHandler implements ItemTooltipCallback {
 		}
 
 		if (item instanceof NanoSuitItem suit) {
-			suit.appendArmorTooltip(stack, lines, Screen.hasShiftDown());
+			suit.appendArmorTooltip(stack, lines, true);
 		} else if (item instanceof QuantumSuitItem suit) {
-			suit.appendArmorTooltip(stack, lines, Screen.hasShiftDown());
+			suit.appendArmorTooltip(stack, lines, true);
 		}
 	}
 
