@@ -69,13 +69,12 @@ public class TwoInTwoOutEmiRecipe extends TREmiRecipe<RebornRecipe> {
 	public void addWidgets(WidgetHolder widgets) {
 		int midX = 16 + 18 + 24;
 		int slotY = (50 - 18 * 2 - 2) / 2;
-		int largeY = (50 - 26) / 2;
 
 		widgets.addSlot(getInput(0), 16, slotY);
 		widgets.addSlot(getInput(1), 16, slotY + 18 + 2);
 
-		widgets.addSlot(getOutput(0), midX + 26, slotY).large(true).recipeContext(this);
-		widgets.addSlot(getOutput(1), midX + 26, slotY + 18 + 2).large(true).recipeContext(this);
+		widgets.addSlot(getOutput(0), midX + 26, slotY).recipeContext(this);
+		widgets.addSlot(getOutput(1), midX + 26, slotY + 18 + 2).recipeContext(this);
 
 		TRUIUtils.energyBar(widgets, recipe, machineEnergy, 0, 0);
 		TRUIUtils.arrowRight(widgets, recipe, midX + 4, (50 - 10) / 2);

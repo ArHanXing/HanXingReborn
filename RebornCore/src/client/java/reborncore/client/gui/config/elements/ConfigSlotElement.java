@@ -66,17 +66,28 @@ public class ConfigSlotElement extends ParentElement {
 		int checkboxY = y + 44;
 		if (inputEnabled) {
 			elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.slotconfig.autoinput"), x - 26, checkboxY += 15,
-				checkBoxElement ->  gui.getMachine().getSlotConfiguration().getSlotDetails(id).autoInput(),
+				checkBoxElement -> {
+					// The client may not have a slot config for every slot yet,
+					// e.g. when a machine's inventory was extended in an update.
+					SlotConfiguration.SlotConfigHolder details = gui.getMachine().getSlotConfiguration().getSlotDetails(id);
+					return details != null && details.autoInput();
+				},
 				() -> popupElement.updateCheckBox("input", gui)));
 		}
 
 		elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.slotconfig.autooutput"), x - 26, checkboxY += 15,
-			checkBoxElement ->  gui.getMachine().getSlotConfiguration().getSlotDetails(id).autoOutput(),
+			checkBoxElement -> {
+				SlotConfiguration.SlotConfigHolder details = gui.getMachine().getSlotConfiguration().getSlotDetails(id);
+				return details != null && details.autoOutput();
+			},
 			() -> popupElement.updateCheckBox("output", gui)));
 
 		if (filterEnabled) {
 			elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.slotconfig.filter_input"), x - 26, checkboxY + 15,
-				checkBoxElement ->  gui.getMachine().getSlotConfiguration().getSlotDetails(id).filter(),
+				checkBoxElement -> {
+					SlotConfiguration.SlotConfigHolder details = gui.getMachine().getSlotConfiguration().getSlotDetails(id);
+					return details != null && details.filter();
+				},
 				() -> popupElement.updateCheckBox("filter", gui)));
 		}
 	}

@@ -123,12 +123,18 @@ public class SlotConfigPopupElement extends AbstractConfigPopupElement {
 				}
 			}
 		} else {
-			SlotConfiguration.SlotConfig currentSlot = guiBase.getMachine().getSlotConfiguration().getSlotDetails(id).getSideDetail(side);
+			SlotConfiguration.SlotConfigHolder configHolder = guiBase.getMachine().getSlotConfiguration().getSlotDetails(id);
+			if (configHolder == null) {
+				// No synced config for this slot yet; fall back to the plain cycle.
+				nextConfig = allowInput ? SlotConfiguration.ExtractConfig.INPUT : SlotConfiguration.ExtractConfig.OUTPUT;
+			} else {
+				SlotConfiguration.SlotConfig currentSlot = configHolder.getSideDetail(side);
 
-			// A bit of a mess, in the future have a way to remove config options from this list
-			nextConfig = currentSlot.getSlotIO().getIoConfig().getNext();
-			if (!allowInput && nextConfig == SlotConfiguration.ExtractConfig.INPUT) {
-				nextConfig = SlotConfiguration.ExtractConfig.OUTPUT;
+				// A bit of a mess, in the future have a way to remove config options from this list
+				nextConfig = currentSlot.getSlotIO().getIoConfig().getNext();
+				if (!allowInput && nextConfig == SlotConfiguration.ExtractConfig.INPUT) {
+					nextConfig = SlotConfiguration.ExtractConfig.OUTPUT;
+				}
 			}
 		}
 

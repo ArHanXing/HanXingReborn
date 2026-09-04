@@ -53,8 +53,8 @@ public class ChemicalReactorBlockEntity extends GenericMachineBlockEntity implem
 	public BuiltScreenHandler createScreenHandler(int syncID, final PlayerEntity player) {
 		return new ScreenHandlerBuilder("chemicalreactor").player(player.getInventory()).inventory().hotbar()
 				.addInventory().blockEntity(this)
-				.slot(0, 44, 29).slot(1, 44, 47)
-				.outputSlot(2, 114, 29).outputSlot(3, 114, 47)
+				.slot(0, 55, 26).slot(1, 55, 45)
+				.outputSlot(2, 101, 26).outputSlot(3, 101, 45)
 				.energySlot(4, 8, 72)
 				.syncEnergyValue().syncCrafterValue().addInventory().create(this, syncID);
 	}
