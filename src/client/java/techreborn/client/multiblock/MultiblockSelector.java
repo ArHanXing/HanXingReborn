@@ -29,13 +29,16 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -238,21 +241,56 @@ public class MultiblockSelector {
 	}
 
 	private String generateJson(World world, BlockPos controller, List<BlockPos> positions) {
-		// Bounding box of the selection
-		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
-		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
-		for (BlockPos pos : positions) {
-			minX = Math.min(minX, pos.getX());
-			minY = Math.min(minY, pos.getY());
-			minZ = Math.min(minZ, pos.getZ());
-			maxX = Math.max(maxX, pos.getX());
-			maxY = Math.max(maxY, pos.getY());
-			maxZ = Math.max(maxZ, pos.getZ());
+		// The multiblock validator applies rotate(facing.getOpposite()) to the
+		// pattern (see JsonMultiblockMachineBlockEntity#isMultiblockValid),
+		// where one rotate() step maps (x, y, z) -> (-z, y, x): 0 steps for
+		// EAST, 1 for SOUTH, 2 for WEST and 3 for NORTH. The selection is
+		// captured in world space, so it has to be rotated by the inverse of
+		// the validator's rotation - otherwise the generated JSON only
+		// round-trips for a controller that faces west.
+		Direction facing = null;
+		BlockState controllerState = world.getBlockState(controller);
+		if (controllerState.contains(Properties.HORIZONTAL_FACING)) {
+			facing = controllerState.get(Properties.HORIZONTAL_FACING);
 		}
 
-		int translateX = minX - controller.getX();
-		int translateY = minY - controller.getY();
-		int translateZ = minZ - controller.getZ();
+		int rotations = 0;
+		if (facing != null) {
+			int validatorRotations = switch (facing.getOpposite()) {
+				case SOUTH -> 1;
+				case WEST -> 2;
+				case NORTH -> 3;
+				default -> 0; // EAST
+			};
+			rotations = (4 - validatorRotations) % 4;
+		}
+
+		// Rotate every world offset (relative to the controller) into pattern
+		// space, remembering which world position each rotated cell came from.
+		Map<BlockPos, BlockPos> rotatedToSource = new HashMap<>();
+		for (BlockPos pos : positions) {
+			BlockPos offset = pos.subtract(controller);
+			for (int i = 0; i < rotations; i++) {
+				offset = new BlockPos(-offset.getZ(), offset.getY(), offset.getX());
+			}
+			rotatedToSource.put(offset, pos);
+		}
+
+		// Bounding box of the rotated pattern
+		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
+		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
+		for (BlockPos offset : rotatedToSource.keySet()) {
+			minX = Math.min(minX, offset.getX());
+			minY = Math.min(minY, offset.getY());
+			minZ = Math.min(minZ, offset.getZ());
+			maxX = Math.max(maxX, offset.getX());
+			maxY = Math.max(maxY, offset.getY());
+			maxZ = Math.max(maxZ, offset.getZ());
+		}
+
+		int translateX = minX;
+		int translateY = minY;
+		int translateZ = minZ;
 
 		// Assign a key character to each distinct block type
 		Map<Block, Character> blockToKey = new HashMap<>();
@@ -270,23 +308,23 @@ public class MultiblockSelector {
 			}
 		}
 
-		// Build the 3D pattern: layers[y][z][x]
+		// Build the 3D pattern: layers[y][z][x] in rotated pattern space
 		JsonArray layersJson = new JsonArray();
 		for (int y = minY; y <= maxY; y++) {
 			JsonArray rows = new JsonArray();
 			for (int z = minZ; z <= maxZ; z++) {
 				StringBuilder row = new StringBuilder();
 				for (int x = minX; x <= maxX; x++) {
-					BlockPos pos = new BlockPos(x, y, z);
-					if (!positions.contains(pos)) {
-						row.append(' ');
-						continue;
-					}
-					Block block = world.getBlockState(pos).getBlock();
-					if (block == Blocks.AIR) {
+					BlockPos source = rotatedToSource.get(new BlockPos(x, y, z));
+					if (source == null) {
 						row.append(' ');
 					} else {
-						row.append(blockToKey.get(block));
+						Block block = world.getBlockState(source).getBlock();
+						if (block == Blocks.AIR) {
+							row.append(' ');
+						} else {
+							row.append(blockToKey.get(block));
+						}
 					}
 				}
 				rows.add(row.toString());
