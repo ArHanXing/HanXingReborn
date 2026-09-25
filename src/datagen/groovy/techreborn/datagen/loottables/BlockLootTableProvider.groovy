@@ -76,6 +76,17 @@ class BlockLootTableProvider extends FabricBlockLootTableProvider {
 			addDrop(it.getFrame())
 			addDrop(it.getCasing())
 		}
+		TRContent.Coils.values().each {
+			addDrop(it.block)
+		}
+		// Standalone structural casings of multiblock families. They are
+		// registered as blocks like every other casing, so they need a drop
+		// too, otherwise breaking one silently voids the block.
+		[TRContent.ECHO_CASING,
+		 TRContent.SPACE_ELEVATOR_CASING,
+		 TRContent.SPACE_ELEVATOR_POWER_MODULE].each {
+			addDrop(it)
+		}
 		addDrop(TRContent.RUBBER_BUTTON)
 		addDrop(TRContent.RUBBER_DOOR, doorDrops(TRContent.RUBBER_DOOR))
 		addDrop(TRContent.RUBBER_FENCE)

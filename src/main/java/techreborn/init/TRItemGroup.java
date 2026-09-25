@@ -160,6 +160,8 @@ public class TRItemGroup {
 			entries.add(machineBlock.casing);
 		}
 		entries.add(TRContent.ECHO_CASING);
+		entries.add(TRContent.SPACE_ELEVATOR_CASING);
+		entries.add(TRContent.SPACE_ELEVATOR_POWER_MODULE);
 		addContent(TRContent.Cables.values(), entries);
 		addContent(TRContent.Machine.values(), entries);
 		addContent(TRContent.SolarPanels.values(), entries);

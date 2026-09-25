@@ -97,6 +97,20 @@ class TRBlockTagProvider extends FabricTagProvider.BlockTagProvider {
 				.add(it.casing)
 		}
 
+		// GT-style coil blocks and the standalone multiblock casings use the
+		// same requiresTool() settings as the machine casings above. Without a
+		// mineable tag a pickaxe does not count as the correct tool, so they
+		// break instantly and never drop anything.
+		TRContent.Coils.values().each {
+			getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE)
+				.add(it.block)
+		}
+
+		getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE)
+			.add(TRContent.ECHO_CASING)
+			.add(TRContent.SPACE_ELEVATOR_CASING)
+			.add(TRContent.SPACE_ELEVATOR_POWER_MODULE)
+
 		getOrCreateTagBuilder(BlockTags.FENCES)
 			.add(TRContent.RUBBER_FENCE)
 			.add(TRContent.REFINED_IRON_FENCE)

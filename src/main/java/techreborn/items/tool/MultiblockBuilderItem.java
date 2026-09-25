@@ -64,6 +64,13 @@ import java.util.function.BiPredicate;
  * blocks are reported once per block type in the player's chat. In creative
  * mode the build does not consume any items.
  * <p>
+ * In survival mode the builder never overwrites existing blocks: it only fills
+ * air. A position blocked by a real block is reported in chat (capped at
+ * {@value #MAX_OCCUPIED_MESSAGES} individual lines, then summarised) and
+ * re-queued, so clearing the obstruction lets the same job continue. A job
+ * that cannot place anything for {@value #MAX_EMPTY_TICKS} consecutive ticks
+ * aborts instead of rescanning forever.
+ * <p>
  * Interaction is wired through {@code UseBlockCallback} and
  * {@code ServerTickEvents} in {@code TechReborn}, so the machine GUI is not
  * opened while the tool is held.
@@ -83,6 +90,12 @@ public class MultiblockBuilderItem extends Item {
 		final ArrayDeque<Entry> queue;
 		final Set<Block> reportedMissing = new HashSet<>();
 		int placed;
+		/** Positions skipped because they were already occupied (survival only). */
+		int skippedOccupied;
+		/** Whether the "…and N more" overflow line has been sent. */
+		boolean overflowReported;
+		/** Consecutive ticks that placed nothing; used to abort stuck jobs. */
+		int emptyTicks;
 
 		BuildJob(UUID playerId, RegistryKey<World> worldKey, BlockPos machinePos, List<Entry> todo) {
 			this.playerId = playerId;
@@ -95,6 +108,10 @@ public class MultiblockBuilderItem extends Item {
 	private static final Map<UUID, BuildJob> ACTIVE_JOBS = new HashMap<>();
 	private static final int BLOCKS_PER_TICK = 10;
 	private static final int MAX_REPORTED_POSITIONS = 20;
+	/** Cap on "already occupied" chat lines; the total is still reported once. */
+	private static final int MAX_OCCUPIED_MESSAGES = 50;
+	/** Abort a job after this many consecutive ticks without placing anything. */
+	private static final int MAX_EMPTY_TICKS = 40;
 
 	public MultiblockBuilderItem() {
 		super(new Item.Settings());
@@ -192,14 +209,32 @@ public class MultiblockBuilderItem extends Item {
 		}
 
 		int budget = BLOCKS_PER_TICK;
+		int placedBefore = job.placed;
 		while (budget > 0 && !job.queue.isEmpty()) {
 			Entry entry = job.queue.poll();
 			tryPlace(world, player, entry, job);
 			budget--;
 		}
 
+		// Positions may be permanently occupied (survival mode never overwrites
+		// blocks), in which case the queue can never drain. Stop instead of
+		// re-scanning it forever.
+		if (job.placed == placedBefore) {
+			if (++job.emptyTicks >= MAX_EMPTY_TICKS) {
+				player.sendMessage(Text.literal("§e搭建已中止§r：有位置被其它方块占用，无法继续"));
+				return true;
+			}
+		} else {
+			job.emptyTicks = 0;
+		}
+
 		if (job.queue.isEmpty()) {
-			player.sendMessage(Text.literal("§e搭建完成！§r共放置 §a" + job.placed + "§r 个方块"));
+			if (job.skippedOccupied > 0) {
+				player.sendMessage(Text.literal("§e搭建结束！§r共放置 §a" + job.placed
+						+ "§r 个方块，§c" + job.skippedOccupied + "§r 个位置被其它方块占用、已跳过"));
+			} else {
+				player.sendMessage(Text.literal("§e搭建完成！§r共放置 §a" + job.placed + "§r 个方块"));
+			}
 			return true;
 		}
 		return false;
@@ -208,6 +243,14 @@ public class MultiblockBuilderItem extends Item {
 	private static void tryPlace(ServerWorld world, ServerPlayerEntity player, Entry entry, BuildJob job) {
 		// Already satisfied (e.g. another source filled it): skip silently.
 		if (entry.predicate().test(world, entry.pos())) {
+			return;
+		}
+		// In survival the builder never overwrites existing blocks: it only
+		// fills air. Positions blocked by a real block are reported and
+		// re-queued so the player can clear them and let the build finish.
+		if (!player.isCreative() && !world.isAir(entry.pos())) {
+			reportOccupied(player, entry.pos(), job);
+			job.queue.add(entry);
 			return;
 		}
 		Block targetBlock = entry.target().getBlock();
@@ -237,6 +280,28 @@ public class MultiblockBuilderItem extends Item {
 		}
 		world.setBlockState(entry.pos(), placedBlock.getDefaultState(), 3);
 		job.placed++;
+	}
+
+	/**
+	 * Reports a position that could not be filled because a block already
+	 * occupies it. Individual lines are capped at
+	 * {@value #MAX_OCCUPIED_MESSAGES}; the remaining positions are summarised
+	 * in a single line instead of flooding the chat.
+	 *
+	 * @param player {@link ServerPlayerEntity} the acting player
+	 * @param pos    {@link BlockPos} the occupied position
+	 * @param job    {@link BuildJob} the job, used for counting and de-duplication
+	 */
+	private static void reportOccupied(ServerPlayerEntity player, BlockPos pos, BuildJob job) {
+		job.skippedOccupied++;
+		if (job.skippedOccupied <= MAX_OCCUPIED_MESSAGES) {
+			player.sendMessage(Text.literal("§c位置 §b(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ()
+					+ ")§c 已被方块占用，生存模式下不覆盖§r"));
+		} else if (!job.overflowReported) {
+			job.overflowReported = true;
+			player.sendMessage(Text.literal("§e…仍有更多位置被占用，后续不再逐条提示（已达 "
+					+ MAX_OCCUPIED_MESSAGES + " 条上限）§r"));
+		}
 	}
 
 	/**
@@ -294,5 +359,6 @@ public class MultiblockBuilderItem extends Item {
 		tooltip.add(Text.translatable("item.techreborn.multiblock_builder.tooltip.1"));
 		tooltip.add(Text.translatable("item.techreborn.multiblock_builder.tooltip.2"));
 		tooltip.add(Text.translatable("item.techreborn.multiblock_builder.tooltip.3"));
+		tooltip.add(Text.translatable("item.techreborn.multiblock_builder.tooltip.4"));
 	}
 }

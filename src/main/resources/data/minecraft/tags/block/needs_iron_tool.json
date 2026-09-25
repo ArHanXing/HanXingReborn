@@ -43,6 +43,20 @@
     "techreborn:zinc_storage_block",
     "techreborn:basic_machine_casing",
     "techreborn:advanced_machine_casing",
-    "techreborn:industrial_machine_casing"
+    "techreborn:industrial_machine_casing",
+    "techreborn:echo_casing",
+    "techreborn:space_elevator_casing",
+    "techreborn:space_elevator_power_module",
+    "techreborn:coil_cupronickel",
+    "techreborn:coil_kanthal",
+    "techreborn:coil_nichrome",
+    "techreborn:coil_molybdenum_disilicide",
+    "techreborn:coil_tungstensteel",
+    "techreborn:coil_hssg",
+    "techreborn:coil_rtm_alloy",
+    "techreborn:coil_naquadah",
+    "techreborn:coil_trinium",
+    "techreborn:coil_tritanium",
+    "techreborn:coil_superconductor"
   ]
 }
