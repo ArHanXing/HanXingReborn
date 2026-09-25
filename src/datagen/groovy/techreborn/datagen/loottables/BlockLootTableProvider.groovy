@@ -83,8 +83,8 @@ class BlockLootTableProvider extends FabricBlockLootTableProvider {
 		// registered as blocks like every other casing, so they need a drop
 		// too, otherwise breaking one silently voids the block.
 		[TRContent.ECHO_CASING,
-		 TRContent.SPACE_ELEVATOR_CASING,
-		 TRContent.SPACE_ELEVATOR_POWER_MODULE].each {
+		TRContent.SPACE_ELEVATOR_CASING,
+		TRContent.SPACE_ELEVATOR_POWER_MODULE].each {
 			addDrop(it)
 		}
 		addDrop(TRContent.RUBBER_BUTTON)
