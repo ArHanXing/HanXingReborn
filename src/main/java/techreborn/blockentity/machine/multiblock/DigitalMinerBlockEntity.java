@@ -765,12 +765,16 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	}
 
 	/**
-	 * Builds the "first N matched blocks" preview shown in the GUI. Walks the
-	 * live world rather than the target list so the preview reflects the filter
-	 * immediately, even before a scan pass reaches those blocks.
+	 * Builds the preview shown in the GUI: how many blocks of each matching type
+	 * are queued, most common first.
+	 * <p>
+	 * Counts rather than coordinates, because a coordinate triple does not fit the
+	 * 176px screen width next to a block name. The entries are harvested from the
+	 * queued targets, so the preview always reflects what the machine is really
+	 * about to mine rather than a second, independent sample of the world.
 	 *
 	 * @param compiled {@link CompiledFilter} the active filter
-	 * @return {@link String} newline separated block names, or a status message
+	 * @return {@link String} newline separated "Block xN" lines, or a status message
 	 */
 	private String buildPreview(@Nullable CompiledFilter compiled) {
 		if (compiled == null) {
@@ -782,22 +786,23 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 					: Text.translatable("gui.techreborn.digital_miner.scanning").getString();
 		}
 		int limit = Math.max(1, TechRebornConfig.digitalMinerMaxPreviewEntries);
+		Map<Block, Integer> counts = new HashMap<>();
+		for (BlockPos targetPos : targets) {
+			counts.merge(world.getBlockState(targetPos).getBlock(), 1, Integer::sum);
+		}
+		List<Map.Entry<Block, Integer>> top = new ArrayList<>(counts.entrySet());
+		top.sort((a, b) -> Integer.compare(b.getValue(), a.getValue()));
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < targets.size() && i < limit; i++) {
+		for (int i = 0; i < top.size() && i < limit; i++) {
 			if (i > 0) {
 				builder.append('\n');
 			}
-			BlockPos targetPos = targets.get(i);
-			Block block = world.getBlockState(targetPos).getBlock();
-			// Compact form: the GUI shows this in a narrow column
-			builder.append(block.getName().getString())
-					.append(' ')
-					.append(targetPos.getX()).append(',')
-					.append(targetPos.getY()).append(',')
-					.append(targetPos.getZ());
+			builder.append(top.get(i).getKey().getName().getString())
+					.append(" x")
+					.append(top.get(i).getValue());
 		}
-		if (targets.size() > limit) {
-			builder.append('\n').append("... +").append(targets.size() - limit);
+		if (top.size() > limit) {
+			builder.append('\n').append("... +").append(top.size() - limit);
 		}
 		return builder.toString();
 	}
@@ -888,7 +893,7 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 			int row = i / 4;
 			builder.outputSlot(i, 84 + col * 18, 41 + row * 18);
 		}
-		builder.energySlot(ENERGY_SLOT, 156, 82);
+		builder.energySlot(ENERGY_SLOT, 8, 76);
 		builder.syncEnergyValue();
 		builder.sync(PacketCodecs.STRING, this::getFilterText, this::setFilterText);
 		builder.sync(PacketCodecs.STRING, this::getPreviewText, this::setPreviewText);

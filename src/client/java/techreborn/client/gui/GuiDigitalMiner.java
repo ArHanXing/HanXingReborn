@@ -56,59 +56,60 @@ import techreborn.packets.serverbound.DigitalMinerPayload;
  */
 public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 
-	/** Extra height over the standard 176, see the class comment. */
-	private static final int EXTRA_HEIGHT = 78;
+	/**
+	 * Extra height over the standard 176. Measured behaviour of {@code GuiBase}:
+	 * the machine area is {@code EXTRA_HEIGHT + 53} tall and the player inventory
+	 * starts at {@code 93 + EXTRA_HEIGHT}, so 40 gives a 93px machine area and
+	 * puts the inventory at y=133.
+	 */
+	private static final int EXTRA_HEIGHT = 40;
 
 	/**
-	 * Layout inside the machine area. The area is {@code backgroundHeight - 93}
-	 * tall, i.e. 0..160, and the player inventory starts at y=173. The output
-	 * slots and the energy slot are placed by the screen handler; these
-	 * constants must match. Note that {@code drawSlot(x, y)} paints its frame at
-	 * {@code (x-1, y-1)} and is about 20px wide, so the boxes below describe the
-	 * drawn extents, not the 18px slot cells.
+	 * Layout inside the 176x133 machine area (y=0..132). The output slots and the
+	 * energy slot are placed by the screen handler; these constants must match.
+	 * {@code drawSlot(x, y)} paints an 18px frame at {@code (x-1, y-1)}, so the
+	 * slot block spans x=83..156 / y=40..94.
 	 *
 	 * <pre>
 	 *  y=9   filter label
-	 *  y=19  filter field, full width
-	 *  y=41  range buttons x=8..56 | range toggle x=136..156 | outputs x=84..176
-	 *  y=60  output row 2
-	 *  y=95  targets / speed / range readout
-	 *  y=116 preview of the matched blocks, up to 4 lines
+	 *  y=18  filter field x=8..78 | "range" button x=82..156
+	 *  y=41  range buttons x=8..56 | output slots 2x4 x=83..156
+	 *  y=76  energy slot, left column under the outputs
+	 *  y=78  targets / speed / range readout (left column only, x&lt;83)
+	 *  y=110 preview of the matched blocks, 2 lines
 	 * </pre>
 	 */
-	private static final int FILTER_LABEL_Y = 9;
+	private static final int FILTER_LABEL_Y = 7;
 	private static final int FILTER_X = 8;
-	private static final int FILTER_Y = 19;
-	private static final int FILTER_WIDTH = 130;
+	private static final int FILTER_Y = 18;
+	private static final int FILTER_WIDTH = 70;
 	private static final int FILTER_HEIGHT = 14;
 
 	private static final int BUTTON_X = 8;
 	private static final int BUTTON_Y = 41;
 
-	/**
-	 * "Range" toggle. The output slot frames fill x=83..176, so this sits on the
-	 * filter row instead, where the field leaves room to its right.
-	 */
-	private static final int RANGE_BUTTON_X = 142;
-	private static final int RANGE_BUTTON_Y = 19;
-	private static final int RANGE_BUTTON_W = 26;
+	/** "Range" toggle, sharing the filter row. */
+	private static final int RANGE_BUTTON_X = 82;
+	private static final int RANGE_BUTTON_Y = 18;
+	private static final int RANGE_BUTTON_W = 74;
 	private static final int RANGE_BUTTON_H = 14;
 
 	private static final int OUTPUT_X = 84;
 	private static final int OUTPUT_Y = 41;
-	/** Below the output frames (which end at y=78). */
-	private static final int ENERGY_SLOT_X = 156;
-	private static final int ENERGY_SLOT_Y = 82;
+	/** Below the output frames, in the free left column. */
+	private static final int ENERGY_SLOT_X = 8;
+	private static final int ENERGY_SLOT_Y = 76;
 
-	private static final int INFO_X = 8;
-	private static final int INFO_Y = 84;
+	/** Right of the energy slot, which occupies the left column at y=76. */
+	private static final int INFO_X = 28;
+	private static final int INFO_Y = 80;
 	private static final int INFO_LINE_HEIGHT = 10;
 
 	private static final int PREVIEW_X = 8;
-	private static final int PREVIEW_Y = 116;
+	private static final int PREVIEW_Y = 110;
 	private static final int PREVIEW_LINE_HEIGHT = 9;
-	/** Four lines fit between the readout and the player inventory at y=173. */
-	private static final int PREVIEW_MAX_LINES = 4;
+	/** Two lines fit below the readout and above the player inventory at y=133. */
+	private static final int PREVIEW_MAX_LINES = 2;
 
 	private final DigitalMinerBlockEntity miner;
 	private TextFieldWidget filterField;
@@ -208,11 +209,13 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 		}
 
 		// Every slot needs its own frame drawn; the player inventory ones are
-		// handled by GuiBase.
+		// handled by GuiBase. drawSlot paints the plain 18px inventory frame,
+		// which is what the rest of the machine GUIs use for inputs and outputs
+		// alike (drawOutputSlot would paint a 26px decorative frame).
 		for (int i = 0; i < DigitalMinerBlockEntity.OUTPUT_SLOTS; i++) {
 			int col = i % 4;
 			int row = i / 4;
-			drawOutputSlot(drawContext, OUTPUT_X + col * 18, OUTPUT_Y + row * 18, layer);
+			drawSlot(drawContext, OUTPUT_X + col * 18, OUTPUT_Y + row * 18, layer);
 		}
 		drawSlot(drawContext, ENERGY_SLOT_X, ENERGY_SLOT_Y, layer);
 

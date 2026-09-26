@@ -1311,7 +1311,7 @@
   "block.techreborn.digital_miner": "Digital Miner",
   "techreborn.tooltip.machine.digital_miner": "Mines blocks matching a filter inside a chunk radius (tags or regex)",
   "gui.techreborn.digital_miner.filter_label": "Filter (#tag or regex)",
-  "gui.techreborn.digital_miner.radius": "Range: %s chunks (%sx%s)",
+  "gui.techreborn.digital_miner.radius": "Range: %s chunks (span %s chunks)",
   "gui.techreborn.digital_miner.targets": "Target blocks: %s",
   "gui.techreborn.digital_miner.speed": "Speed: %s ticks/block (%s overclockers)",
   "gui.techreborn.digital_miner.preview": "Preview:",

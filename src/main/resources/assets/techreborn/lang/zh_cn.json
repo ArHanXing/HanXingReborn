@@ -1253,7 +1253,7 @@
   "block.techreborn.digital_miner": "数字型采矿机",
   "techreborn.tooltip.machine.digital_miner": "按区块范围挖掘指定方块（支持标签与正则筛选）",
   "gui.techreborn.digital_miner.filter_label": "筛选（#标签 或 正则）",
-  "gui.techreborn.digital_miner.radius": "范围: %s 区块（%s×%s）",
+  "gui.techreborn.digital_miner.radius": "范围: %s 区块（直径 %s 区块）",
   "gui.techreborn.digital_miner.targets": "目标方块: %s",
   "gui.techreborn.digital_miner.speed": "速度: %s tick/方块（超频 %s）",
   "gui.techreborn.digital_miner.preview": "预览:",
