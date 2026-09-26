@@ -1258,6 +1258,7 @@
   "gui.techreborn.digital_miner.speed": "速度: %s tick/方块（超频 %s）",
   "gui.techreborn.digital_miner.preview": "预览:",
   "gui.techreborn.digital_miner.show_range": "显示工作范围",
+  "gui.techreborn.digital_miner.show_range_short": "范围",
   "gui.techreborn.digital_miner.filter_invalid": "筛选表达式无效",
   "gui.techreborn.digital_miner.no_targets": "没有匹配的方块",
   "gui.techreborn.digital_miner.scanning": "扫描中…",

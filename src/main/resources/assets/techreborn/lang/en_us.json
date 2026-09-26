@@ -1316,6 +1316,7 @@
   "gui.techreborn.digital_miner.speed": "Speed: %s ticks/block (%s overclockers)",
   "gui.techreborn.digital_miner.preview": "Preview:",
   "gui.techreborn.digital_miner.show_range": "Show working range",
+  "gui.techreborn.digital_miner.show_range_short": "Range",
   "gui.techreborn.digital_miner.filter_invalid": "Invalid filter expression",
   "gui.techreborn.digital_miner.no_targets": "No matching blocks",
   "gui.techreborn.digital_miner.scanning": "Scanning...",

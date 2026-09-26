@@ -34,39 +34,81 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 
 import reborncore.client.gui.GuiBase;
-import reborncore.client.gui.GuiSprites;
 import reborncore.client.gui.widget.GuiButtonUpDown;
 import reborncore.client.gui.widget.GuiButtonUpDown.UpDownButtonType;
 import reborncore.common.screen.BuiltScreenHandler;
 
 import techreborn.blockentity.machine.multiblock.DigitalMinerBlockEntity;
-import techreborn.config.TechRebornConfig;
 import techreborn.packets.serverbound.DigitalMinerPayload;
 
 /**
- * GUI of the Digital Miner: eight output slots, the range buttons, the filter
- * text field and the "what will be mined" information block.
+ * GUI of the Digital Miner: the filter field, the range controls, eight output
+ * slots and the "what will be mined" readout.
+ * <p>
+ * The screen is 40px taller than the usual 176x176 machine GUI so the filter
+ * field can sit on its own row at the top without colliding with the range
+ * buttons and the readout. {@code GuiBase} derives both the background size and
+ * the player inventory position from {@code backgroundHeight}, so raising it
+ * here shifts everything below the machine area down consistently.
  * <p>
  * The filter is pushed to the server when the player presses Enter or the field
  * loses focus, so a half-typed expression never restarts the scan.
  */
 public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 
-	private static final int SLOT_SIZE = 18;
-	/** Position of the first output slot. */
-	private static final int OUTPUT_X = 71;
-	private static final int OUTPUT_Y = 17;
-	private static final int ENERGY_SLOT_X = 8;
-	private static final int ENERGY_SLOT_Y = 42;
+	/** Extra height over the standard 176, see the class comment. */
+	private static final int EXTRA_HEIGHT = 78;
 
+	/**
+	 * Layout inside the machine area. The area is {@code backgroundHeight - 93}
+	 * tall, i.e. 0..160, and the player inventory starts at y=173. The output
+	 * slots and the energy slot are placed by the screen handler; these
+	 * constants must match. Note that {@code drawSlot(x, y)} paints its frame at
+	 * {@code (x-1, y-1)} and is about 20px wide, so the boxes below describe the
+	 * drawn extents, not the 18px slot cells.
+	 *
+	 * <pre>
+	 *  y=9   filter label
+	 *  y=19  filter field, full width
+	 *  y=41  range buttons x=8..56 | range toggle x=136..156 | outputs x=84..176
+	 *  y=60  output row 2
+	 *  y=95  targets / speed / range readout
+	 *  y=116 preview of the matched blocks, up to 4 lines
+	 * </pre>
+	 */
+	private static final int FILTER_LABEL_Y = 9;
 	private static final int FILTER_X = 8;
-	private static final int FILTER_Y = 15;
-	private static final int FILTER_WIDTH = 54;
+	private static final int FILTER_Y = 19;
+	private static final int FILTER_WIDTH = 130;
 	private static final int FILTER_HEIGHT = 14;
 
+	private static final int BUTTON_X = 8;
+	private static final int BUTTON_Y = 41;
+
+	/**
+	 * "Range" toggle. The output slot frames fill x=83..176, so this sits on the
+	 * filter row instead, where the field leaves room to its right.
+	 */
+	private static final int RANGE_BUTTON_X = 142;
+	private static final int RANGE_BUTTON_Y = 19;
+	private static final int RANGE_BUTTON_W = 26;
+	private static final int RANGE_BUTTON_H = 14;
+
+	private static final int OUTPUT_X = 84;
+	private static final int OUTPUT_Y = 41;
+	/** Below the output frames (which end at y=78). */
+	private static final int ENERGY_SLOT_X = 156;
+	private static final int ENERGY_SLOT_Y = 82;
+
 	private static final int INFO_X = 8;
-	private static final int INFO_Y = 34;
-	private static final int PREVIEW_Y = 58;
+	private static final int INFO_Y = 84;
+	private static final int INFO_LINE_HEIGHT = 10;
+
+	private static final int PREVIEW_X = 8;
+	private static final int PREVIEW_Y = 116;
+	private static final int PREVIEW_LINE_HEIGHT = 9;
+	/** Four lines fit between the readout and the player inventory at y=173. */
+	private static final int PREVIEW_MAX_LINES = 4;
 
 	private final DigitalMinerBlockEntity miner;
 	private TextFieldWidget filterField;
@@ -78,6 +120,8 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 		super(player, blockEntity, blockEntity.createScreenHandler(syncID, player));
 		this.miner = blockEntity;
 		this.sentFilter = blockEntity.getFilterText();
+		// GuiBase reads this for the background size and the inventory position
+		this.backgroundHeight += EXTRA_HEIGHT;
 	}
 
 	@Override
@@ -87,13 +131,13 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 		int top = getGuiTop();
 
 		// range buttons
-		addDrawableChild(new GuiButtonUpDown(left + 8, top + FILTER_Y + FILTER_HEIGHT + 2, this,
+		addDrawableChild(new GuiButtonUpDown(left + BUTTON_X, top + BUTTON_Y, this,
 				b -> sendButton(1), UpDownButtonType.FORWARD));
-		addDrawableChild(new GuiButtonUpDown(left + 8 + 12, top + FILTER_Y + FILTER_HEIGHT + 2, this,
+		addDrawableChild(new GuiButtonUpDown(left + BUTTON_X + 12, top + BUTTON_Y, this,
 				b -> sendButton(-1), UpDownButtonType.REWIND));
-		addDrawableChild(new GuiButtonUpDown(left + 8 + 24, top + FILTER_Y + FILTER_HEIGHT + 2, this,
+		addDrawableChild(new GuiButtonUpDown(left + BUTTON_X + 24, top + BUTTON_Y, this,
 				b -> sendButton(5), UpDownButtonType.FASTFORWARD));
-		addDrawableChild(new GuiButtonUpDown(left + 8 + 36, top + FILTER_Y + FILTER_HEIGHT + 2, this,
+		addDrawableChild(new GuiButtonUpDown(left + BUTTON_X + 36, top + BUTTON_Y, this,
 				b -> sendButton(-5), UpDownButtonType.FASTREWIND));
 
 		// working range display, mirroring the chunk loader's button
@@ -102,8 +146,8 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 				button.setMessage(rangeButtonText());
 				reborncore.client.ClientChunkManager.toggleLoadedChunks(miner.getPos());
 			})
-			.position(left + 8, top + 74)
-			.size(102, 14)
+			.position(left + RANGE_BUTTON_X, top + RANGE_BUTTON_Y)
+			.size(RANGE_BUTTON_W, RANGE_BUTTON_H)
 			.build()
 		);
 
@@ -111,12 +155,11 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 				FILTER_WIDTH, FILTER_HEIGHT, Text.translatable("gui.techreborn.digital_miner.filter"));
 		filterField.setMaxLength(128);
 		filterField.setText(miner.getFilterText());
-		filterField.setChangedListener(value -> filterField.setEditableColor(0xFFFFFF));
 		addDrawableChild(filterField);
 	}
 
 	private Text rangeButtonText() {
-		return Text.translatable("gui.techreborn.digital_miner.show_range");
+		return Text.translatable("gui.techreborn.digital_miner.show_range_short");
 	}
 
 	private void sendButton(int delta) {
@@ -157,6 +200,30 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 	}
 
 	@Override
+	protected void drawBackground(DrawContext drawContext, float partialTicks, int mouseX, int mouseY) {
+		super.drawBackground(drawContext, partialTicks, mouseX, mouseY);
+		final Layer layer = Layer.BACKGROUND;
+		if (hideGuiElements()) {
+			return;
+		}
+
+		// Every slot needs its own frame drawn; the player inventory ones are
+		// handled by GuiBase.
+		for (int i = 0; i < DigitalMinerBlockEntity.OUTPUT_SLOTS; i++) {
+			int col = i % 4;
+			int row = i / 4;
+			drawOutputSlot(drawContext, OUTPUT_X + col * 18, OUTPUT_Y + row * 18, layer);
+		}
+		drawSlot(drawContext, ENERGY_SLOT_X, ENERGY_SLOT_Y, layer);
+
+		// the filter field sits over the background, draw its frame
+		drawContext.fill(getGuiLeft() + FILTER_X - 1, getGuiTop() + FILTER_Y - 1,
+				getGuiLeft() + FILTER_X + FILTER_WIDTH + 1, getGuiTop() + FILTER_Y + FILTER_HEIGHT + 1, 0xFF202020);
+		drawContext.fill(getGuiLeft() + FILTER_X, getGuiTop() + FILTER_Y,
+				getGuiLeft() + FILTER_X + FILTER_WIDTH, getGuiTop() + FILTER_Y + FILTER_HEIGHT, 0xFF000000);
+	}
+
+	@Override
 	protected void drawForeground(DrawContext drawContext, int mouseX, int mouseY) {
 		super.drawForeground(drawContext, mouseX, mouseY);
 		if (hideGuiElements()) {
@@ -164,47 +231,29 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 		}
 
 		drawText(drawContext, Text.translatable("gui.techreborn.digital_miner.filter_label"),
-				FILTER_X, FILTER_Y - 10, theme.titleColor().rgba(), Layer.FOREGROUND);
+				FILTER_X, FILTER_LABEL_Y, theme.titleColor().rgba(), Layer.FOREGROUND);
 
-		Text range = Text.translatable("gui.techreborn.digital_miner.radius", miner.getRadius(),
-				miner.getRadius() * 2 + 1);
-		drawText(drawContext, range, INFO_X, INFO_Y, theme.titleColor().rgba(), Layer.FOREGROUND);
-
+		// left column: targets / speed / range
 		Text targets = Text.translatable("gui.techreborn.digital_miner.targets", miner.getTargetCount());
-		drawText(drawContext, targets, INFO_X, INFO_Y + 10, theme.titleColor().rgba(), Layer.FOREGROUND);
+		drawText(drawContext, targets, INFO_X, INFO_Y, theme.titleColor().rgba(), Layer.FOREGROUND);
 
 		Text speed = Text.translatable("gui.techreborn.digital_miner.speed", miner.getSpeedTicks(),
 				miner.overclockerCount());
-		drawText(drawContext, speed, INFO_X, INFO_Y + 20, theme.titleColor().rgba(), Layer.FOREGROUND);
+		drawText(drawContext, speed, INFO_X, INFO_Y + INFO_LINE_HEIGHT, theme.titleColor().rgba(), Layer.FOREGROUND);
 
-		// preview of the first few matched blocks
-		drawText(drawContext, Text.translatable("gui.techreborn.digital_miner.preview"),
-				INFO_X, PREVIEW_Y - 10, theme.titleColor().rgba(), Layer.FOREGROUND);
+		Text range = Text.translatable("gui.techreborn.digital_miner.radius", miner.getRadius(),
+				miner.getRadius() * 2 + 1);
+		drawText(drawContext, range, INFO_X, INFO_Y + INFO_LINE_HEIGHT * 2, theme.titleColor().rgba(), Layer.FOREGROUND);
+
+		// preview of the matched blocks, last lines of the machine area
 		List<String> lines = String.valueOf(miner.getPreviewText()).lines()
-				.limit(Math.max(1, TechRebornConfig.digitalMinerMaxPreviewEntries))
+				.limit(PREVIEW_MAX_LINES)
 				.toList();
 		int y = PREVIEW_Y;
 		for (String line : lines) {
-			drawText(drawContext, Text.literal(line), INFO_X, y, 0xAAAAAA, Layer.FOREGROUND);
-			y += 9;
+			drawText(drawContext, Text.literal(line), PREVIEW_X, y, 0xAAAAAA, Layer.FOREGROUND);
+			y += PREVIEW_LINE_HEIGHT;
 		}
-	}
-
-	@Override
-	protected void drawBackground(DrawContext drawContext, float partialTicks, int mouseX, int mouseY) {
-		super.drawBackground(drawContext, partialTicks, mouseX, mouseY);
-		final Layer layer = Layer.BACKGROUND;
-		if (hideGuiElements()) {
-			return;
-		}
-		// energy slot frame
-		GuiSprites.drawSprite(drawContext, GuiSprites.SLOT, getGuiLeft() + ENERGY_SLOT_X, getGuiTop() + ENERGY_SLOT_Y);
-
-		// the filter field sits over the background, draw its frame
-		drawContext.fill(getGuiLeft() + FILTER_X - 1, getGuiTop() + FILTER_Y - 1,
-				getGuiLeft() + FILTER_X + FILTER_WIDTH + 1, getGuiTop() + FILTER_Y + FILTER_HEIGHT + 1, 0xFF202020);
-		drawContext.fill(getGuiLeft() + FILTER_X, getGuiTop() + FILTER_Y,
-				getGuiLeft() + FILTER_X + FILTER_WIDTH, getGuiTop() + FILTER_Y + FILTER_HEIGHT, 0xFF000000);
 	}
 
 	/** Kept for symmetry with the other GUIs; the miner has no recipe tabs. */

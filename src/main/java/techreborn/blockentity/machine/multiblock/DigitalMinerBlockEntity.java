@@ -787,12 +787,14 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 			if (i > 0) {
 				builder.append('\n');
 			}
-			Block block = world.getBlockState(targets.get(i)).getBlock();
+			BlockPos targetPos = targets.get(i);
+			Block block = world.getBlockState(targetPos).getBlock();
+			// Compact form: the GUI shows this in a narrow column
 			builder.append(block.getName().getString())
-					.append(" (")
-					.append(targets.get(i).getX()).append(", ")
-					.append(targets.get(i).getY()).append(", ")
-					.append(targets.get(i).getZ()).append(')');
+					.append(' ')
+					.append(targetPos.getX()).append(',')
+					.append(targetPos.getY()).append(',')
+					.append(targetPos.getZ());
 		}
 		if (targets.size() > limit) {
 			builder.append('\n').append("... +").append(targets.size() - limit);
@@ -878,13 +880,15 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 		BlockEntityScreenHandlerBuilder builder = new ScreenHandlerBuilder("digitalminer")
 				.player(player.getInventory()).inventory().hotbar().addInventory()
 				.blockEntity(this);
-		// 8 outputs in two rows of four
+		// 8 outputs in two rows of four, right of the range buttons; the energy
+		// slot sits under them. These coordinates must match the layout
+		// documented in GuiDigitalMiner.
 		for (int i = 0; i < OUTPUT_SLOTS; i++) {
 			int col = i % 4;
 			int row = i / 4;
-			builder.outputSlot(i, 53 + col * 18, 26 + row * 18);
+			builder.outputSlot(i, 84 + col * 18, 41 + row * 18);
 		}
-		builder.energySlot(ENERGY_SLOT, 8, 72);
+		builder.energySlot(ENERGY_SLOT, 156, 82);
 		builder.syncEnergyValue();
 		builder.sync(PacketCodecs.STRING, this::getFilterText, this::setFilterText);
 		builder.sync(PacketCodecs.STRING, this::getPreviewText, this::setPreviewText);
