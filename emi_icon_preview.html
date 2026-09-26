@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>EMI 略缩图预览 — simplified_icons.png</title>
+<style>
+  :root {
+    --bg: #1b1d21;
+    --panel: #26292e;
+    --line: #3a3f46;
+    --text: #d7dae0;
+    --dim: #8b929c;
+    --accent: #5bee38;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 18px;
+    background: var(--bg); color: var(--text);
+    font: 13px/1.5 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+  }
+  h1 { font-size: 15px; margin: 0 0 4px; font-weight: 600; }
+  .sub { color: var(--dim); font-size: 12px; margin-bottom: 14px; }
+  .sub code { background: #000; padding: 1px 5px; border-radius: 3px; color: var(--accent); }
+  .bar { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; padding: 10px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+  .bar label { color: var(--dim); }
+  .bar input[type=range] { width: 130px; vertical-align: middle; }
+  #wrap { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px; }
+  .card h2 { font-size: 12px; margin: 0 0 10px; color: var(--dim); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+  #sheet { image-rendering: pixelated; display: block; border: 1px solid var(--line); background: #0e0f11; }
+  #legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 6px; flex: 1 1 520px; min-width: 340px; }
+  .tile { display: flex; gap: 8px; align-items: center; padding: 5px 6px; border-radius: 5px; border: 1px solid transparent; }
+  .tile:hover { background: #2f333a; border-color: var(--line); }
+  .tile canvas { image-rendering: pixelated; background: #0e0f11; border: 1px solid var(--line); border-radius: 3px; flex: none; }
+  .meta { min-width: 0; }
+  .nm { font-size: 11px; font-family: Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .co { font-size: 10px; color: var(--dim); font-family: Consolas, monospace; }
+  .cat { font-size: 10px; color: var(--accent); font-family: Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .new .nm { color: var(--accent); }
+  #err { display: none; padding: 10px 12px; margin-bottom: 14px; background: #3a2325; border: 1px solid #6b3538; border-radius: 6px; color: #ffb4b4; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<h1>EMI 略缩图预览</h1>
+<div class="sub">
+  数据源：<code>EmiTextures.java</code> · 贴图：<code>src/main/resources/assets/techreborn/textures/gui/simplified_icons.png</code>
+</div>
+
+<div id="err">
+  浏览器阻止了本地文件读取（<code>file://</code> 同源限制）。请用下面的选择框手动指定
+  <code>simplified_icons.png</code>，或改用本地服务器打开本页面。
+</div>
+
+<div class="bar">
+  <label><input type="checkbox" id="onlyUsed" checked> 只显示已命名的格位</label>
+  <label>缩放 <input type="range" id="zoom" min="24" max="80" step="8" value="48"><span id="zv">48</span>px</label>
+  <label>手动指定贴图 <input type="file" id="file" accept="image/png"></label>
+</div>
+
+<div id="wrap">
+  <div class="card">
+    <h2>贴图集 256×256</h2>
+    <canvas id="sheet" width="256" height="256"></canvas>
+  </div>
+  <div id="legend"></div>
+</div>
+
+<script>
+// ---- 图标定义：name / x / y / 使用它的 EMI 配方分类 -------------------------
+// 与 src/client/java/techreborn/client/compat/emi/core/EmiTextures.java 保持一致
+const ICONS = [
+  ["GRINDING",                             0,  0, "grinder"],
+  ["ALLOY_SMELTING",                      16,  0, "alloy_smelter"],
+  ["ASSEMBLING",                          32,  0, "assembling_machine"],
+  ["BLAST_FURNACE",                       48,  0, "blast_furnace"],
+  ["CENTRIFUGE",                          64,  0, "centrifuge"],
+  ["CHEMICAL_REACTING",                   80,  0, "chemical_reactor"],
+  ["COMPRESSING",                         96,  0, "compressor"],
+  ["DISTILLATION_TOWER",                 112,  0, "distillation_tower"],
+  ["EXTRACTING",                         128,  0, "extractor"],
+  ["IMPLOSION_COMPRESSING",              144,  0, "implosion_compressor"],
+  ["ELECTROLYZING",                      160,  0, "industrial_electrolyzer"],
+  ["INDUSTRIAL_GRINDING",                176,  0, "industrial_grinder"],
+  ["SAWMILLING",                         192,  0, "industrial_sawmill"],
+  ["SCRAPBOX",                           208,  0, "scrapbox"],
+  ["VACUUM_FREEZING",                    224,  0, "vacuum_freezer"],
+  ["FLUID_REPLICATING",                  240,  0, "fluid_replicator"],
+  ["FUSION_REACTOR",                       0, 16, "fusion_reactor"],
+  ["ROLLING_MACHINE",                     16, 16, "rolling_machine"],
+  ["WIRE_MILLING",                        32, 16, "wire_mill"],
+  ["CANNING",                             48, 16, "solid_canning_machine"],
+  ["— ExMI 为其他模组预留（未使用）—",    64, 16, "FLUID_FROM_CAN"],
+  ["— ExMI 为其他模组预留（未使用）—",    80, 16, "FLUID_INTO_CAN"],
+  ["— ExMI 为其他模组预留（未使用）—",    96, 16, "CONDENSING"],
+  ["— ExMI 为其他模组预留（未使用）—",   112, 16, "MODULE"],
+  ["— ExMI 为其他模组预留（未使用）—",   128, 16, "RECYCLING"],
+  ["— ExMI 为其他模组预留（未使用）—",   144, 16, "METAL_SMELTING"],
+  ["— ExMI 为其他模组预留（未使用）—",   160, 16, "MIXING"],
+  ["— ExMI 为其他模组预留（未使用）—",   176, 16, "LASERING"],
+  ["— ExMI 为其他模组预留（未使用）—",   192, 16, "ENERGIZING"],
+  ["— ExMI 为其他模组预留（未使用）—",   208, 16, "?"],
+  ["— ExMI 为其他模组预留（未使用）—",   224, 16, "?"],
+  ["— ExMI 为其他模组预留（未使用）—",   240, 16, "?"],
+  ["LARGE_CHEMICAL_REACTOR",              32, 32, "large_chemical_reactor"],
+  ["LATHE",                               48, 32, "lathe"],
+  ["PRECISE_ASSEMBLER",                   64, 32, "precise_assembler"],
+  ["HUNTER_PROCESS_REACTOR",              80, 32, "hunter_process_reactor  ★新增"],
+  ["KROLL_REDUCTION_VESSEL",              96, 32, "kroll_reduction_vessel  ★新增"],
+  ["CULTIVATION_VESSEL",                 112, 32, "cultivation_vessel  ★新增"],
+  ["IRRADIATED_MUTAGENSIS_CHAMBER",      128, 32, "irradiated_mutagensis_chamber  ★新增"],
+  ["SUPERCRITICAL_POLYMERIZATION_CHAMBER",144, 32, "supercritical_polymerization_chamber  ★新增"],
+  ["GREENHOUSE",                         160, 32, "greenhouse  ★新增"],
+  ["RANCH",                              176, 32, "ranch  ★新增"],
+  ["ORE_CRUSHER",                        192, 32, "ore_crusher  ★新增"],
+];
+
+const NEW_FROM = 80;  // x >= 80 且 y == 32 视为本次新增（含 ORE_CRUSHER）
+
+const img = new Image();
+const sheet = document.getElementById('sheet');
+const sctx = sheet.getContext('2d');
+let scale = 48;
+let ready = false;
+
+function isNew(x, y) { return y === 32 && x >= NEW_FROM; }
+
+// ---- 渲染贴图集：放大 + 网格 + 已命名格位的标记 --------------------------
+function drawSheet() {
+  sctx.clearRect(0, 0, 256, 256);
+  if (ready) {
+    sctx.imageSmoothingEnabled = false;
+    sctx.drawImage(img, 0, 0, 256, 256);
+  }
+  // 网格
+  sctx.strokeStyle = 'rgba(255,255,255,0.10)';
+  sctx.lineWidth = 1;
+  for (let i = 0; i <= 16; i++) {
+    const p = i * 16 + 0.5;
+    sctx.beginPath(); sctx.moveTo(p, 0); sctx.lineTo(p, 256); sctx.stroke();
+    sctx.beginPath(); sctx.moveTo(0, p); sctx.lineTo(256, p); sctx.stroke();
+  }
+  // 已命名的格位描边：绿=本次新增，蓝=既有
+  sctx.lineWidth = 2;
+  for (const [name, x, y] of ICONS) {
+    if (name.startsWith('—')) continue;
+    sctx.strokeStyle = isNew(x, y) ? '#5bee38' : '#00a8f3';
+    sctx.strokeRect(x + 1, y + 1, 14, 14);
+  }
+}
+
+// ---- 生成图例 ------------------------------------------------------------
+const legend = document.getElementById('legend');
+const onlyUsed = document.getElementById('onlyUsed');
+
+function drawTile(cv, x, y) {
+  const c = cv.getContext('2d');
+  cv.width = scale; cv.height = scale;
+  c.imageSmoothingEnabled = false;
+  c.clearRect(0, 0, scale, scale);
+  if (ready) c.drawImage(img, x, y, 16, 16, 0, 0, scale, scale);
+}
+
+function buildLegend() {
+  legend.innerHTML = '';
+  const rows = onlyUsed.checked ? ICONS.filter(r => !r[0].startsWith('—')) : ICONS;
+  for (const [name, x, y, cat] of rows) {
+    const el = document.createElement('div');
+    el.className = 'tile' + (isNew(x, y) ? ' new' : '');
+    const cv = document.createElement('canvas');
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.innerHTML =
+      '<div class="nm" title="' + name + '">' + name + '</div>' +
+      '<div class="co">(' + x + ', ' + y + ')</div>' +
+      '<div class="cat" title="' + cat + '">' + cat + '</div>';
+    el.appendChild(cv);
+    el.appendChild(meta);
+    el.title = '点击复制坐标';
+    el.addEventListener('click', () => {
+      navigator.clipboard?.writeText(x + ',' + y);
+    });
+    legend.appendChild(el);
+    drawTile(cv, x, y);
+  }
+}
+
+// ---- 载入贴图 ------------------------------------------------------------
+function onLoaded() {
+  ready = true;
+  document.getElementById('err').style.display = 'none';
+  drawSheet();
+  buildLegend();
+}
+
+// 优先读取仓库内的相对路径；file:// 下会被浏览器拦截，此时提示手动指定
+img.onload = onLoaded;
+img.onerror = () => {
+  document.getElementById('err').style.display = 'block';
+  drawSheet();
+  buildLegend();
+};
+img.src = 'src/main/resources/assets/techreborn/textures/gui/simplified_icons.png';
+
+document.getElementById('file').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { img.src = r.result; };
+  r.readAsDataURL(f);
+});
+
+document.getElementById('zoom').addEventListener('input', e => {
+  scale = +e.target.value;
+  document.getElementById('zv').textContent = scale;
+  buildLegend();
+});
+onlyUsed.addEventListener('change', buildLegend);
+
+drawSheet();
+buildLegend();
+</script>
+</body>
+</html>
