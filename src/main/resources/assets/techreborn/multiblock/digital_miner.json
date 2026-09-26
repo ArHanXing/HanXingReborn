@@ -1,20 +1,24 @@
 {
-	"translate": [
-		-1,
-		-1,
-		0
-	],
-	"layers": [
-		[
-			"XXX"
-		],
-		[
-			"X X"
-		]
-	],
-	"keys": {
-		"X": {
-			"block": "techreborn:basic_machine_casing"
-		}
-	}
+  "translate": [
+    -1,
+    -2,
+    -1
+  ],
+  "layers": [
+    [
+      "AAA",
+      "AAA",
+      "AAA"
+    ],
+    [
+      "AAA",
+      "AAA",
+      "AAA"
+    ]
+  ],
+  "keys": {
+    "A": {
+      "block": "techreborn:basic_machine_casing"
+    }
+  }
 }
