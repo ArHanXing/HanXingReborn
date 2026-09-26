@@ -31,6 +31,7 @@ import techreborn.packets.serverbound.AESUConfigPayload;
 import techreborn.packets.serverbound.AutoCraftingLockPayload;
 import techreborn.packets.serverbound.ChunkloaderPayload;
 import techreborn.packets.serverbound.DetectorRadiusPayload;
+import techreborn.packets.serverbound.DigitalMinerPayload;
 import techreborn.packets.serverbound.DysonHostBindingPayload;
 import techreborn.packets.serverbound.DysonReceiverBindingPayload;
 import techreborn.packets.serverbound.ExperiencePayload;
@@ -60,6 +61,7 @@ public class Packets {
 		registry.register(AutoCraftingLockPayload.ID, AutoCraftingLockPayload.CODEC);
 		registry.register(ChunkloaderPayload.ID, ChunkloaderPayload.CODEC);
 		registry.register(DetectorRadiusPayload.ID, DetectorRadiusPayload.CODEC);
+		registry.register(DigitalMinerPayload.ID, DigitalMinerPayload.CODEC);
 		registry.register(DysonHostBindingPayload.ID, DysonHostBindingPayload.CODEC);
 		registry.register(DysonReceiverBindingPayload.ID, DysonReceiverBindingPayload.CODEC);
 		registry.register(ExperiencePayload.ID, ExperiencePayload.CODEC);

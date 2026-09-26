@@ -580,6 +580,33 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "space_elevator", key = "SpaceElevatorEnergyPerTick", comment = "Space Elevator energy consumption while running (Energy per tick)")
 	public static int spaceElevatorEnergyPerTick = 2048;
 
+	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerMaxInput", comment = "Digital Miner Max Input (Energy per tick)")
+	public static int digitalMinerMaxInput = 128;
+
+	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerMaxEnergy", comment = "Digital Miner Max Energy")
+	public static int digitalMinerMaxEnergy = 1_000_000;
+
+	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerMaxRadius", comment = "Digital Miner max chunk radius of the working area (1-3)")
+	public static int digitalMinerMaxRadius = 3;
+
+	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerBaseEnergyPerTick", comment = "Digital Miner energy per tick with 0 overclockers (= 0.25A LV, 32 EU/t per amp)")
+	public static int digitalMinerBaseEnergyPerTick = 8;
+
+	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerBaseBreakTime", comment = "Digital Miner ticks to break one block with 0 overclockers")
+	public static int digitalMinerBaseBreakTime = 80;
+
+	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerSpeedMultiplierPerOverclocker", comment = "Digital Miner break time multiplier per overclocker (0.5 = half the time)")
+	public static double digitalMinerSpeedMultiplierPerOverclocker = 0.5;
+
+	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerPowerMultiplierPerOverclocker", comment = "Digital Miner energy multiplier per overclocker (2.0 = double the draw)")
+	public static double digitalMinerPowerMultiplierPerOverclocker = 2.0;
+
+	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerScanBudgetPerTick", comment = "Digital Miner positions examined per tick while scanning the working area")
+	public static int digitalMinerScanBudgetPerTick = 512;
+
+	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerMaxPreviewEntries", comment = "Digital Miner number of matched blocks shown in the GUI preview")
+	public static int digitalMinerMaxPreviewEntries = 10;
+
 	@Config(config = "machines", category = "space_elevator_assembler", key = "SpaceElevatorAssemblerMaxInput", comment = "Space Elevator Assembler Max Input (Energy per tick)")
 	public static int spaceElevatorAssemblerMaxInput = 128;
 

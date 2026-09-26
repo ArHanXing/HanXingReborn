@@ -39,6 +39,7 @@ import techreborn.packets.serverbound.AESUConfigPayload;
 import techreborn.packets.serverbound.AutoCraftingLockPayload;
 import techreborn.packets.serverbound.ChunkloaderPayload;
 import techreborn.packets.serverbound.DetectorRadiusPayload;
+import techreborn.packets.serverbound.DigitalMinerPayload;
 import techreborn.packets.serverbound.DysonHostBindingPayload;
 import techreborn.packets.serverbound.DysonReceiverBindingPayload;
 import techreborn.packets.serverbound.ExperiencePayload;
@@ -55,6 +56,15 @@ import techreborn.packets.serverbound.SuitNightVisionPayload;
 
 public class ServerboundPackets {
 	public static void init() {
+		ServerPlayNetworking.registerGlobalReceiver(DigitalMinerPayload.ID, (payload, context) -> {
+			var miner = GuiType.DIGITAL_MINER.getBlockEntity(context, payload, TRBlockEntities.DIGITAL_MINER);
+			if (payload.filter() == null || payload.filter().isEmpty()) {
+				miner.handleGuiInputFromClient(payload.buttonID(), context.player());
+			} else {
+				miner.setFilterText(payload.filter());
+			}
+		});
+
 		ServerPlayNetworking.registerGlobalReceiver(AESUConfigPayload.ID, (payload, context) -> {
 			var aesu = GuiType.AESU.getBlockEntity(context, payload, TRBlockEntities.ADJUSTABLE_SU);
 			aesu.handleGuiInputFromClient(payload.buttonID(), payload.shift(), payload.ctrl());

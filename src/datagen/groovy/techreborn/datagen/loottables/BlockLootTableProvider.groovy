@@ -84,7 +84,8 @@ class BlockLootTableProvider extends FabricBlockLootTableProvider {
 		// too, otherwise breaking one silently voids the block.
 		[TRContent.ECHO_CASING,
 		TRContent.SPACE_ELEVATOR_CASING,
-		TRContent.SPACE_ELEVATOR_POWER_MODULE].each {
+		TRContent.SPACE_ELEVATOR_POWER_MODULE,
+		TRContent.TIER1_MACHINE_CASING].each {
 			addDrop(it)
 		}
 		addDrop(TRContent.RUBBER_BUTTON)

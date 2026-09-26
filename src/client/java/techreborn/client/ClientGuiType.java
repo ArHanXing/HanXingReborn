@@ -69,6 +69,7 @@ import techreborn.blockentity.machine.multiblock.KrollReductionVesselBlockEntity
 import techreborn.blockentity.machine.multiblock.CultivationVesselBlockEntity;
 import techreborn.blockentity.machine.multiblock.DysonSwarmHostBlockEntity;
 import techreborn.blockentity.machine.multiblock.DysonSwarmReceiverBlockEntity;
+import techreborn.blockentity.machine.multiblock.DigitalMinerBlockEntity;
 import techreborn.blockentity.machine.multiblock.IrradiatedMutagensisChamberBlockEntity;
 import techreborn.blockentity.machine.multiblock.SupercriticalPolymerizationChamberBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeGasTurbineBlockEntity;
@@ -118,6 +119,7 @@ import techreborn.client.gui.GuiBatbox;
 import techreborn.client.gui.GuiBlastFurnace;
 import techreborn.client.gui.GuiDysonSwarmHost;
 import techreborn.client.gui.GuiDysonSwarmReceiver;
+import techreborn.client.gui.GuiDigitalMiner;
 import techreborn.client.gui.GuiLargeMachine;
 import techreborn.client.gui.GuiLargeFluidGenerator;
 import techreborn.client.gui.GuiPreciseAssembler;
@@ -210,6 +212,7 @@ public record ClientGuiType<T extends BlockEntity>(GuiType<T> guiType, GuiFactor
 	public static final ClientGuiType<SupercriticalPolymerizationChamberBlockEntity> SUPERCRITICAL_POLYMERIZATION_CHAMBER = register(GuiType.SUPERCRITICAL_POLYMERIZATION_CHAMBER, GuiFourInTwoOut::new);
 	public static final ClientGuiType<DysonSwarmHostBlockEntity> DYSON_SWARM_HOST = register(GuiType.DYSON_SWARM_HOST, GuiDysonSwarmHost::new);
 	public static final ClientGuiType<DysonSwarmReceiverBlockEntity> DYSON_SWARM_RECEIVER = register(GuiType.DYSON_SWARM_RECEIVER, GuiDysonSwarmReceiver::new);
+	public static final ClientGuiType<DigitalMinerBlockEntity> DIGITAL_MINER = register(GuiType.DIGITAL_MINER, GuiDigitalMiner::new);
 	public static final ClientGuiType<PreciseAssemblerBlockEntity> PRECISE_ASSEMBLER = register(GuiType.PRECISE_ASSEMBLER, GuiPreciseAssembler::new);
 	public static final ClientGuiType<PrimitiveDistillationTowerBlockEntity> PRIMITIVE_DISTILLATION_TOWER = register(GuiType.PRIMITIVE_DISTILLATION_TOWER, GuiDistillationTower::new);
 	public static final ClientGuiType<RotaryHearthFurnaceBlockEntity> ROTARY_HEARTH_FURNACE = register(GuiType.ROTARY_HEARTH_FURNACE, GuiRotaryHearthFurnace::new);

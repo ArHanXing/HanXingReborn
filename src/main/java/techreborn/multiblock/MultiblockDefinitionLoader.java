@@ -99,7 +99,8 @@ public class MultiblockDefinitionLoader {
 			"irradiated_mutagensis_chamber",
 			"supercritical_polymerization_chamber",
 			"dyson_swarm_host",
-			"dyson_swarm_receiver"
+			"dyson_swarm_receiver",
+			"digital_miner"
 	};
 
 	private MultiblockDefinitionLoader() {

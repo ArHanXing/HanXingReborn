@@ -90,6 +90,7 @@ import techreborn.blockentity.machine.multiblock.IrradiatedMutagensisChamberBloc
 import techreborn.blockentity.machine.multiblock.DysonSwarmHostBlockEntity;
 import techreborn.blockentity.machine.multiblock.DysonSwarmReceiverBlockEntity;
 import techreborn.blockentity.machine.multiblock.SupercriticalPolymerizationChamberBlockEntity;
+import techreborn.blockentity.machine.multiblock.DigitalMinerBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeGasTurbineBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeCombustionEngineBlockEntity;
 import techreborn.blockentity.generator.multiblock.UniversalChemicalFuelEngineBlockEntity;
@@ -213,6 +214,7 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<SupercriticalPolymerizationChamberBlockEntity> SUPERCRITICAL_POLYMERIZATION_CHAMBER = register("supercritical_polymerization_chamber");
 	public static final GuiType<DysonSwarmHostBlockEntity> DYSON_SWARM_HOST = register("dyson_swarm_host");
 	public static final GuiType<DysonSwarmReceiverBlockEntity> DYSON_SWARM_RECEIVER = register("dyson_swarm_receiver");
+	public static final GuiType<DigitalMinerBlockEntity> DIGITAL_MINER = register("digital_miner");
 
 
 	private static <T extends BlockEntity> GuiType<T> register(String path) {

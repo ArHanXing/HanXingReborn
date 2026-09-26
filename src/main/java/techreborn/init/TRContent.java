@@ -73,6 +73,7 @@ import techreborn.blockentity.machine.tier3.ChunkLoaderBlockEntity;
 import techreborn.blockentity.machine.tier3.IndustrialCentrifugeBlockEntity;
 import techreborn.blockentity.machine.tier3.MatterFabricatorBlockEntity;
 import techreborn.blockentity.storage.energy.AdjustableSUBlockEntity;
+import techreborn.blocks.DigitalMinerBlock;
 import techreborn.blocks.GenericMachineBlock;
 import techreborn.blocks.IndustrialGrinderBlock;
 import techreborn.blocks.LargeChemicalReactorBlock;
@@ -146,6 +147,7 @@ public class TRContent {
 	public static Block SPACE_ELEVATOR_CASING;
 	public static Block SPACE_ELEVATOR_POWER_MODULE;
 	public static Block ECHO_CASING;
+	public static Block TIER1_MACHINE_CASING;
 	public static Block RUBBER_LEAVES;
 	public static Block RUBBER_LOG;
 	public static Block RUBBER_SLAB;
@@ -831,6 +833,7 @@ public class TRContent {
 		SUPERCRITICAL_POLYMERIZATION_CHAMBER(new SupercriticalPolymerizationChamberBlock(GuiType.SUPERCRITICAL_POLYMERIZATION_CHAMBER, SupercriticalPolymerizationChamberBlockEntity::new)),
 		DYSON_SWARM_HOST(new GenericMachineBlock(GuiType.DYSON_SWARM_HOST, DysonSwarmHostBlockEntity::new)),
 		DYSON_SWARM_RECEIVER(new GenericMachineBlock(GuiType.DYSON_SWARM_RECEIVER, DysonSwarmReceiverBlockEntity::new)),
+		DIGITAL_MINER(new DigitalMinerBlock(GuiType.DIGITAL_MINER, DigitalMinerBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),
 		GREENHOUSE_CONTROLLER(new GenericMachineBlock(GuiType.GREENHOUSE_CONTROLLER, GreenhouseControllerBlockEntity::new)),

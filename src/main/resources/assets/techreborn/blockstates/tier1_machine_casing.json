@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "": { "model": "techreborn:block/machines/structure/tier1_machine_casing" }
+    }
+}
