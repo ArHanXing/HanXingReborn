@@ -14,7 +14,7 @@
 	],
 	"keys": {
 		"X": {
-			"block": "techreborn:tier1_machine_casing"
+			"block": "techreborn:basic_machine_casing"
 		}
 	}
 }

@@ -1308,7 +1308,6 @@
   "tooltip.techreborn.ore_prospector.header": "Ore Prospecting Results (%s closest chunks):",
 
   "block.techreborn.echo_casing": "Echo Alloy Casing",
-  "block.techreborn.tier1_machine_casing": "Tier 1 Machine Casing",
   "block.techreborn.digital_miner": "Digital Miner",
   "techreborn.tooltip.machine.digital_miner": "Mines blocks matching a filter inside a chunk radius (tags or regex)",
   "gui.techreborn.digital_miner.filter_label": "Filter (#tag or regex)",

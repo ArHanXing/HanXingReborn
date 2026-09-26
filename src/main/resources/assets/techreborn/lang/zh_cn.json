@@ -1250,7 +1250,6 @@
   "tooltip.techreborn.ore_prospector.header": "探矿结果 (最近的 %s 个区块):",
 
   "block.techreborn.echo_casing": "回响合金外壳",
-  "block.techreborn.tier1_machine_casing": "基础机械外壳",
   "block.techreborn.digital_miner": "数字型采矿机",
   "techreborn.tooltip.machine.digital_miner": "按区块范围挖掘指定方块（支持标签与正则筛选）",
   "gui.techreborn.digital_miner.filter_label": "筛选（#标签 或 正则）",

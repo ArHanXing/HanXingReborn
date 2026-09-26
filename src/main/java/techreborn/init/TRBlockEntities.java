@@ -203,16 +203,15 @@ public class TRBlockEntities {
 	private static ItemConvertible[] getMachineCasingBlocks() {
 		ItemConvertible[] casings = TRContent.MachineBlocks.getCasings();
 		ItemConvertible[] coils = TRContent.Coils.values();
-		ItemConvertible[] all = new ItemConvertible[casings.length + coils.length + 4];
+		ItemConvertible[] all = new ItemConvertible[casings.length + coils.length + 3];
 		System.arraycopy(casings, 0, all, 0, casings.length);
 		System.arraycopy(coils, 0, all, casings.length, coils.length);
-		// Space Elevator, Dyson Swarm and Digital Miner structural blocks share
-		// the machine casing block entity (they are created by
+		// Space Elevator and Dyson Swarm structural blocks share the machine
+		// casing block entity (they are created by
 		// BlockEntityProvider.createBlockEntity).
 		all[casings.length + coils.length] = TRContent.SPACE_ELEVATOR_CASING;
 		all[casings.length + coils.length + 1] = TRContent.SPACE_ELEVATOR_POWER_MODULE;
 		all[casings.length + coils.length + 2] = TRContent.ECHO_CASING;
-		all[casings.length + coils.length + 3] = TRContent.TIER1_MACHINE_CASING;
 		return all;
 	}
 }

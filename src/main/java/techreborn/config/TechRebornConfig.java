@@ -589,7 +589,7 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerMaxRadius", comment = "Digital Miner max chunk radius of the working area (1-3)")
 	public static int digitalMinerMaxRadius = 3;
 
-	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerBaseEnergyPerTick", comment = "Digital Miner energy per tick with 0 overclockers (= 0.25A LV, 32 EU/t per amp)")
+	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerBaseEnergyPerTick", comment = "Digital Miner draw in EU/t with 0 overclockers: 0.25A at LV (32 EU/t per amp) = 8 EU/t")
 	public static int digitalMinerBaseEnergyPerTick = 8;
 
 	@Config(config = "machines", category = "digital_miner", key = "DigitalMinerBaseBreakTime", comment = "Digital Miner ticks to break one block with 0 overclockers")

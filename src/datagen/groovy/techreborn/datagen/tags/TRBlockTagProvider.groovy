@@ -110,7 +110,6 @@ class TRBlockTagProvider extends FabricTagProvider.BlockTagProvider {
 			.add(TRContent.ECHO_CASING)
 			.add(TRContent.SPACE_ELEVATOR_CASING)
 			.add(TRContent.SPACE_ELEVATOR_POWER_MODULE)
-			.add(TRContent.TIER1_MACHINE_CASING)
 
 		getOrCreateTagBuilder(BlockTags.FENCES)
 			.add(TRContent.RUBBER_FENCE)

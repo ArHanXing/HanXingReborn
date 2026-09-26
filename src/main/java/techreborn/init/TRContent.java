@@ -147,7 +147,6 @@ public class TRContent {
 	public static Block SPACE_ELEVATOR_CASING;
 	public static Block SPACE_ELEVATOR_POWER_MODULE;
 	public static Block ECHO_CASING;
-	public static Block TIER1_MACHINE_CASING;
 	public static Block RUBBER_LEAVES;
 	public static Block RUBBER_LOG;
 	public static Block RUBBER_SLAB;

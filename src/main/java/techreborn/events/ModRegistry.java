@@ -93,7 +93,6 @@ public class ModRegistry {
 		RebornRegistry.registerBlock(TRContent.SPACE_ELEVATOR_CASING = InitUtils.setup(new BlockSpaceElevatorCasing(), "space_elevator_casing"), itemGroup);
 		RebornRegistry.registerBlock(TRContent.SPACE_ELEVATOR_POWER_MODULE = InitUtils.setup(new BlockSpaceElevatorPowerModule(), "space_elevator_power_module"), itemGroup);
 		RebornRegistry.registerBlock(TRContent.ECHO_CASING = InitUtils.setup(new BlockEchoCasing(), "echo_casing"), itemGroup);
-		RebornRegistry.registerBlock(TRContent.TIER1_MACHINE_CASING = InitUtils.setup(new BlockTier1MachineCasing(), "tier1_machine_casing"), itemGroup);
 		RebornRegistry.registerBlock(TRContent.RUBBER_LEAVES = InitUtils.setup(new BlockRubberLeaves(), "rubber_leaves"), itemGroup);
 		RebornRegistry.registerBlock(TRContent.RUBBER_LOG = InitUtils.setup(new BlockRubberLog(), "rubber_log"), itemGroup);
 		RebornRegistry.registerBlock(TRContent.RUBBER_LOG_STRIPPED = InitUtils.setup(new PillarBlock(TRBlockSettings.rubberLogStripped()), "rubber_log_stripped"), itemGroup);
