@@ -207,19 +207,19 @@ public class TREmiPlugin implements EmiPlugin {
 			EmiRecipeSorting.compareOutputThenInput());
 
 	public static final EmiRecipeCategory HUNTER_PROCESS_REACTOR_CATEGORY =
-		new EmiRecipeCategory(trId("hunter_process_reactor"), HUNTER_PROCESS_REACTOR_STACK, HUNTER_PROCESS_REACTOR_STACK,
+		new EmiRecipeCategory(trId("hunter_process_reactor"), HUNTER_PROCESS_REACTOR_STACK, EmiTextures.HUNTER_PROCESS_REACTOR,
 			EmiRecipeSorting.compareOutputThenInput());
 	public static final EmiRecipeCategory KROLL_REDUCTION_VESSEL_CATEGORY =
-		new EmiRecipeCategory(trId("kroll_reduction_vessel"), KROLL_REDUCTION_VESSEL_STACK, KROLL_REDUCTION_VESSEL_STACK,
+		new EmiRecipeCategory(trId("kroll_reduction_vessel"), KROLL_REDUCTION_VESSEL_STACK, EmiTextures.KROLL_REDUCTION_VESSEL,
 			EmiRecipeSorting.compareOutputThenInput());
 	public static final EmiRecipeCategory CULTIVATION_VESSEL_CATEGORY =
-		new EmiRecipeCategory(trId("cultivation_vessel"), CULTIVATION_VESSEL_STACK, CULTIVATION_VESSEL_STACK,
+		new EmiRecipeCategory(trId("cultivation_vessel"), CULTIVATION_VESSEL_STACK, EmiTextures.CULTIVATION_VESSEL,
 			EmiRecipeSorting.compareOutputThenInput());
 	public static final EmiRecipeCategory IRRADIATED_MUTAGENSIS_CHAMBER_CATEGORY =
-		new EmiRecipeCategory(trId("irradiated_mutagensis_chamber"), IRRADIATED_MUTAGENSIS_CHAMBER_STACK, IRRADIATED_MUTAGENSIS_CHAMBER_STACK,
+		new EmiRecipeCategory(trId("irradiated_mutagensis_chamber"), IRRADIATED_MUTAGENSIS_CHAMBER_STACK, EmiTextures.IRRADIATED_MUTAGENSIS_CHAMBER,
 			EmiRecipeSorting.compareOutputThenInput());
 	public static final EmiRecipeCategory SUPERCRITICAL_POLYMERIZATION_CHAMBER_CATEGORY =
-		new EmiRecipeCategory(trId("supercritical_polymerization_chamber"), SUPERCRITICAL_POLYMERIZATION_CHAMBER_STACK, SUPERCRITICAL_POLYMERIZATION_CHAMBER_STACK,
+		new EmiRecipeCategory(trId("supercritical_polymerization_chamber"), SUPERCRITICAL_POLYMERIZATION_CHAMBER_STACK, EmiTextures.SUPERCRITICAL_POLYMERIZATION_CHAMBER,
 			EmiRecipeSorting.compareOutputThenInput());
 
 	public static final EmiRecipeCategory LARGE_CHEMICAL_REACTOR_CATEGORY =
@@ -227,7 +227,7 @@ public class TREmiPlugin implements EmiPlugin {
 			EmiTextures.LARGE_CHEMICAL_REACTOR, EmiRecipeSorting.compareOutputThenInput());
 
 	public static final EmiRecipeCategory ORE_CRUSHER_CATEGORY =
-		new EmiRecipeCategory(trId("ore_crusher"), ORE_CRUSHER_STACK, EmiTextures.GRINDING,
+		new EmiRecipeCategory(trId("ore_crusher"), ORE_CRUSHER_STACK, EmiTextures.ORE_CRUSHER,
 			EmiRecipeSorting.compareOutputThenInput());
 
 	public static final EmiRecipeCategory GREENHOUSE_CATEGORY =

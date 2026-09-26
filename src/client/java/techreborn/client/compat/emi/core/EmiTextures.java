@@ -56,10 +56,24 @@ public class EmiTextures {
 	public static final EmiTexture LATHE = new EmiTexture(SIMPLIFIED_ICONS, 48, 32, 16, 16);
 	public static final EmiTexture LARGE_CHEMICAL_REACTOR = new EmiTexture(SIMPLIFIED_ICONS, 32, 32, 16, 16);
 	public static final EmiTexture PRECISE_ASSEMBLER = new EmiTexture(SIMPLIFIED_ICONS, 64, 32, 16, 16);
-	// Reserved slots for the Large Greenhouse / Large Ranch icons (placeholder,
-	// replace once the icons are drawn)
-	public static final EmiTexture GREENHOUSE = new EmiTexture(SIMPLIFIED_ICONS, 64, 16, 16, 16);
-	public static final EmiTexture RANCH = new EmiTexture(SIMPLIFIED_ICONS, 80, 16, 16, 16);
+	// Icons for the standalone multiblock machines. Their category used to
+	// pass the machine stack as the icon, which made every recipe of that
+	// machine look alike in the crafting tree; these give each machine its own
+	// pictogram, all drawn in row 2, columns 5..11 of the sheet (the first free
+	// run of cells). The old GREENHOUSE/RANCH slots at (64,16)/(80,16) held a
+	// generic vase shape that was not identifiable as either machine, so these
+	// two constants now point at the new artwork in the same run.
+	public static final EmiTexture HUNTER_PROCESS_REACTOR = new EmiTexture(SIMPLIFIED_ICONS, 80, 32, 16, 16);
+	public static final EmiTexture KROLL_REDUCTION_VESSEL = new EmiTexture(SIMPLIFIED_ICONS, 96, 32, 16, 16);
+	public static final EmiTexture CULTIVATION_VESSEL = new EmiTexture(SIMPLIFIED_ICONS, 112, 32, 16, 16);
+	public static final EmiTexture IRRADIATED_MUTAGENSIS_CHAMBER = new EmiTexture(SIMPLIFIED_ICONS, 128, 32, 16, 16);
+	public static final EmiTexture SUPERCRITICAL_POLYMERIZATION_CHAMBER = new EmiTexture(SIMPLIFIED_ICONS, 144, 32, 16, 16);
+	public static final EmiTexture GREENHOUSE = new EmiTexture(SIMPLIFIED_ICONS, 160, 32, 16, 16);
+	public static final EmiTexture RANCH = new EmiTexture(SIMPLIFIED_ICONS, 176, 32, 16, 16);
+	// The ore crusher category used to reuse GRINDING (0,0), which is the
+	// grinder icon in the upstream sheet, so both categories rendered the exact
+	// same picture in the crafting tree. This gives it its own.
+	public static final EmiTexture ORE_CRUSHER = new EmiTexture(SIMPLIFIED_ICONS, 192, 32, 16, 16);
 
 	public static final NinePatchTexture SLOT_BG = new NinePatchTexture(WIDGETS, 0, 0, 3, 3, 1, 1, 1, 1, false);
 }
