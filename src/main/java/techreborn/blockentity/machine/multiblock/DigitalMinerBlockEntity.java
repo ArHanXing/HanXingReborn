@@ -25,7 +25,9 @@
 package techreborn.blockentity.machine.multiblock;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -75,7 +77,13 @@ import techreborn.init.TRContent;
  * cursor that examines a bounded number of positions per tick. Because several
  * hundred thousand positions can share only a handful of distinct block states,
  * the filter is evaluated once per {@link BlockState} and memoised, which turns
- * the inner loop into a single array lookup.
+ * the inner loop into a single hash lookup.
+ * <p>
+ * <b>Selection.</b> Only blocks that yield at least one item are ever queued:
+ * fluids, unbreakable blocks and anything whose loot table is empty are skipped,
+ * so a pass always makes progress. Harvesting is all-or-nothing, which means a
+ * full output leaves the block in place and parks the machine instead of
+ * burning power on a harvest it cannot store.
  * <p>
  * <b>Power.</b> The draw is constant while mining and scales in exact powers of
  * two with the number of overclocker upgrades (0.25/0.5/1/2/4 A at LV), which
@@ -103,6 +111,14 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 
 	/** Positions that still need mining, nearest-first per scan order. */
 	private final List<BlockPos> targets = new ArrayList<>();
+
+	/**
+	 * Per-pass memoisation of the filter result keyed by block state. A scan
+	 * pass visits ~10^6 positions drawn from only a few dozen distinct states,
+	 * so evaluating the regex once per state instead of once per position turns
+	 * the inner loop into a single hash lookup. Cleared by {@link #resetScan()}.
+	 */
+	private final Map<BlockState, Boolean> matchCache = new HashMap<>();
 
 	// ---- scan cursor over the whole working region -------------------------
 	/** Index of the chunk column currently being walked. */
@@ -315,6 +331,7 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 
 	private void resetScan() {
 		targets.clear();
+		matchCache.clear();
 		miningPos = null;
 		miningProgress = 0;
 		scanChunk = 0;
@@ -347,7 +364,9 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 				miningProgress = 0;
 			}
 			setActiveState(world, pos, false);
-			unloadChunks();
+			// keep only our own chunk loaded so a repaired structure or a new
+			// filter is noticed, drop the working area
+			updateChunks((ServerWorld) world, false);
 			refreshDisplay(compiled);
 			return;
 		}
@@ -370,16 +389,19 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 
 		scanStep((ServerWorld) world, compiled);
 
-		boolean working = mineStep((ServerWorld) world) || !targets.isEmpty() || !scanCompleted;
+		// "Working" drives both the front texture and the force-loaded area. A
+		// pending target counts as work, except when the block is sitting ready
+		// to harvest but the outputs cannot take it: that is the "outputs full,
+		// stop" state, so the area is released instead.
+		boolean pendingTarget = !targets.isEmpty() && miningPos == null;
+		boolean harvested = mineStep((ServerWorld) world);
+		boolean working = harvested || pendingTarget || !scanCompleted;
 		setActiveState(world, pos, working);
 
-		// Force-load while there is still something to do, release as soon as
-		// the region is exhausted (or the outputs are full).
-		if (working) {
-			updateChunks((ServerWorld) world);
-		} else {
-			unloadChunks();
-		}
+		// Force-load the working area while there is something to do; when idle
+		// (outputs full or nothing left to mine) only our own chunk stays
+		// loaded, so the machine can still notice new targets.
+		updateChunks((ServerWorld) world, working);
 
 		refreshDisplay(compiled);
 		if (world.getTime() % 20 == 0) {
@@ -433,18 +455,26 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 
 	/**
 	 * Examines up to the configured budget of positions, appending matches to
-	 * the target list. {@code *} is not a wildcard here: the region is walked
-	 * in a deterministic order and the cursor survives across ticks.
+	 * the target list.
+	 * <p>
+	 * The cursor survives across ticks so the region is walked exactly once per
+	 * pass. Because a pass touches on the order of a million positions that
+	 * share only a few dozen distinct {@link BlockState}s, the filter is
+	 * evaluated once per state and memoised in {@link #matchCache}; the inner
+	 * loop then costs one world lookup plus one hash lookup.
+	 *
+	 * @param world    {@link ServerWorld} the machine's world
+	 * @param compiled {@link CompiledFilter} the active filter
 	 */
 	private void scanStep(ServerWorld world, CompiledFilter compiled) {
 		if (scanCompleted) {
 			return;
 		}
-		int radiusBlocks = (radius * 2 + 1) * 16;
 		int originX = (getPos().getX() >> 4 << 4) - radius * 16;
 		int originZ = (getPos().getZ() >> 4 << 4) - radius * 16;
 		int minY = world.getBottomY();
-		int maxY = world.getTopY();
+		// getTopY() is exclusive
+		int maxY = world.getTopY() - 1;
 
 		int budget = Math.max(1, TechRebornConfig.digitalMinerScanBudgetPerTick);
 		int side = radius * 2 + 1;
@@ -459,7 +489,7 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 			budget--;
 
 			BlockState probeState = world.getBlockState(probe);
-			if (isMineable(probeState) && compiled.matches(probeState)) {
+			if (isMineable(probeState) && matchesCached(probeState, compiled) && hasDrops(world, probe, probeState)) {
 				targets.add(probe.toImmutable());
 			}
 
@@ -481,9 +511,40 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 				}
 			}
 		}
-		// the scan origin is unused beyond the loop above; kept for clarity of
-		// the region definition
-		assert radiusBlocks > 0;
+	}
+
+	/**
+	 * Evaluates the filter for a block state, reusing earlier results. The
+	 * cache is per pass: {@link #resetScan()} drops it whenever the filter, the
+	 * radius or the structure changes.
+	 *
+	 * @param state    {@link BlockState} the state to test
+	 * @param compiled {@link CompiledFilter} the active filter
+	 * @return {@code true} if the state matches the filter
+	 */
+	private boolean matchesCached(BlockState state, CompiledFilter compiled) {
+		Boolean cached = matchCache.get(state);
+		if (cached != null) {
+			return cached;
+		}
+		boolean result = compiled.matches(state);
+		matchCache.put(state, result);
+		return result;
+	}
+
+	/**
+	 * @param world {@link ServerWorld} the machine's world
+	 * @param pos   {@link BlockPos} the position being probed
+	 * @param state {@link BlockState} the state at that position
+	 * @return {@code true} if the block yields at least one item
+	 */
+	private boolean hasDrops(ServerWorld world, BlockPos pos, BlockState state) {
+		for (ItemStack drop : Block.getDroppedStacks(state, world, pos, null)) {
+			if (!drop.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -537,12 +598,12 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 			return false;
 		}
 
-		// harvest
+		// Harvest. Nothing is committed unless every drop fits, so a full
+		// output leaves the block in place and the machine reports "not
+		// working" (which releases the force-loaded area and stops the draw).
 		BlockState state = world.getBlockState(miningPos);
 		List<ItemStack> drops = Block.getDroppedStacks(state, world, miningPos, null);
 		if (!insertDrops(drops)) {
-			// outputs full: stop, the block stays in place
-			miningProgress = breakTimeTicks() - 1;
 			return false;
 		}
 		world.setBlockState(miningPos, Blocks.AIR.getDefaultState(), 3);
@@ -625,25 +686,44 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	// chunk force-loading
 	// =======================================================================
 
-	private void updateChunks(ServerWorld world) {
-		if (chunksLoaded && loadedRadius == radius) {
+	/**
+	 * Keeps the machine's own chunk force-loaded at all times, and expands to
+	 * the whole working area while there is something to do.
+	 * <p>
+	 * Its own chunk is never released: the block entity has to keep ticking to
+	 * notice a repaired structure or newly placed targets, which it could not do
+	 * from an unloaded chunk. Only the surrounding {@code radius} chunks are
+	 * dropped when the machine goes idle, honouring "stop force-loading once the
+	 * outputs are full or nothing is left to mine".
+	 *
+	 * @param world  {@link ServerWorld} the machine's world
+	 * @param active {@code boolean} {@code true} while the machine has work
+	 */
+	private void updateChunks(ServerWorld world, boolean active) {
+		int wanted = active ? radius : 0;
+		if (chunksLoaded && loadedRadius == wanted) {
 			return;
 		}
+		// Drop the previous set first: a shrinking radius would otherwise leave
+		// the old, larger ring registered forever.
 		unloadChunks();
+
 		ChunkLoaderManager manager = ChunkLoaderManager.get(world);
 		ChunkPos root = getChunkPos();
-		for (int dx = -radius; dx <= radius; dx++) {
-			for (int dz = -radius; dz <= radius; dz++) {
-				ChunkPos target = new ChunkPos(root.x + dx, root.z + dz);
-				if (!manager.isChunkLoaded(world, target, getPos())) {
-					manager.loadChunk(world, target, getPos(), null);
-				}
+		for (int dx = -wanted; dx <= wanted; dx++) {
+			for (int dz = -wanted; dz <= wanted; dz++) {
+				manager.loadChunk(world, new ChunkPos(root.x + dx, root.z + dz), getPos(), null);
 			}
 		}
 		chunksLoaded = true;
-		loadedRadius = radius;
+		loadedRadius = wanted;
 	}
 
+	/**
+	 * Releases every chunk this machine force-loads, including its own. Called
+	 * before re-registering a different radius and whenever the machine stops
+	 * working entirely (broken, unloaded or invalid structure).
+	 */
 	private void unloadChunks() {
 		if (!chunksLoaded || world == null || world.isClient) {
 			chunksLoaded = false;
@@ -751,6 +831,18 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	public void onBreak(World world, PlayerEntity player, BlockPos pos, BlockState state) {
 		unloadChunks();
 		super.onBreak(world, player, pos, state);
+	}
+
+	/**
+	 * Releases the force-loaded chunks. Without this the loader entries would
+	 * outlive the machine (and keep its chunks loaded forever) whenever the
+	 * controller is removed by something other than a player breaking it, such
+	 * as an explosion or a {@code /setblock}.
+	 */
+	@Override
+	public void markRemoved() {
+		unloadChunks();
+		super.markRemoved();
 	}
 
 	// =======================================================================
