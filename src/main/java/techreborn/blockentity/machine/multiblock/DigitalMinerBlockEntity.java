@@ -34,6 +34,7 @@ import java.util.regex.PatternSyntaxException;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -48,6 +49,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import reborncore.common.blockentity.MachineBaseBlockEntity;
@@ -141,6 +143,12 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	// ---- chunk force-loading ----------------------------------------------
 	private boolean chunksLoaded = false;
 	private int loadedRadius = -1;
+	/**
+	 * UUID of the player who placed the machine. {@code ChunkLoaderManager}
+	 * rejects a blank owner ({@code Validate.isTrue(!StringUtils.isBlank(player))}),
+	 * so this must never be null or empty when chunks are loaded.
+	 */
+	private String ownerUdid = "";
 
 	public DigitalMinerBlockEntity(BlockPos pos, BlockState state) {
 		super(TRBlockEntities.DIGITAL_MINER, pos, state, "DigitalMiner",
@@ -704,6 +712,13 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 		if (chunksLoaded && loadedRadius == wanted) {
 			return;
 		}
+		// ChunkLoaderManager validates that the owner is non-blank, so a machine
+		// whose placer was never recorded (world-generated, an old save, or a
+		// controller placed by something other than a player) simply does not
+		// force-load instead of crashing every tick.
+		if (StringUtils.isBlank(ownerUdid)) {
+			return;
+		}
 		// Drop the previous set first: a shrinking radius would otherwise leave
 		// the old, larger ring registered forever.
 		unloadChunks();
@@ -712,7 +727,7 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 		ChunkPos root = getChunkPos();
 		for (int dx = -wanted; dx <= wanted; dx++) {
 			for (int dz = -wanted; dz <= wanted; dz++) {
-				manager.loadChunk(world, new ChunkPos(root.x + dx, root.z + dz), getPos(), null);
+				manager.loadChunk(world, new ChunkPos(root.x + dx, root.z + dz), getPos(), ownerUdid);
 			}
 		}
 		chunksLoaded = true;
@@ -802,6 +817,13 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	// =======================================================================
 
 	@Override
+	public void onPlace(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+		super.onPlace(world, pos, state, placer, stack);
+		// recorded here because ChunkLoaderManager needs a non-blank owner
+		ownerUdid = placer.getUuidAsString();
+	}
+
+	@Override
 	public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(tag, registryLookup);
 		tag.putInt("radius", radius);
@@ -809,6 +831,7 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 		tag.putString("preview", previewText);
 		tag.putInt("targets", displayTargetCount);
 		tag.putInt("speed", displaySpeedTicks);
+		tag.putString("ownerUdid", ownerUdid);
 		inventory.write(tag, registryLookup);
 	}
 
@@ -822,6 +845,7 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 		previewText = tag.getString("preview");
 		displayTargetCount = tag.getInt("targets");
 		displaySpeedTicks = tag.getInt("speed");
+		ownerUdid = tag.getString("ownerUdid");
 		inventory.read(tag, registryLookup);
 		filter = null;
 		filterInvalid = false;
