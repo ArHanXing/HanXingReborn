@@ -132,9 +132,11 @@ public class GuiBase<T extends ScreenHandler> extends HandledScreen<T> {
 		drawContext.drawTexture(BACKGROUND_TEXTURE, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		boolean drawPlayerSlots = selectedTab == null && drawPlayerSlots();
 		updateSlotDraw(drawPlayerSlots);
-		builder.drawDefaultBackground(drawContext, x, y, xSize, ySize);
+		// GUIs that override backgroundHeight (see getPlayerInventoryOffset)
+		// need the panel to stretch along with the taller window.
+		builder.drawDefaultBackground(drawContext, x, y, xSize, ySize + getPlayerInventoryOffset());
 		if (drawPlayerSlots) {
-			builder.drawPlayerSlots(drawContext, this, x + backgroundWidth / 2, y + 93, true);
+			builder.drawPlayerSlots(drawContext, this, x + backgroundWidth / 2, y + 93 + getPlayerInventoryOffset(), true);
 		}
 		if (tryAddUpgrades() && be instanceof IUpgradeable upgradeable) {
 			if (upgradeable.canBeUpgraded()) {
@@ -151,8 +153,22 @@ public class GuiBase<T extends ScreenHandler> extends HandledScreen<T> {
 		}
 
 		final GuiBase<T> gui = this;
-		getTab().ifPresent(guiTab -> builder.drawSlotConfigTips(drawContext, gui, x + backgroundWidth / 2, y + 93, mouseX, mouseY, guiTab));
+		getTab().ifPresent(guiTab -> builder.drawSlotConfigTips(drawContext, gui, x + backgroundWidth / 2, y + 93 + getPlayerInventoryOffset(), mouseX, mouseY, guiTab));
 
+	}
+
+	/**
+	 * Extra vertical offset applied to the player inventory area (frame
+	 * drawing and slot-config tips). A GUI that makes the window taller by
+	 * raising {@code backgroundHeight} must shift the inventory down by the
+	 * same amount, otherwise machine content overlaps it. The screen handler
+	 * of the machine has to place the player slots at the matching Y
+	 * coordinates ({@code inventory} / {@code hotbar} builder calls).
+	 *
+	 * @return {@code 0} for the default 166px background
+	 */
+	protected int getPlayerInventoryOffset() {
+		return Math.max(0, backgroundHeight - 166);
 	}
 
 	private void updateSlotDraw(boolean doDraw) {

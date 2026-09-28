@@ -103,6 +103,15 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	private static final int FILTER_SLOT = 12;
 	private static final int ENERGY_SLOT = 13;
 
+	/**
+	 * Extra height (in px) the Digital Miner GUI adds over the standard 176px
+	 * machine window. The player inventory rows in {@link #createScreenHandler}
+	 * are shifted down by this amount and {@code GuiBase} draws the slot frames
+	 * at the matching offset, keeping the machine area (readouts, preview)
+	 * clear of the inventory.
+	 */
+	public static final int EXTRA_HEIGHT = 40;
+
 	private int radius = 1;
 
 	private String filterText = DEFAULT_FILTER;
@@ -883,7 +892,12 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, final PlayerEntity player) {
 		BlockEntityScreenHandlerBuilder builder = new ScreenHandlerBuilder("digitalminer")
-				.player(player.getInventory()).inventory().hotbar().addInventory()
+				.player(player.getInventory())
+				// The GUI is EXTRA_HEIGHT (40px) taller than the standard one,
+				// so the player inventory rows shift down by that amount.
+				.inventory(8, 94 + EXTRA_HEIGHT)
+				.hotbar(8, 152 + EXTRA_HEIGHT)
+				.addInventory()
 				.blockEntity(this);
 		// 8 outputs in two rows of four, right of the range buttons; the energy
 		// slot sits under them. These coordinates must match the layout

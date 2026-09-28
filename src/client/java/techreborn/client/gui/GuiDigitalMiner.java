@@ -45,11 +45,13 @@ import techreborn.packets.serverbound.DigitalMinerPayload;
  * GUI of the Digital Miner: the filter field, the range controls, eight output
  * slots and the "what will be mined" readout.
  * <p>
- * The screen is 40px taller than the usual 176x176 machine GUI so the filter
- * field can sit on its own row at the top without colliding with the range
- * buttons and the readout. {@code GuiBase} derives both the background size and
- * the player inventory position from {@code backgroundHeight}, so raising it
- * here shifts everything below the machine area down consistently.
+ * The screen is {@value DigitalMinerBlockEntity#EXTRA_HEIGHT}px taller than the
+ * usual machine GUI. {@code GuiBase} derives the player inventory position from
+ * {@code backgroundHeight} (see {@code GuiBase.getPlayerInventoryOffset()}), so
+ * raising {@code backgroundHeight} here shifts the inventory down and it never
+ * collides with the filter row, the range buttons, the readout or the preview.
+ * {@code DigitalMinerBlockEntity.createScreenHandler} places the player slots
+ * at the matching offset.
  * <p>
  * The filter is pushed to the server when the player presses Enter or the field
  * loses focus, so a half-typed expression never restarts the scan.
@@ -57,16 +59,8 @@ import techreborn.packets.serverbound.DigitalMinerPayload;
 public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 
 	/**
-	 * Extra height over the standard 176. Measured behaviour of {@code GuiBase}:
-	 * the machine area is {@code EXTRA_HEIGHT + 53} tall and the player inventory
-	 * starts at {@code 93 + EXTRA_HEIGHT}, so 40 gives a 93px machine area and
-	 * puts the inventory at y=133.
-	 */
-	private static final int EXTRA_HEIGHT = 40;
-
-	/**
-	 * Layout inside the 176x133 machine area (y=0..132). The output slots and the
-	 * energy slot are placed by the screen handler; these constants must match.
+	 * Layout inside the machine area: the output slots and the energy slot are
+	 * placed by the screen handler; these constants must match.
 	 * {@code drawSlot(x, y)} paints an 18px frame at {@code (x-1, y-1)}, so the
 	 * slot block spans x=83..156 / y=40..94.
 	 *
@@ -77,6 +71,7 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 	 *  y=76  energy slot, left column under the outputs
 	 *  y=78  targets / speed / range readout (left column only, x&lt;83)
 	 *  y=110 preview of the matched blocks, 2 lines
+	 *  y=133 player inventory (shifted down by DigitalMinerBlockEntity.EXTRA_HEIGHT)
 	 * </pre>
 	 */
 	private static final int FILTER_LABEL_Y = 7;
@@ -122,7 +117,7 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 		this.miner = blockEntity;
 		this.sentFilter = blockEntity.getFilterText();
 		// GuiBase reads this for the background size and the inventory position
-		this.backgroundHeight += EXTRA_HEIGHT;
+		this.backgroundHeight += DigitalMinerBlockEntity.EXTRA_HEIGHT;
 	}
 
 	@Override
