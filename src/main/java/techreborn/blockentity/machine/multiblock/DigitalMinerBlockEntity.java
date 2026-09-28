@@ -901,11 +901,11 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 				.blockEntity(this);
 		// 8 outputs in two rows of four, right of the range buttons; the energy
 		// slot sits under them. These coordinates must match the layout
-		// documented in GuiDigitalMiner.
+		// documented in GuiDigitalMiner (OUTPUT_X/OUTPUT_Y, ENERGY_SLOT_*).
 		for (int i = 0; i < OUTPUT_SLOTS; i++) {
 			int col = i % 4;
 			int row = i / 4;
-			builder.outputSlot(i, 84 + col * 18, 41 + row * 18);
+			builder.outputSlot(i, 84 + col * 18, 49 + row * 18);
 		}
 		builder.energySlot(ENERGY_SLOT, 8, 76);
 		builder.syncEnergyValue();

@@ -1310,6 +1310,7 @@
   "block.techreborn.echo_casing": "Echo Alloy Casing",
   "block.techreborn.digital_miner": "Digital Miner",
   "techreborn.tooltip.machine.digital_miner": "Mines blocks matching a filter inside a chunk radius (tags or regex)",
+  "gui.techreborn.digital_miner.filter": "Filter...",
   "gui.techreborn.digital_miner.filter_label": "Filter (#tag or regex)",
   "gui.techreborn.digital_miner.radius": "Range: %s chunks (span %s chunks)",
   "gui.techreborn.digital_miner.targets": "Target blocks: %s",

@@ -33,7 +33,11 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 
+import org.lwjgl.glfw.GLFW;
+
 import reborncore.client.gui.GuiBase;
+import reborncore.client.gui.widget.GuiButtonExtended;
+import reborncore.client.gui.widget.GuiButtonHologram;
 import reborncore.client.gui.widget.GuiButtonUpDown;
 import reborncore.client.gui.widget.GuiButtonUpDown.UpDownButtonType;
 import reborncore.common.screen.BuiltScreenHandler;
@@ -60,28 +64,31 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 
 	/**
 	 * Layout inside the machine area: the output slots and the energy slot are
-	 * placed by the screen handler; these constants must match.
-	 * {@code drawSlot(x, y)} paints an 18px frame at {@code (x-1, y-1)}, so the
-	 * slot block spans x=83..156 / y=40..94.
+	 * placed by the screen handler; these constants must match
+	 * {@code DigitalMinerBlockEntity.createScreenHandler}.
 	 *
 	 * <pre>
-	 *  y=9   filter label
-	 *  y=18  filter field x=8..78 | "range" button x=82..156
-	 *  y=41  range buttons x=8..56 | output slots 2x4 x=83..156
-	 *  y=76  energy slot, left column under the outputs
-	 *  y=78  targets / speed / range readout (left column only, x&lt;83)
-	 *  y=110 preview of the matched blocks, 2 lines
-	 *  y=133 player inventory (shifted down by DigitalMinerBlockEntity.EXTRA_HEIGHT)
+	 *  y=6    machine title (centred)
+	 *  y=18   filter field x=8..78 | "range" toggle x=82..156
+	 *  y=34   "filter" label, on its own row below the field
+	 *  y=47   range +/- buttons x=8..56
+	 *  y=49   output slots 2x4 x=83..156 (two rows: 49 and 67)
+	 *  y=76   energy slot, left column under the range buttons
+	 *  y=84   targets / speed / range readout (left column, x&gt;=28)
+	 *  y=114  preview of the matched blocks, 2 lines
+	 *  y=133  player inventory (shifted down by DigitalMinerBlockEntity.EXTRA_HEIGHT)
 	 * </pre>
 	 */
-	private static final int FILTER_LABEL_Y = 7;
 	private static final int FILTER_X = 8;
 	private static final int FILTER_Y = 18;
 	private static final int FILTER_WIDTH = 70;
 	private static final int FILTER_HEIGHT = 14;
 
+	/** "Filter" label, on its own row directly below the filter field. */
+	private static final int FILTER_LABEL_Y = FILTER_Y + FILTER_HEIGHT + 2;
+
 	private static final int BUTTON_X = 8;
-	private static final int BUTTON_Y = 41;
+	private static final int BUTTON_Y = 47;
 
 	/** "Range" toggle, sharing the filter row. */
 	private static final int RANGE_BUTTON_X = 82;
@@ -90,20 +97,20 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 	private static final int RANGE_BUTTON_H = 14;
 
 	private static final int OUTPUT_X = 84;
-	private static final int OUTPUT_Y = 41;
-	/** Below the output frames, in the free left column. */
+	private static final int OUTPUT_Y = 49;
+	/** Below the range buttons, in the free left column. */
 	private static final int ENERGY_SLOT_X = 8;
 	private static final int ENERGY_SLOT_Y = 76;
 
-	/** Right of the energy slot, which occupies the left column at y=76. */
+	/** Right of the energy slot, below the output slots. */
 	private static final int INFO_X = 28;
-	private static final int INFO_Y = 80;
+	private static final int INFO_Y = 84;
 	private static final int INFO_LINE_HEIGHT = 10;
 
 	private static final int PREVIEW_X = 8;
-	private static final int PREVIEW_Y = 110;
+	private static final int PREVIEW_Y = 114;
 	private static final int PREVIEW_LINE_HEIGHT = 9;
-	/** Two lines fit below the readout and above the player inventory at y=133. */
+	/** Two lines fit between the readout and the player inventory at y=133. */
 	private static final int PREVIEW_MAX_LINES = 2;
 
 	private final DigitalMinerBlockEntity miner;
@@ -111,6 +118,9 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 	/** Last text handed to the server, to avoid redundant packets. */
 	private String sentFilter;
 	private boolean filterFocused;
+	/** Hologram toggle; created once and re-positioned when the structure changes. */
+	private GuiButtonHologram hologramButton;
+	private boolean hologramValid;
 
 	public GuiDigitalMiner(int syncID, final PlayerEntity player, DigitalMinerBlockEntity blockEntity) {
 		super(player, blockEntity, blockEntity.createScreenHandler(syncID, player));
@@ -152,6 +162,29 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 		filterField.setMaxLength(128);
 		filterField.setText(miner.getFilterText());
 		addDrawableChild(filterField);
+
+		// Hologram toggle: top-left when the structure is formed, centre of the
+		// machine area (over the "structure missing" overlay) when it is not.
+		// addHologramButton() adds the GUI origin itself, so pass offsets.
+		hologramValid = miner.isMultiblockValid();
+		GuiButtonHologram button = addHologramButton(hologramOffsetX(), hologramOffsetY(), 212, Layer.FOREGROUND);
+		button.clickHandler(this::onClick);
+		hologramButton = button;
+	}
+
+	/** X of the hologram toggle, relative to the GUI origin. */
+	private int hologramOffsetX() {
+		return hologramValid ? 6 : 76;
+	}
+
+	/** Y of the hologram toggle, relative to the GUI origin. */
+	private int hologramOffsetY() {
+		return hologramValid ? 4 : 56;
+	}
+
+	/** Toggles the multiblock hologram, like the other multiblock machines. */
+	public void onClick(GuiButtonExtended button, Double mouseX, Double mouseY) {
+		miner.renderMultiblock ^= !hideGuiElements();
 	}
 
 	private Text rangeButtonText() {
@@ -173,9 +206,18 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		// While the filter field has focus, the "open inventory" key (E by
+		// default) must be consumed so the screen stays open: HandledScreen
+		// closes on that key before the focused widget ever sees it. The
+		// character itself is inserted through charTyped, so nothing is lost.
+		if (filterField != null && filterField.isFocused() && client != null
+				&& (modifiers & (GLFW.GLFW_MOD_CONTROL | GLFW.GLFW_MOD_ALT | GLFW.GLFW_MOD_SUPER)) == 0
+				&& client.options.inventoryKey.matchesKey(keyCode, scanCode)) {
+			return true;
+		}
 		// Enter commits the filter instead of closing the screen
 		if (filterField != null && filterField.isFocused()
-				&& (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER || keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ENTER)) {
+				&& (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER)) {
 			sendFilter();
 			filterField.setFocused(false);
 			return true;
@@ -219,6 +261,19 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 				getGuiLeft() + FILTER_X + FILTER_WIDTH + 1, getGuiTop() + FILTER_Y + FILTER_HEIGHT + 1, 0xFF202020);
 		drawContext.fill(getGuiLeft() + FILTER_X, getGuiTop() + FILTER_Y,
 				getGuiLeft() + FILTER_X + FILTER_WIDTH, getGuiTop() + FILTER_Y + FILTER_HEIGHT, 0xFF000000);
+
+		// The structure can change while the GUI is open: keep the hologram
+		// toggle at the right spot and grey the machine area out when invalid.
+		boolean valid = miner.isMultiblockValid();
+		if (valid != hologramValid) {
+			hologramValid = valid;
+			// setX/setY take absolute screen coordinates
+			hologramButton.setX(hologramOffsetX() + getGuiLeft());
+			hologramButton.setY(hologramOffsetY() + getGuiTop());
+		}
+		if (valid) {
+			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, layer);
+		}
 	}
 
 	@Override
@@ -226,6 +281,13 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 		super.drawForeground(drawContext, mouseX, mouseY);
 		if (hideGuiElements()) {
 			return;
+		}
+
+		// The structure state can change while the GUI is open: keep the
+		// hologram toggle in the right spot and grey the machine area out.
+		if (!hologramValid) {
+			builder.drawMultiblockMissingBar(drawContext, this, Layer.FOREGROUND);
+			builder.drawHologramButton(drawContext, this, 76, 56, mouseX, mouseY, Layer.FOREGROUND);
 		}
 
 		drawText(drawContext, Text.translatable("gui.techreborn.digital_miner.filter_label"),
