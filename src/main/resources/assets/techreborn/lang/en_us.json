@@ -1295,6 +1295,8 @@
   "emi.category.techreborn.fluid_from_container": "Fluid from Container",
   "emi.category.techreborn.fluid_into_container": "Fluid into Container",
   "emi.category.techreborn.multiblock_info": "Multiblock Structure",
+  "emi.category.techreborn.large_mixer": "Large Mixer",
+  "emi.category.techreborn.large_refinery": "Large Refinery",
   "gui.techreborn.emi.multiblock_total": "Total structure blocks: %s",
 
   "item.techreborn.basic_ore_prospector": "Basic Ore Prospector",
