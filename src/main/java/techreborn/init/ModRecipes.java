@@ -108,4 +108,9 @@ public class ModRecipes {
 	public static final RecipeType<RebornRecipe> CULTIVATION_VESSEL = RecipeManager.newRecipeType(Identifier.of("techreborn:cultivation_vessel"));
 	public static final RecipeType<RebornRecipe> IRRADIATED_MUTAGENSIS_CHAMBER = RecipeManager.newRecipeType(Identifier.of("techreborn:irradiated_mutagensis_chamber"));
 	public static final RecipeType<RebornRecipe> SUPERCRITICAL_POLYMERIZATION_CHAMBER = RecipeManager.newRecipeType(Identifier.of("techreborn:supercritical_polymerization_chamber"));
+
+	// 4-input / 6-output independent multiblock machines, same shape as the
+	// distillation tower.
+	public static final RecipeType<RebornRecipe> LARGE_MIXER = RecipeManager.newRecipeType(Identifier.of("techreborn:large_mixer"));
+	public static final RecipeType<RebornRecipe> LARGE_REFINERY = RecipeManager.newRecipeType(Identifier.of("techreborn:large_refinery"));
 }

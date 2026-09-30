@@ -100,7 +100,9 @@ public class MultiblockDefinitionLoader {
 			"supercritical_polymerization_chamber",
 			"dyson_swarm_host",
 			"dyson_swarm_receiver",
-			"digital_miner"
+			"digital_miner",
+			"large_mixer",
+			"large_refinery"
 	};
 
 	private MultiblockDefinitionLoader() {

@@ -75,5 +75,10 @@ public class EmiTextures {
 	// same picture in the crafting tree. This gives it its own.
 	public static final EmiTexture ORE_CRUSHER = new EmiTexture(SIMPLIFIED_ICONS, 192, 32, 16, 16);
 
+	// Two ExMI cells that no TechReborn category used: a mixing vessel and a
+	// two-stage column, which fit the Large Mixer and the Large Refinery.
+	public static final EmiTexture MIXING = new EmiTexture(SIMPLIFIED_ICONS, 160, 16, 16, 16);
+	public static final EmiTexture REFINING = new EmiTexture(SIMPLIFIED_ICONS, 0, 32, 16, 16);
+
 	public static final NinePatchTexture SLOT_BG = new NinePatchTexture(WIDGETS, 0, 0, 3, 3, 1, 1, 1, 1, false);
 }

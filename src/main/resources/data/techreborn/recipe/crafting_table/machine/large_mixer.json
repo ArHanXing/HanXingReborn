@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CAC",
+    "PBP",
+    "EME"
+  ],
+  "key": {
+    "P": {
+      "item": "techreborn:compressor"
+    },
+    "B": {
+      "item": "techreborn:industrial_machine_frame"
+    },
+    "C": {
+      "item": "techreborn:chemical_reactor"
+    },
+    "A": {
+      "item": "techreborn:alloy_smelter"
+    },
+    "E": {
+      "item": "techreborn:industrial_machine_frame"
+    },
+    "M": {
+      "item": "techreborn:energy_flow_chip"
+    }
+  },
+  "result": {
+    "id": "techreborn:large_mixer"
+  }
+}

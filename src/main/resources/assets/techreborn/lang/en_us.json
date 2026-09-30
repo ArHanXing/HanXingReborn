@@ -1309,6 +1309,8 @@
 
   "block.techreborn.echo_casing": "Echo Alloy Casing",
   "block.techreborn.digital_miner": "Digital Miner",
+  "block.techreborn.large_mixer": "Large Mixer",
+  "block.techreborn.large_refinery": "Large Refinery",
   "techreborn.tooltip.machine.digital_miner": "Mines blocks matching a filter inside a chunk radius (tags or regex)",
   "gui.techreborn.digital_miner.filter": "Filter...",
   "gui.techreborn.digital_miner.filter_label": "Filter (#tag or regex)",

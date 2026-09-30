@@ -70,6 +70,8 @@ import techreborn.blockentity.machine.multiblock.CultivationVesselBlockEntity;
 import techreborn.blockentity.machine.multiblock.DysonSwarmHostBlockEntity;
 import techreborn.blockentity.machine.multiblock.DysonSwarmReceiverBlockEntity;
 import techreborn.blockentity.machine.multiblock.DigitalMinerBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeMixerBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeRefineryBlockEntity;
 import techreborn.blockentity.machine.multiblock.IrradiatedMutagensisChamberBlockEntity;
 import techreborn.blockentity.machine.multiblock.SupercriticalPolymerizationChamberBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeGasTurbineBlockEntity;
@@ -213,6 +215,10 @@ public record ClientGuiType<T extends BlockEntity>(GuiType<T> guiType, GuiFactor
 	public static final ClientGuiType<DysonSwarmHostBlockEntity> DYSON_SWARM_HOST = register(GuiType.DYSON_SWARM_HOST, GuiDysonSwarmHost::new);
 	public static final ClientGuiType<DysonSwarmReceiverBlockEntity> DYSON_SWARM_RECEIVER = register(GuiType.DYSON_SWARM_RECEIVER, GuiDysonSwarmReceiver::new);
 	public static final ClientGuiType<DigitalMinerBlockEntity> DIGITAL_MINER = register(GuiType.DIGITAL_MINER, GuiDigitalMiner::new);
+	// Both 4-in / 6-out machines reuse the distillation tower GUI: identical
+	// slot layout (2x2 inputs, 3x2 outputs) and progress bar.
+	public static final ClientGuiType<LargeMixerBlockEntity> LARGE_MIXER = register(GuiType.LARGE_MIXER, GuiDistillationTower::new);
+	public static final ClientGuiType<LargeRefineryBlockEntity> LARGE_REFINERY = register(GuiType.LARGE_REFINERY, GuiDistillationTower::new);
 	public static final ClientGuiType<PreciseAssemblerBlockEntity> PRECISE_ASSEMBLER = register(GuiType.PRECISE_ASSEMBLER, GuiPreciseAssembler::new);
 	public static final ClientGuiType<PrimitiveDistillationTowerBlockEntity> PRIMITIVE_DISTILLATION_TOWER = register(GuiType.PRIMITIVE_DISTILLATION_TOWER, GuiDistillationTower::new);
 	public static final ClientGuiType<RotaryHearthFurnaceBlockEntity> ROTARY_HEARTH_FURNACE = register(GuiType.ROTARY_HEARTH_FURNACE, GuiRotaryHearthFurnace::new);

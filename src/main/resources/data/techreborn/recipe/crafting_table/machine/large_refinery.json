@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CDC",
+    "PBP",
+    "EME"
+  ],
+  "key": {
+    "P": {
+      "item": "techreborn:industrial_electrolyzer"
+    },
+    "B": {
+      "item": "techreborn:industrial_machine_frame"
+    },
+    "C": {
+      "item": "techreborn:industrial_centrifuge"
+    },
+    "D": {
+      "item": "techreborn:distillation_tower"
+    },
+    "E": {
+      "item": "techreborn:extractor"
+    },
+    "M": {
+      "item": "techreborn:energy_flow_chip"
+    }
+  },
+  "result": {
+    "id": "techreborn:large_refinery"
+  }
+}

@@ -613,6 +613,18 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "space_elevator_assembler", key = "SpaceElevatorAssemblerMaxEnergy", comment = "Space Elevator Assembler Max Energy")
 	public static int spaceElevatorAssemblerMaxEnergy = 10_000;
 
+	@Config(config = "machines", category = "large_mixer", key = "LargeMixerMaxInput", comment = "Large Mixer Max Input (Energy per tick)")
+	public static int largeMixerMaxInput = 128;
+
+	@Config(config = "machines", category = "large_mixer", key = "LargeMixerMaxEnergy", comment = "Large Mixer Max Energy")
+	public static int largeMixerMaxEnergy = 10_000;
+
+	@Config(config = "machines", category = "large_refinery", key = "LargeRefineryMaxInput", comment = "Large Refinery Max Input (Energy per tick)")
+	public static int largeRefineryMaxInput = 128;
+
+	@Config(config = "machines", category = "large_refinery", key = "LargeRefineryMaxEnergy", comment = "Large Refinery Max Energy")
+	public static int largeRefineryMaxEnergy = 10_000;
+
 	@Config(config = "machines", category = "space_elevator_miner", key = "SpaceElevatorMinerMaxInput", comment = "Space Elevator Miner Max Input (Energy per tick)")
 	public static int spaceElevatorMinerMaxInput = 128;
 

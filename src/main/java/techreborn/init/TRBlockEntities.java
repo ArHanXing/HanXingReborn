@@ -183,6 +183,8 @@ public class TRBlockEntities {
 	public static final BlockEntityType<DysonSwarmHostBlockEntity> DYSON_SWARM_HOST = register(DysonSwarmHostBlockEntity::new, "dyson_swarm_host", TRContent.Machine.DYSON_SWARM_HOST);
 	public static final BlockEntityType<DysonSwarmReceiverBlockEntity> DYSON_SWARM_RECEIVER = register(DysonSwarmReceiverBlockEntity::new, "dyson_swarm_receiver", TRContent.Machine.DYSON_SWARM_RECEIVER);
 	public static final BlockEntityType<DigitalMinerBlockEntity> DIGITAL_MINER = register(DigitalMinerBlockEntity::new, "digital_miner", TRContent.Machine.DIGITAL_MINER);
+	public static final BlockEntityType<LargeMixerBlockEntity> LARGE_MIXER = register(LargeMixerBlockEntity::new, "large_mixer", TRContent.Machine.LARGE_MIXER);
+	public static final BlockEntityType<LargeRefineryBlockEntity> LARGE_REFINERY = register(LargeRefineryBlockEntity::new, "large_refinery", TRContent.Machine.LARGE_REFINERY);
 
 	public static <T extends BlockEntity> BlockEntityType<T> register(BiFunction<BlockPos, BlockState, T> supplier, String name, ItemConvertible... items) {
 		return register(supplier, name, Arrays.stream(items).map(itemConvertible -> Block.getBlockFromItem(itemConvertible.asItem())).toArray(Block[]::new));

@@ -85,6 +85,8 @@ import techreborn.blocks.SupercriticalPolymerizationChamberBlock;
 import techreborn.blocks.LargeCompressorBlock;
 import techreborn.blocks.LargeGrinderBlock;
 import techreborn.blocks.LargeLatheBlock;
+import techreborn.blocks.LargeMixerBlock;
+import techreborn.blocks.LargeRefineryBlock;
 import techreborn.blocks.FurnaceProMaxBlock;
 import techreborn.blocks.PreciseAssemblerBlock;
 import techreborn.blocks.LargeWireMillBlock;
@@ -833,6 +835,8 @@ public class TRContent {
 		DYSON_SWARM_HOST(new GenericMachineBlock(GuiType.DYSON_SWARM_HOST, DysonSwarmHostBlockEntity::new)),
 		DYSON_SWARM_RECEIVER(new GenericMachineBlock(GuiType.DYSON_SWARM_RECEIVER, DysonSwarmReceiverBlockEntity::new)),
 		DIGITAL_MINER(new DigitalMinerBlock(GuiType.DIGITAL_MINER, DigitalMinerBlockEntity::new)),
+		LARGE_MIXER(new LargeMixerBlock(GuiType.LARGE_MIXER, LargeMixerBlockEntity::new)),
+		LARGE_REFINERY(new LargeRefineryBlock(GuiType.LARGE_REFINERY, LargeRefineryBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),
 		GREENHOUSE_CONTROLLER(new GenericMachineBlock(GuiType.GREENHOUSE_CONTROLLER, GreenhouseControllerBlockEntity::new)),
