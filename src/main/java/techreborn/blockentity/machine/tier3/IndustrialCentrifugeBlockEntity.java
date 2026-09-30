@@ -47,7 +47,8 @@ public class IndustrialCentrifugeBlockEntity extends GenericMachineBlockEntity i
 		final int[] outputs = new int[]{2, 3, 4, 5};
 		this.inventory = new RebornInventory<>(7, "IndustrialCentrifugeBlockEntity", 64, this);
 		this.crafter = new RecipeCrafter(ModRecipes.CENTRIFUGE, this, 2, 4, this.inventory, inputs, outputs);
-		this.crafter.setMaxParallel(16);
+		// Runs sequentially: the Large Centrifuge is the machine that provides
+		// parallelism for centrifuge recipes.
 	}
 
 	// IContainerProvider
