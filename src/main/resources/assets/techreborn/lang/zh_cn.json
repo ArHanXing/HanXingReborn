@@ -1261,6 +1261,8 @@
   "gui.techreborn.digital_miner.show_range": "显示工作范围",
   "gui.techreborn.digital_miner.show_range_short": "范围",
   "gui.techreborn.digital_miner.filter_invalid": "筛选表达式无效",
+  "gui.techreborn.digital_miner.filter_invalid_regex": "正则无法解析",
+  "gui.techreborn.digital_miner.filter_invalid_tag": "标签无效",
   "gui.techreborn.digital_miner.no_targets": "没有匹配的方块",
   "gui.techreborn.digital_miner.scanning": "扫描中…",
   "block.techreborn.dyson_swarm_host": "戴森云主机",

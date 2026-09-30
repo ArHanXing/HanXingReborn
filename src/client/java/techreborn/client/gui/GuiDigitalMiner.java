@@ -71,7 +71,8 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 	 *  y=6    machine title (centred)
 	 *  y=18   filter field x=8..78 | "range" toggle x=82..156
 	 *  y=34   "filter" label, on its own row below the field
-	 *  y=47   range +/- buttons x=8..56
+	 *  y=45   parse-error line, only when the expression cannot be parsed
+	 *  y=57   range +/- buttons x=8..56
 	 *  y=49   output slots 2x4 x=83..156 (two rows: 49 and 67)
 	 *  y=76   energy slot, left column under the range buttons
 	 *  y=84   targets / speed / range readout (left column, x&gt;=28)
@@ -86,9 +87,11 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 
 	/** "Filter" label, on its own row directly below the filter field. */
 	private static final int FILTER_LABEL_Y = FILTER_Y + FILTER_HEIGHT + 2;
+	/** Parse-error line, one row under the label; only drawn when invalid. */
+	private static final int FILTER_ERROR_Y = FILTER_LABEL_Y + 11;
 
 	private static final int BUTTON_X = 8;
-	private static final int BUTTON_Y = 47;
+	private static final int BUTTON_Y = 57;
 
 	/** "Range" toggle, sharing the filter row. */
 	private static final int RANGE_BUTTON_X = 82;
@@ -292,6 +295,14 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 
 		drawText(drawContext, Text.translatable("gui.techreborn.digital_miner.filter_label"),
 				FILTER_X, FILTER_LABEL_Y, theme.titleColor().rgba(), Layer.FOREGROUND);
+
+		// A filter that cannot be parsed is reported right under the field
+		// instead of failing somewhere in the scan.
+		String errorKey = miner.getFilterErrorKey();
+		if (errorKey != null && !errorKey.isEmpty()) {
+			drawText(drawContext, Text.translatable(errorKey),
+					FILTER_X, FILTER_ERROR_Y, theme.warningTextColor().rgba(), Layer.FOREGROUND);
+		}
 
 		// left column: targets / speed / range
 		Text targets = Text.translatable("gui.techreborn.digital_miner.targets", miner.getTargetCount());

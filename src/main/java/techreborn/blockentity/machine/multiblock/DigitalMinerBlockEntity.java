@@ -24,10 +24,14 @@
 
 package techreborn.blockentity.machine.multiblock;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -48,6 +52,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -119,9 +124,29 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	private transient CompiledFilter filter;
 	/** Set when the user typed an expression that does not compile. */
 	private boolean filterInvalid = false;
+	/**
+	 * Translation key of the current filter error, {@code ""} while the filter is
+	 * valid. Synced to the GUI, which shows the message under the filter field.
+	 */
+	private String filterErrorKey = "";
 
-	/** Positions that still need mining, nearest-first per scan order. */
-	private final List<BlockPos> targets = new ArrayList<>();
+	/** Positions that still need mining, in discovery order. */
+	private final Deque<BlockPos> targets = new ArrayDeque<>();
+
+	/**
+	 * Perimeter of the vein currently being expanded (breadth-first from every
+	 * block that matched), probed before the linear pass so a compact ore vein
+	 * is queued as a unit instead of one block per scan step.
+	 */
+	private final Deque<BlockPos> frontier = new ArrayDeque<>();
+	/** Positions already queued on the {@link #frontier}, so none is probed twice. */
+	private final Set<BlockPos> frontierSeen = new HashSet<>();
+	/**
+	 * Upper bound for {@link #frontierSeen}: an enormous vein must not grow the
+	 * frontier without limit. Anything dropped here is still found by the
+	 * linear pass, just later.
+	 */
+	private static final int MAX_FRONTIER_SIZE = 8192;
 
 	/**
 	 * Per-pass memoisation of the filter result keyed by block state. A scan
@@ -222,11 +247,16 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	 * is stripped because tags are matched by namespace membership rather than
 	 * by glob. Anything else is a regex over the registry id, with bare
 	 * {@code *} expanded to {@code .*} and {@code ?} to {@code .}.
+	 * <p>
+	 * Never throws: an expression that cannot be parsed (bad tag id, or regex
+	 * syntax the user typed with characters that do not survive the glob
+	 * expansion) returns {@code null} and the caller flags it in the GUI.
 	 *
 	 * @param expression {@link String} the raw GUI text
-	 * @return {@link CompiledFilter} the compiled filter
-	 * @throws PatternSyntaxException if a regex branch does not compile
+	 * @return {@link CompiledFilter} the compiled filter, or {@code null} if the
+	 *         expression is not valid
 	 */
+	@Nullable
 	private static CompiledFilter compile(String expression) {
 		String text = expression.trim();
 		if (text.isEmpty()) {
@@ -241,13 +271,16 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 			Identifier tagId;
 			try {
 				tagId = Identifier.of(tagText);
-			} catch (IllegalArgumentException e) {
-				throw new PatternSyntaxException("invalid tag id", tagText, 0);
+			} catch (RuntimeException e) {
+				return null;
 			}
 			return new CompiledFilter(TagKey.of(RegistryKeys.BLOCK, tagId), null);
 		}
-		String regex = globToRegex(text);
-		return new CompiledFilter(null, Pattern.compile(regex));
+		try {
+			return new CompiledFilter(null, Pattern.compile(globToRegex(text)));
+		} catch (PatternSyntaxException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -276,10 +309,15 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	@Nullable
 	private CompiledFilter filter() {
 		if (filter == null && !filterInvalid) {
-			try {
-				filter = compile(filterText);
-			} catch (IllegalArgumentException e) {
+			CompiledFilter compiled = compile(filterText);
+			if (compiled == null) {
 				filterInvalid = true;
+				// "#..." is a tag lookup, anything else goes through the regex
+				filterErrorKey = filterText.trim().startsWith("#")
+						? "gui.techreborn.digital_miner.filter_invalid_tag"
+						: "gui.techreborn.digital_miner.filter_invalid_regex";
+			} else {
+				filter = compiled;
 			}
 		}
 		return filter;
@@ -291,6 +329,18 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 
 	public boolean isFilterInvalid() {
 		return filterInvalid;
+	}
+
+	/**
+	 * @return {@link String} translation key of the current filter error, or
+	 *         {@code ""} when the filter is valid
+	 */
+	public String getFilterErrorKey() {
+		return filterErrorKey;
+	}
+
+	public void setFilterErrorKey(String value) {
+		filterErrorKey = value == null ? "" : value;
 	}
 
 	/**
@@ -307,6 +357,7 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 		filterText = next;
 		filter = null;
 		filterInvalid = false;
+		filterErrorKey = "";
 		// compile eagerly so an invalid expression is flagged right away
 		filter();
 		resetScan();
@@ -348,6 +399,8 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 
 	private void resetScan() {
 		targets.clear();
+		frontier.clear();
+		frontierSeen.clear();
 		matchCache.clear();
 		miningPos = null;
 		miningProgress = 0;
@@ -474,6 +527,13 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	 * Examines up to the configured budget of positions, appending matches to
 	 * the target list.
 	 * <p>
+	 * The frontier expansion runs first: whenever a block matches, its six
+	 * face-adjacent neighbours are queued and probed before the linear pass
+	 * continues, so a compact ore vein is queued as a whole instead of one block
+	 * per cursor step. This is what makes the machine practical in packs whose
+	 * ores spawn in large veins. Only when the frontier is drained does the
+	 * cursor walk the region, so the linear pass cannot starve the veins.
+	 * <p>
 	 * The cursor survives across ticks so the region is walked exactly once per
 	 * pass. Because a pass touches on the order of a million positions that
 	 * share only a few dozen distinct {@link BlockState}s, the filter is
@@ -484,6 +544,10 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	 * @param compiled {@link CompiledFilter} the active filter
 	 */
 	private void scanStep(ServerWorld world, CompiledFilter compiled) {
+		int budget = Math.max(1, TechRebornConfig.digitalMinerScanBudgetPerTick);
+
+		budget = expandFrontier(world, compiled, budget);
+
 		if (scanCompleted) {
 			return;
 		}
@@ -493,7 +557,6 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 		// getTopY() is exclusive
 		int maxY = world.getTopY() - 1;
 
-		int budget = Math.max(1, TechRebornConfig.digitalMinerScanBudgetPerTick);
 		int side = radius * 2 + 1;
 
 		while (budget > 0 && !scanCompleted) {
@@ -505,9 +568,13 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 					originZ + scanChunk / side * 16 + scanZ);
 			budget--;
 
-			BlockState probeState = world.getBlockState(probe);
-			if (isMineable(probeState) && matchesCached(probeState, compiled) && hasDrops(world, probe, probeState)) {
-				targets.add(probe.toImmutable());
+			// Positions the frontier already looked at are skipped: they either
+			// matched (and are queued) or they cannot match at all.
+			if (!frontierSeen.contains(probe)) {
+				BlockState probeState = world.getBlockState(probe);
+				if (isMineable(probeState) && matchesCached(probeState, compiled) && hasDrops(world, probe, probeState)) {
+					addTarget(probe);
+				}
 			}
 
 			// advance the cursor
@@ -526,6 +593,55 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 						}
 					}
 				}
+			}
+		}
+	}
+
+	/**
+	 * Probes the vein frontier: positions queued as neighbours of a block that
+	 * already matched. Matches extend the frontier in turn.
+	 *
+	 * @param world    {@link ServerWorld} the machine's world
+	 * @param compiled {@link CompiledFilter} the active filter
+	 * @param budget   {@code int} positions left in this tick's budget
+	 * @return {@code int} the budget left after the frontier was drained
+	 */
+	private int expandFrontier(ServerWorld world, CompiledFilter compiled, int budget) {
+		while (budget > 0 && !frontier.isEmpty()) {
+			BlockPos probe = frontier.pollFirst();
+			budget--;
+			BlockState state = world.getBlockState(probe);
+			if (isMineable(state) && matchesCached(state, compiled) && hasDrops(world, probe, state)) {
+				targets.addLast(probe);
+				queueNeighbours(probe);
+			}
+		}
+		return budget;
+	}
+
+	/** Queues a matched block and starts expanding around it. */
+	private void addTarget(BlockPos pos) {
+		BlockPos immutable = pos.toImmutable();
+		targets.addLast(immutable);
+		queueNeighbours(immutable);
+	}
+
+	/**
+	 * Queues the six face-adjacent neighbours of a matched block, skipping the
+	 * ones already handled. Capped by {@link #MAX_FRONTIER_SIZE} so an enormous
+	 * vein cannot grow the frontier without bound; anything dropped is still
+	 * found by the linear pass, just later.
+	 *
+	 * @param pos {@link BlockPos} the matched block
+	 */
+	private void queueNeighbours(BlockPos pos) {
+		if (frontierSeen.size() >= MAX_FRONTIER_SIZE) {
+			return;
+		}
+		for (Direction direction : Direction.values()) {
+			BlockPos neighbour = pos.offset(direction);
+			if (frontierSeen.add(neighbour)) {
+				frontier.addLast(neighbour);
 			}
 		}
 	}
@@ -602,7 +718,7 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 			}
 		}
 		while (miningPos == null && !targets.isEmpty()) {
-			BlockPos candidate = targets.remove(0);
+			BlockPos candidate = targets.pollFirst();
 			if (isMineable(world.getBlockState(candidate))) {
 				miningPos = candidate;
 				miningProgress = 0;
@@ -787,7 +903,9 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	 */
 	private String buildPreview(@Nullable CompiledFilter compiled) {
 		if (compiled == null) {
-			return Text.translatable("gui.techreborn.digital_miner.filter_invalid").getString();
+			return Text.translatable(filterErrorKey.isEmpty()
+					? "gui.techreborn.digital_miner.filter_invalid"
+					: filterErrorKey).getString();
 		}
 		if (targets.isEmpty()) {
 			return scanCompleted
@@ -865,6 +983,7 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 		inventory.read(tag, registryLookup);
 		filter = null;
 		filterInvalid = false;
+		filterErrorKey = "";
 	}
 
 	@Override
@@ -910,6 +1029,7 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 		builder.energySlot(ENERGY_SLOT, 8, 76);
 		builder.syncEnergyValue();
 		builder.sync(PacketCodecs.STRING, this::getFilterText, this::setFilterText);
+		builder.sync(PacketCodecs.STRING, this::getFilterErrorKey, this::setFilterErrorKey);
 		builder.sync(PacketCodecs.STRING, this::getPreviewText, this::setPreviewText);
 		builder.sync(PacketCodecs.INTEGER, this::getRadius, this::setRadius);
 		builder.sync(PacketCodecs.INTEGER, this::getTargetCount, this::setTargetCount);

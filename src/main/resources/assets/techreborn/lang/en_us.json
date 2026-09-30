@@ -1319,6 +1319,8 @@
   "gui.techreborn.digital_miner.show_range": "Show working range",
   "gui.techreborn.digital_miner.show_range_short": "Range",
   "gui.techreborn.digital_miner.filter_invalid": "Invalid filter expression",
+  "gui.techreborn.digital_miner.filter_invalid_regex": "Invalid regex",
+  "gui.techreborn.digital_miner.filter_invalid_tag": "Invalid tag",
   "gui.techreborn.digital_miner.no_targets": "No matching blocks",
   "gui.techreborn.digital_miner.scanning": "Scanning...",
   "block.techreborn.dyson_swarm_host": "Dyson Swarm Host",
