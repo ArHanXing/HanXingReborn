@@ -34,3 +34,6 @@ changelog.txt
 /RebornCore/run
 /.exmiSrc
 /.gtm1201Src
+
+/.guiwork
+__pycache__

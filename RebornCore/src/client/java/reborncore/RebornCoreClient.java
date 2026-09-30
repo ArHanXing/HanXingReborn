@@ -76,5 +76,14 @@ public class RebornCoreClient implements ClientModInitializer {
 			FabricLoader.getInstance().getModContainer("reborncore").get(),
 			ResourcePackActivationType.NORMAL
 		);
+
+		// Optional 1.21.1 Applied Energistics 2 restyle of the whole machine GUI.
+		// It covers every sprite reborncore_darkmode touches as well, so enabling
+		// both only makes sense if this one is the higher priority pack.
+		ResourceManagerHelper.registerBuiltinResourcePack(
+			Identifier.of("reborncore", "reborncore_ae2style"),
+			FabricLoader.getInstance().getModContainer("reborncore").get(),
+			ResourcePackActivationType.NORMAL
+		);
 	}
 }

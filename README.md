@@ -15,6 +15,7 @@
 - 多方块的信息页面，现在可以按 + 号直接编写多方块结构的样板
 - 多方块搭建器，集结构检测和自动放置为一体
 - Jade 集成，更方便地查看配方输入与输出、耗电发电信息
+- 内置可选资源包「RebornCore AE2 Style」
 
 新机器：
 - 转底炉，其热量影响并行（基础4并，热量每高于配方1000J，并行x4）
@@ -23,7 +24,7 @@
 - 改良发电手段：大型燃气涡轮、大型柴油机、通用化学能引擎
 - 超维度等泥土熔炉...的同分异构体
 - 太空电梯：相较 GTL 的机制更加自由，模块只需要放置在主机的一定范围内
-- 数字型采矿机：前期就能做
+- 数字型采矿机：前期就能做，支持正则匹配等，挖矿小帮手
 
 TODO：
 - 更多新机制：精密组装兼容装配机、重构聚变堆逻辑、裂变反应堆
@@ -61,7 +62,7 @@ Techreborn is available in a range of different languages, if you want to help o
 [![reborncore](https://i.imgur.com/NcOEWOh.png)](https://minecraft.curseforge.com/projects/reborncore/)
 
 
-# License
+# License & Thanks
 
 Tech Reborn is licensed under the MIT license. Full license is  in **LICENSE.md**.
 
@@ -70,3 +71,5 @@ EMI 兼容使用的代码来自 [ExMI](https://github.com/Kneelawk/extra-mod-int
 材质依旧来源于 GT Modern.
 
 部分材质来源于 Dyson Cube Project mod.
+
+AE2 GUI 重绘由DS完成，其材质来源为 XingLuo 1.21 AE GUI Expansion 材质包。
