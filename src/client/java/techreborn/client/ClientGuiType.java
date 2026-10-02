@@ -72,6 +72,7 @@ import techreborn.blockentity.machine.multiblock.DysonSwarmReceiverBlockEntity;
 import techreborn.blockentity.machine.multiblock.DigitalMinerBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeMixerBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeRefineryBlockEntity;
+import techreborn.blockentity.machine.multiblock.IsotopeSeparatorBlockEntity;
 import techreborn.blockentity.machine.multiblock.IrradiatedMutagensisChamberBlockEntity;
 import techreborn.blockentity.machine.multiblock.SupercriticalPolymerizationChamberBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeGasTurbineBlockEntity;
@@ -122,6 +123,7 @@ import techreborn.client.gui.GuiBlastFurnace;
 import techreborn.client.gui.GuiDysonSwarmHost;
 import techreborn.client.gui.GuiDysonSwarmReceiver;
 import techreborn.client.gui.GuiDigitalMiner;
+import techreborn.client.gui.GuiIsotopeSeparator;
 import techreborn.client.gui.GuiLargeMachine;
 import techreborn.client.gui.GuiLargeFluidGenerator;
 import techreborn.client.gui.GuiPreciseAssembler;
@@ -219,6 +221,7 @@ public record ClientGuiType<T extends BlockEntity>(GuiType<T> guiType, GuiFactor
 	// slot layout (2x2 inputs, 3x2 outputs) and progress bar.
 	public static final ClientGuiType<LargeMixerBlockEntity> LARGE_MIXER = register(GuiType.LARGE_MIXER, GuiDistillationTower::new);
 	public static final ClientGuiType<LargeRefineryBlockEntity> LARGE_REFINERY = register(GuiType.LARGE_REFINERY, GuiDistillationTower::new);
+	public static final ClientGuiType<IsotopeSeparatorBlockEntity> ISOTOPE_SEPARATOR = register(GuiType.ISOTOPE_SEPARATOR, GuiIsotopeSeparator::new);
 	public static final ClientGuiType<PreciseAssemblerBlockEntity> PRECISE_ASSEMBLER = register(GuiType.PRECISE_ASSEMBLER, GuiPreciseAssembler::new);
 	public static final ClientGuiType<PrimitiveDistillationTowerBlockEntity> PRIMITIVE_DISTILLATION_TOWER = register(GuiType.PRIMITIVE_DISTILLATION_TOWER, GuiDistillationTower::new);
 	public static final ClientGuiType<RotaryHearthFurnaceBlockEntity> ROTARY_HEARTH_FURNACE = register(GuiType.ROTARY_HEARTH_FURNACE, GuiRotaryHearthFurnace::new);

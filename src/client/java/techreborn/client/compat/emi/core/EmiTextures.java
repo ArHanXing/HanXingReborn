@@ -79,6 +79,8 @@ public class EmiTextures {
 	// two-stage column, which fit the Large Mixer and the Large Refinery.
 	public static final EmiTexture MIXING = new EmiTexture(SIMPLIFIED_ICONS, 160, 16, 16, 16);
 	public static final EmiTexture REFINING = new EmiTexture(SIMPLIFIED_ICONS, 0, 32, 16, 16);
+	/** A spinning disc, used for the Isotope Separator's rotor-driven recipes. */
+	public static final EmiTexture ROTOR = new EmiTexture(SIMPLIFIED_ICONS, 16, 32, 16, 16);
 
 	public static final NinePatchTexture SLOT_BG = new NinePatchTexture(WIDGETS, 0, 0, 3, 3, 1, 1, 1, 1, false);
 }

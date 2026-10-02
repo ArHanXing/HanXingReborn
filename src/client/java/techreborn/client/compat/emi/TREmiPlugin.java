@@ -108,6 +108,7 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiStack SUPERCRITICAL_POLYMERIZATION_CHAMBER_STACK = EmiStack.of(TRContent.Machine.SUPERCRITICAL_POLYMERIZATION_CHAMBER);
 	public static final EmiStack LARGE_MIXER_STACK = EmiStack.of(TRContent.Machine.LARGE_MIXER);
 	public static final EmiStack LARGE_REFINERY_STACK = EmiStack.of(TRContent.Machine.LARGE_REFINERY);
+	public static final EmiStack ISOTOPE_SEPARATOR_STACK = EmiStack.of(TRContent.Machine.ISOTOPE_SEPARATOR);
 
 	public static final EmiRecipeCategory ALLOY_SMELTER_CATEGORY =
 		new EmiRecipeCategory(trId("alloy_smelter"), ALLOY_SMELTER_STACK, EmiTextures.ALLOY_SMELTING,
@@ -229,6 +230,9 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiRecipeCategory LARGE_REFINERY_CATEGORY =
 		new EmiRecipeCategory(trId("large_refinery"), LARGE_REFINERY_STACK, EmiTextures.REFINING,
 			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiRecipeCategory ISOTOPE_SEPARATOR_CATEGORY =
+		new EmiRecipeCategory(trId("isotope_separator"), ISOTOPE_SEPARATOR_STACK, EmiTextures.ROTOR,
+			EmiRecipeSorting.compareOutputThenInput());
 
 	public static final EmiRecipeCategory LARGE_CHEMICAL_REACTOR_CATEGORY =
 		new EmiRecipeCategory(trId("large_chemical_reactor"), LARGE_CHEMICAL_REACTOR_STACK,
@@ -262,6 +266,7 @@ public class TREmiPlugin implements EmiPlugin {
 		Map.entry("distillation_tower", TRContent.Machine.DISTILLATION_TOWER),
 		Map.entry("large_mixer", TRContent.Machine.LARGE_MIXER),
 		Map.entry("large_refinery", TRContent.Machine.LARGE_REFINERY),
+		Map.entry("isotope_separator", TRContent.Machine.ISOTOPE_SEPARATOR),
 		Map.entry("fluid_replicator", TRContent.Machine.FLUID_REPLICATOR),
 		Map.entry("implosion_compressor", TRContent.Machine.IMPLOSION_COMPRESSOR),
 		Map.entry("industrial_blast_furnace", TRContent.Machine.INDUSTRIAL_BLAST_FURNACE),
@@ -580,6 +585,12 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(LARGE_REFINERY_CATEGORY, LARGE_REFINERY_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.LARGE_REFINERY)) {
 			registry.addRecipe(new FourInSixOutEmiRecipe(recipe, LARGE_REFINERY_CATEGORY));
+		}
+
+		registry.addCategory(ISOTOPE_SEPARATOR_CATEGORY);
+		registry.addWorkstation(ISOTOPE_SEPARATOR_CATEGORY, ISOTOPE_SEPARATOR_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.ISOTOPE_SEPARATOR)) {
+			registry.addRecipe(new IsotopeSeparatorEmiRecipe(recipe));
 		}
 
 		registry.addCategory(PLASMA_GENERATOR_CATEGORY);

@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ICI",
+    "PBP",
+    "EME"
+  ],
+  "key": {
+    "P": {
+      "item": "techreborn:industrial_centrifuge"
+    },
+    "B": {
+      "item": "techreborn:industrial_machine_frame"
+    },
+    "C": {
+      "item": "techreborn:advanced_machine_frame"
+    },
+    "I": {
+      "item": "techreborn:industrial_electrolyzer"
+    },
+    "E": {
+      "item": "techreborn:extractor"
+    },
+    "M": {
+      "item": "techreborn:energy_flow_chip"
+    }
+  },
+  "result": {
+    "id": "techreborn:isotope_separator"
+  }
+}

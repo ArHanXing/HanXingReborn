@@ -102,7 +102,8 @@ public class MultiblockDefinitionLoader {
 			"dyson_swarm_receiver",
 			"digital_miner",
 			"large_mixer",
-			"large_refinery"
+			"large_refinery",
+			"isotope_separator"
 	};
 
 	private MultiblockDefinitionLoader() {

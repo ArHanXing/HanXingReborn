@@ -625,6 +625,21 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "large_refinery", key = "LargeRefineryMaxEnergy", comment = "Large Refinery Max Energy")
 	public static int largeRefineryMaxEnergy = 10_000;
 
+	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorMaxInput", comment = "Isotope Separator Max Input (Energy per tick)")
+	public static int isotopeSeparatorMaxInput = 128;
+
+	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorMaxEnergy", comment = "Isotope Separator Max Energy")
+	public static int isotopeSeparatorMaxEnergy = 100_000;
+
+	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorTimeReduction", comment = "Isotope Separator process time reduction at full speed (0.75 = full speed takes 25% of the time)")
+	public static double isotopeSeparatorTimeReduction = 0.75;
+
+	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorEnergyPenalty", comment = "Isotope Separator extra energy multiplier at full speed (3.0 = 4x power)")
+	public static double isotopeSeparatorEnergyPenalty = 3.0;
+
+	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorRotorWearInterval", comment = "Ticks of processing per point of rotor wear at full speed (scales inversely with speed)")
+	public static int isotopeSeparatorRotorWearInterval = 200;
+
 	@Config(config = "machines", category = "space_elevator_miner", key = "SpaceElevatorMinerMaxInput", comment = "Space Elevator Miner Max Input (Energy per tick)")
 	public static int spaceElevatorMinerMaxInput = 128;
 

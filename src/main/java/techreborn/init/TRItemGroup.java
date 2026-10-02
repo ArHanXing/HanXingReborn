@@ -168,6 +168,7 @@ public class TRItemGroup {
 		entries.add(TRContent.COMPUTER_CUBE);
 		entries.add(TRContent.NUKE);
 		addContent(TRContent.Upgrades.values(), entries);
+		addContent(TRContent.Rotors.values(), entries);
 		addContent(TRContent.StorageUnit.values(), entries);
 		addContent(TRContent.TankUnit.values(), entries);
 		for (TRContent.StorageUnit storageUnit : TRContent.StorageUnit.values()) {

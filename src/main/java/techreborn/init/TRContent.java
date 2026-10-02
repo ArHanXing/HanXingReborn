@@ -87,6 +87,7 @@ import techreborn.blocks.LargeGrinderBlock;
 import techreborn.blocks.LargeLatheBlock;
 import techreborn.blocks.LargeMixerBlock;
 import techreborn.blocks.LargeRefineryBlock;
+import techreborn.blocks.IsotopeSeparatorBlock;
 import techreborn.blocks.FurnaceProMaxBlock;
 import techreborn.blocks.PreciseAssemblerBlock;
 import techreborn.blocks.LargeWireMillBlock;
@@ -837,6 +838,7 @@ public class TRContent {
 		DIGITAL_MINER(new DigitalMinerBlock(GuiType.DIGITAL_MINER, DigitalMinerBlockEntity::new)),
 		LARGE_MIXER(new LargeMixerBlock(GuiType.LARGE_MIXER, LargeMixerBlockEntity::new)),
 		LARGE_REFINERY(new LargeRefineryBlock(GuiType.LARGE_REFINERY, LargeRefineryBlockEntity::new)),
+		ISOTOPE_SEPARATOR(new IsotopeSeparatorBlock(GuiType.ISOTOPE_SEPARATOR, IsotopeSeparatorBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),
 		GREENHOUSE_CONTROLLER(new GenericMachineBlock(GuiType.GREENHOUSE_CONTROLLER, GreenhouseControllerBlockEntity::new)),
@@ -1596,6 +1598,63 @@ public class TRContent {
 		@Override
 		public TagKey<Item> asTag() {
 			return tag;
+		}
+	}
+
+	/**
+	 * Rotors for the Isotope Separator. Each rotor caps the achievable rotation
+	 * speed ({@link #rpmLimit}, 0..1) and wears out while the machine actually
+	 * processes; higher tiers have more durability and reach a higher speed.
+	 * <p>
+	 * Textures are intentionally absent for now, the items exist so recipes and
+	 * the machine can be wired up and balanced first.
+	 */
+	public enum Rotors implements ItemConvertible {
+		STEEL(0.50, 4_000, 1.0),
+		TITANIUM(0.75, 8_000, 1.0),
+		TUNGSTENSTEEL(0.90, 16_000, 1.0),
+		GAIA(1.00, 24_000, 1.0),
+		/** Reaches full speed and additionally reduces the energy multiplier. */
+		SHINE(1.00, 24_000, 0.7);
+
+		public final String name;
+		public final Item item;
+		/** Upper bound on the rotation speed this rotor allows (0..1). */
+		public final double rpmLimit;
+		/** Usable ticks before the rotor breaks. */
+		public final int durability;
+		/** Factor applied to the machine's energy multiplier. */
+		public final double energyFactor;
+
+		Rotors(double rpmLimit, int durability, double energyFactor) {
+			this.name = this.toString().toLowerCase(Locale.ROOT) + "_rotor";
+			this.rpmLimit = rpmLimit;
+			this.durability = durability;
+			this.energyFactor = energyFactor;
+			this.item = new Item(new Item.Settings().maxCount(1).maxDamage(durability));
+			InitUtils.setup(item, name);
+		}
+
+		@Override
+		public Item asItem() {
+			return item;
+		}
+
+		/**
+		 * @param stack {@link ItemStack} the rotor slot contents
+		 * @return {@link Rotors} the rotor, or {@code null} for an empty or
+		 *         unrecognised slot (the machine then runs at its 25% floor)
+		 */
+		public static Rotors fromStack(ItemStack stack) {
+			if (stack == null || stack.isEmpty()) {
+				return null;
+			}
+			for (Rotors rotor : values()) {
+				if (stack.isOf(rotor.item)) {
+					return rotor;
+				}
+			}
+			return null;
 		}
 	}
 
