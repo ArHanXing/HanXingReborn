@@ -123,8 +123,8 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 	 * @return {@code double} the rotor's speed cap, or the no-rotor floor
 	 */
 	public double getRotorRpmLimit() {
-		TRContent.Rotors rotor = TRContent.Rotors.fromStack(inventory.getStack(ROTOR_SLOT));
-		return rotor == null ? NO_ROTOR_RPM : rotor.rpmLimit;
+		TRContent.Parts rotor = TRContent.Parts.rotorFromStack(inventory.getStack(ROTOR_SLOT));
+		return rotor == null || rotor.rpmLimit == null ? NO_ROTOR_RPM : rotor.rpmLimit;
 	}
 
 	/**
@@ -158,8 +158,8 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 	 */
 	public double energyMultiplier(double rpm) {
 		double base = 1.0 + TechRebornConfig.isotopeSeparatorEnergyPenalty * rpm;
-		TRContent.Rotors rotor = TRContent.Rotors.fromStack(inventory.getStack(ROTOR_SLOT));
-		return base * (rotor == null ? 1.0 : rotor.energyFactor);
+		TRContent.Parts rotor = TRContent.Parts.rotorFromStack(inventory.getStack(ROTOR_SLOT));
+		return base * (rotor == null ? 1.0 : rotor.rotorEnergyFactor);
 	}
 
 	// =======================================================================
@@ -234,7 +234,7 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 			return;
 		}
 		ItemStack rotorStack = inventory.getStack(ROTOR_SLOT);
-		if (TRContent.Rotors.fromStack(rotorStack) == null) {
+		if (TRContent.Parts.rotorFromStack(rotorStack) == null) {
 			return;
 		}
 		int interval = Math.max(1, (int) Math.round(TechRebornConfig.isotopeSeparatorRotorWearInterval / Math.max(rpm, 0.01)));

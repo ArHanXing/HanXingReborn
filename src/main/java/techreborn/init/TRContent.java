@@ -1427,15 +1427,84 @@ public class TRContent {
 		SPONGE_PIECE,
 		TEMPLATE_TEMPLATE,
 
-		SYNTHETIC_REDSTONE_CRYSTAL;
+		SYNTHETIC_REDSTONE_CRYSTAL,
+
+		// Rotors for the Isotope Separator. They live here rather than in their
+		// own enum because their textures are plain machine parts
+		// (textures/item/part/<name>.png), which this enum derives automatically.
+		// The rotor-specific stats are the extra constructor arguments.
+		STEEL_ROTOR(0.50, 1.0),
+		TITANIUM_ROTOR(0.75, 1.0),
+		TUNGSTENSTEEL_ROTOR(0.90, 1.0),
+		GAIA_ROTOR(1.00, 1.0),
+		/** Reaches full speed and additionally reduces the energy multiplier. */
+		SHINE_ROTOR(1.00, 0.7);
 
 		public final String name;
 		public final Item item;
+		/**
+		 * Upper bound on the rotation speed this part allows (0..1), or
+		 * {@code null} when the part is not a rotor.
+		 */
+		@Nullable
+		public final Double rpmLimit;
+		/** Factor applied to the machine's energy multiplier; 1 for non-rotors. */
+		public final double rotorEnergyFactor;
 
 		Parts() {
+			this(null, 1.0);
+		}
+
+		Parts(@Nullable Double rpmLimit, double rotorEnergyFactor) {
 			name = this.toString().toLowerCase(Locale.ROOT);
-			item = new Item(new Item.Settings());
+			this.rpmLimit = rpmLimit;
+			this.rotorEnergyFactor = rotorEnergyFactor;
+			// Rotors wear out, so they do not stack and carry durability.
+			final int durability = rotorDurability(this);
+			item = durability > 0
+					? new Item(new Item.Settings().maxCount(1).maxDamage(durability))
+					: new Item(new Item.Settings());
 			InitUtils.setup(item, name);
+		}
+
+		/**
+		 * @param part {@link Parts} the part to test
+		 * @return {@code int} the rotor's usable ticks, or {@code 0} for a
+		 *         non-rotor part
+		 */
+		private static int rotorDurability(Parts part) {
+			return switch (part) {
+				case STEEL_ROTOR -> 4_000;
+				case TITANIUM_ROTOR -> 8_000;
+				case TUNGSTENSTEEL_ROTOR -> 16_000;
+				case GAIA_ROTOR, SHINE_ROTOR -> 24_000;
+				default -> 0;
+			};
+		}
+
+		/**
+		 * @return {@code boolean} {@code true} if this part is a rotor
+		 */
+		public boolean isRotor() {
+			return rpmLimit != null;
+		}
+
+		/**
+		 * @param stack {@link ItemStack} the rotor slot contents
+		 * @return {@link Parts} the rotor, or {@code null} for an empty slot or
+		 *         a non-rotor item (the machine then runs at its 25% floor)
+		 */
+		@Nullable
+		public static Parts rotorFromStack(ItemStack stack) {
+			if (stack == null || stack.isEmpty()) {
+				return null;
+			}
+			for (Parts part : values()) {
+				if (part.isRotor() && stack.isOf(part.item)) {
+					return part;
+				}
+			}
+			return null;
 		}
 
 		public ItemStack getStack() {
@@ -1598,63 +1667,6 @@ public class TRContent {
 		@Override
 		public TagKey<Item> asTag() {
 			return tag;
-		}
-	}
-
-	/**
-	 * Rotors for the Isotope Separator. Each rotor caps the achievable rotation
-	 * speed ({@link #rpmLimit}, 0..1) and wears out while the machine actually
-	 * processes; higher tiers have more durability and reach a higher speed.
-	 * <p>
-	 * Textures are intentionally absent for now, the items exist so recipes and
-	 * the machine can be wired up and balanced first.
-	 */
-	public enum Rotors implements ItemConvertible {
-		STEEL(0.50, 4_000, 1.0),
-		TITANIUM(0.75, 8_000, 1.0),
-		TUNGSTENSTEEL(0.90, 16_000, 1.0),
-		GAIA(1.00, 24_000, 1.0),
-		/** Reaches full speed and additionally reduces the energy multiplier. */
-		SHINE(1.00, 24_000, 0.7);
-
-		public final String name;
-		public final Item item;
-		/** Upper bound on the rotation speed this rotor allows (0..1). */
-		public final double rpmLimit;
-		/** Usable ticks before the rotor breaks. */
-		public final int durability;
-		/** Factor applied to the machine's energy multiplier. */
-		public final double energyFactor;
-
-		Rotors(double rpmLimit, int durability, double energyFactor) {
-			this.name = this.toString().toLowerCase(Locale.ROOT) + "_rotor";
-			this.rpmLimit = rpmLimit;
-			this.durability = durability;
-			this.energyFactor = energyFactor;
-			this.item = new Item(new Item.Settings().maxCount(1).maxDamage(durability));
-			InitUtils.setup(item, name);
-		}
-
-		@Override
-		public Item asItem() {
-			return item;
-		}
-
-		/**
-		 * @param stack {@link ItemStack} the rotor slot contents
-		 * @return {@link Rotors} the rotor, or {@code null} for an empty or
-		 *         unrecognised slot (the machine then runs at its 25% floor)
-		 */
-		public static Rotors fromStack(ItemStack stack) {
-			if (stack == null || stack.isEmpty()) {
-				return null;
-			}
-			for (Rotors rotor : values()) {
-				if (stack.isOf(rotor.item)) {
-					return rotor;
-				}
-			}
-			return null;
 		}
 	}
 
