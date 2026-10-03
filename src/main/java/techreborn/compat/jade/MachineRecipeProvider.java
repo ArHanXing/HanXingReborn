@@ -48,6 +48,7 @@ import snownee.jade.api.ui.IElementHelper;
 import techreborn.api.IEnergyProducerProvider;
 import techreborn.blockentity.generator.multiblock.LargeFluidGeneratorBlockEntity;
 import techreborn.blockentity.machine.multiblock.DysonSwarmMachineBlockEntity;
+import techreborn.blockentity.machine.multiblock.IsotopeSeparatorBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorAssemblerBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorMinerBlockEntity;
 
@@ -104,6 +105,23 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 			data.putLong("elevator_host", assembler.getSyncedHostPos());
 		} else if (accessor.getBlockEntity() instanceof SpaceElevatorMinerBlockEntity miner) {
 			data.putLong("elevator_host", miner.getSyncedHostPos());
+		}
+
+		// Isotope Separator: speed drive state, cost multipliers and rotor life.
+		// This machine alone reports these, so the lines stay out of every other
+		// machine's tooltip.
+		if (accessor.getBlockEntity() instanceof IsotopeSeparatorBlockEntity separator) {
+			double rpm = separator.getRpm();
+			data.putDouble("iso_rpm", rpm);
+			data.putDouble("iso_limit", separator.getRotorRpmLimit());
+			data.putDouble("iso_energy", separator.energyMultiplier(rpm));
+			data.putDouble("iso_time", separator.timeMultiplier(rpm));
+			data.putBoolean("iso_degraded", separator.isDegraded());
+			ItemStack rotor = separator.getRotorStack();
+			data.putBoolean("iso_has_rotor", separator.isRotorInstalled());
+			data.putInt("iso_rotor_damage", rotor.isEmpty() ? 0 : rotor.getDamage());
+			data.putInt("iso_rotor_max", rotor.isEmpty() ? 0 : rotor.getMaxDamage());
+			data.putLong("iso_rotor_ticks", separator.getRotorRemainingTicks());
 		}
 
 		if (!(accessor.getBlockEntity() instanceof IRecipeCrafterProvider provider)) {
@@ -193,6 +211,38 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 						Text.literal(String.valueOf(host.getX())).formatted(Formatting.YELLOW),
 						Text.literal(String.valueOf(host.getY())).formatted(Formatting.YELLOW),
 						Text.literal(String.valueOf(host.getZ())).formatted(Formatting.YELLOW)));
+			}
+		}
+
+		// Isotope Separator: speed, cost multipliers, grade and rotor life. Shown
+		// before the recipe lines so it is present even while idle.
+		if (data.contains("iso_rpm")) {
+			double rpm = data.getDouble("iso_rpm");
+			double limit = data.getDouble("iso_limit");
+			tooltip.add(Text.translatable("jade.techreborn.isotope_rpm",
+					Text.literal(String.format("%.0f%%", rpm * 100.0)).formatted(Formatting.YELLOW),
+					Text.literal(String.format("%.0f%%", limit * 100.0)).formatted(Formatting.YELLOW)));
+			tooltip.add(Text.translatable("jade.techreborn.isotope_energy",
+					Text.literal(String.format("%.2fx", data.getDouble("iso_energy"))).formatted(Formatting.YELLOW)));
+			tooltip.add(Text.translatable("jade.techreborn.isotope_time",
+					Text.literal(String.format("%.2fx", data.getDouble("iso_time"))).formatted(Formatting.YELLOW)));
+			if (data.getBoolean("iso_degraded")) {
+				tooltip.add(Text.translatable("jade.techreborn.isotope_grade",
+						Text.translatable("jade.techreborn.isotope_grade_degraded").formatted(Formatting.RED)));
+			} else {
+				tooltip.add(Text.translatable("jade.techreborn.isotope_grade",
+						Text.translatable("jade.techreborn.isotope_grade_normal").formatted(Formatting.GREEN)));
+			}
+			if (data.getBoolean("iso_has_rotor")) {
+				tooltip.add(Text.translatable("jade.techreborn.isotope_rotor",
+						Text.literal(String.valueOf(data.getInt("iso_rotor_max") - data.getInt("iso_rotor_damage")))
+								.formatted(Formatting.YELLOW),
+						Text.literal(String.valueOf(data.getInt("iso_rotor_max"))).formatted(Formatting.YELLOW)));
+				long ticks = data.getLong("iso_rotor_ticks");
+				tooltip.add(Text.translatable("jade.techreborn.isotope_rotor_time",
+						Text.literal(IsotopeSeparatorBlockEntity.formatTicks(ticks)).formatted(Formatting.YELLOW)));
+			} else {
+				tooltip.add(Text.translatable("jade.techreborn.isotope_rotor_none").formatted(Formatting.GRAY));
 			}
 		}
 

@@ -81,11 +81,6 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 	public static final double DEGRADE_THRESHOLD = 0.6;
 
 	private double rotorEnergyFactor = 1.0;
-	/** Last computed values, kept for the GUI. Recomputed every tick. */
-	private int displaySignal = 0;
-	private double displayRpm = 0;
-	private double displayRpmLimit = NO_ROTOR_RPM;
-	private boolean displayDegraded = false;
 
 	public IsotopeSeparatorBlockEntity(BlockPos pos, BlockState state) {
 		super(TRBlockEntities.ISOTOPE_SEPARATOR, pos, state, "IsotopeSeparator",
@@ -148,8 +143,16 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 	 * @return {@code int} the process time for the given speed
 	 */
 	public int effectiveTime(int recipeTime, double rpm) {
-		double factor = 1.0 - TechRebornConfig.isotopeSeparatorTimeReduction * rpm;
-		return (int) Math.max(1, Math.round(recipeTime * factor));
+		return (int) Math.max(1, Math.round(recipeTime * timeMultiplier(rpm)));
+	}
+
+	/**
+	 * @param rpm {@code double} the effective rotation speed
+	 * @return {@code double} the process-time multiplier at that speed
+	 *         ({@code 1.0 - timeReduction * rpm})
+	 */
+	public double timeMultiplier(double rpm) {
+		return Math.max(0.01, 1.0 - TechRebornConfig.isotopeSeparatorTimeReduction * rpm);
 	}
 
 	/**
@@ -162,18 +165,67 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 		return base * (rotor == null ? 1.0 : rotor.rotorEnergyFactor);
 	}
 
+	/**
+	 * @param rpm {@code double} the effective rotation speed
+	 * @return {@code int} ticks of processing per point of rotor wear; wear
+	 *         scales inversely with the speed
+	 */
+	public int wearIntervalTicks(double rpm) {
+		return Math.max(1, (int) Math.round(TechRebornConfig.isotopeSeparatorRotorWearInterval / Math.max(rpm, 0.01)));
+	}
+
+	/**
+	 * @return {@link ItemStack} the rotor slot contents, may be empty
+	 */
+	public ItemStack getRotorStack() {
+		return inventory.getStack(ROTOR_SLOT);
+	}
+
+	/**
+	 * @return {@code boolean} {@code true} if a rotor is installed
+	 */
+	public boolean isRotorInstalled() {
+		return TRContent.Parts.rotorFromStack(inventory.getStack(ROTOR_SLOT)) != null;
+	}
+
+	/**
+	 * Estimated remaining rotor life, using the current speed's wear interval.
+	 *
+	 * @return {@code long} ticks the installed rotor would still last, or
+	 *         {@code -1} when no rotor is installed
+	 */
+	public long getRotorRemainingTicks() {
+		ItemStack rotor = getRotorStack();
+		if (TRContent.Parts.rotorFromStack(rotor) == null) {
+			return -1;
+		}
+		int remainingWear = Math.max(0, rotor.getMaxDamage() - rotor.getDamage());
+		return (long) remainingWear * wearIntervalTicks(getRpm());
+	}
+
 	// =======================================================================
 	// energy
 	// =======================================================================
 
 	/**
-	 * {@code RecipeCrafter} prices a tick at {@code currentRecipe.power() *
-	 * getPowerMultiplier()}, so the rotation cost is folded in here rather than
-	 * in {@code getEuPerTick} (which the crafter does not call).
+	 * The rotor's rotation cost, folded into the machine's power multiplier.
 	 */
 	@Override
 	public double getPowerMultiplier() {
 		return super.getPowerMultiplier() * rotorEnergyFactor;
+	}
+
+	/**
+	 * The crafter prices a tick through {@code IUpgradeHandler.getEuPerTick},
+	 * whose base implementation multiplies by the raw {@code powerMultiplier}
+	 * field and therefore ignores {@link #getPowerMultiplier()}. Overriding it
+	 * here is what makes the rotation cost (and the Shine rotor's discount)
+	 * actually reach the energy draw; overriding the getter alone would leave
+	 * the machine paying base power at every speed.
+	 */
+	@Override
+	public long getEuPerTick(long baseEu) {
+		return (long) (baseEu * getPowerMultiplier());
 	}
 
 	/**
@@ -198,10 +250,6 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 		}
 
 		double rpm = getRpm();
-		displaySignal = getRedstoneSignal();
-		displayRpm = rpm;
-		displayRpmLimit = getRotorRpmLimit();
-		displayDegraded = rpm > DEGRADE_THRESHOLD;
 
 		// Shorter process at higher speed. The overclocker upgrade also writes
 		// currentNeededTicks, so take the faster of the two instead of letting
@@ -237,7 +285,7 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 		if (TRContent.Parts.rotorFromStack(rotorStack) == null) {
 			return;
 		}
-		int interval = Math.max(1, (int) Math.round(TechRebornConfig.isotopeSeparatorRotorWearInterval / Math.max(rpm, 0.01)));
+		int interval = wearIntervalTicks(rpm);
 		if (getWorld() == null || getWorld().getTime() % interval != 0) {
 			return;
 		}
@@ -349,29 +397,29 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 		}
 	}
 
+	/**
+	 * Formats a tick count as a compact duration ({@code 45s}, {@code 2m 30s},
+	 * {@code 1h 5m}). Used by the GUI and Jade for the rotor life estimate.
+	 *
+	 * @param ticks {@code long} duration in ticks
+	 * @return {@link String} the formatted duration
+	 */
+	public static String formatTicks(long ticks) {
+		long seconds = Math.max(0, ticks) / 20;
+		long minutes = seconds / 60;
+		long hours = minutes / 60;
+		if (hours > 0) {
+			return hours + "h " + (minutes % 60) + "m";
+		}
+		if (minutes > 0) {
+			return minutes + "m " + (seconds % 60) + "s";
+		}
+		return seconds + "s";
+	}
+
 	// =======================================================================
 	// GUI
 	// =======================================================================
-
-	public int getDisplaySignal() {
-		return displaySignal;
-	}
-
-	public double getDisplayRpm() {
-		return displayRpm;
-	}
-
-	public double getDisplayRpmLimit() {
-		return displayRpmLimit;
-	}
-
-	public boolean isDisplayDegraded() {
-		return displayDegraded;
-	}
-
-	public void setDisplaySignal(int value) {
-		displaySignal = value;
-	}
 
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, final PlayerEntity player) {
