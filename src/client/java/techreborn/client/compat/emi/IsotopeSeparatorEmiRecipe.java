@@ -24,27 +24,27 @@
 
 package techreborn.client.compat.emi;
 
+import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.recipe.RecipeEntry;
+import reborncore.common.crafting.RebornRecipe;
 
 import techreborn.client.compat.emi.core.UIUtils;
-import techreborn.recipe.recipes.IsotopeSeparatorRecipe;
 
 /**
  * EMI display for the Isotope Separator: feed and rotor on the left, product and
- * tails on the right. Uses the machine-specific recipe type so the optional
- * {@code degraded_output} is available to the display.
+ * tails on the right, with the energy bar, arrow and cook time in between.
  */
-public class IsotopeSeparatorEmiRecipe extends TREmiRecipe<IsotopeSeparatorRecipe> {
+public class IsotopeSeparatorEmiRecipe extends TREmiRecipe<RebornRecipe> {
 
-	public IsotopeSeparatorEmiRecipe(RecipeEntry<IsotopeSeparatorRecipe> recipe) {
+	public IsotopeSeparatorEmiRecipe(RecipeEntry<RebornRecipe> recipe) {
 		super(recipe);
 		checkInputCount(2);
 		checkOutputCount(2);
 	}
 
 	@Override
-	public dev.emi.emi.api.recipe.EmiRecipeCategory getCategory() {
+	public EmiRecipeCategory getCategory() {
 		return TREmiPlugin.ISOTOPE_SEPARATOR_CATEGORY;
 	}
 

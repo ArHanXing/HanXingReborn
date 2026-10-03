@@ -24,7 +24,6 @@
 
 package techreborn.blockentity.machine.multiblock;
 
-import java.util.List;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,23 +43,20 @@ import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
-import techreborn.recipe.recipes.IsotopeSeparatorRecipe;
 
 /**
  * The Isotope Separator: a tier 2 multiblock that separates a feed into a
- * product and a tails stream, where the separation quality trades off against
- * speed.
+ * product and a tails stream.
  * <p>
  * <b>Speed.</b> The rotation speed {@code r} comes from the redstone signal
  * applied to the controller itself (0..15 scaled to 0..1) and is capped by the
  * rotor in slot 1. A missing rotor still runs, at a 25% floor.
  * <p>
  * <b>The trade-off.</b> Faster rotation shortens the process but costs more
- * energy, and past {@code r = 0.6} the separation degrades: {@code outputs[0]}
- * is replaced by the recipe's {@code degraded_output}, i.e. the machine needs
- * one more cascade stage for the same enrichment. The sweet spot is therefore
- * exactly {@code r = 0.6}, and time-accelerating upgrades can only make the
- * machine burn more power, never bypass the cascade.
+ * energy: the process time scales with {@code 1 - 0.5r} while the draw scales
+ * with {@code 1 + 3r}. Speed is therefore always paid for in power, so
+ * time-accelerating upgrades can make the machine burn more energy but never
+ * remove the cost of running fast.
  * <p>
  * Rotors wear out while the machine actually processes, faster at higher speed.
  */
@@ -77,9 +73,8 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 
 	/** Speed used when no rotor is installed. */
 	public static final double NO_ROTOR_RPM = 0.25;
-	/** Rotation speed above which the separation degrades. */
-	public static final double DEGRADE_THRESHOLD = 0.6;
 
+	/** Rotation cost factor currently in effect, folded into the power draw. */
 	private double rotorEnergyFactor = 1.0;
 
 	public IsotopeSeparatorBlockEntity(BlockPos pos, BlockState state) {
@@ -90,8 +85,8 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 		final int[] inputs = new int[]{INPUT_SLOT, ROTOR_SLOT};
 		final int[] outputs = new int[]{PRODUCT_SLOT, TAILS_SLOT};
 		this.inventory = new RebornInventory<>(ENERGY_SLOT + 1, "IsotopeSeparatorBlockEntity", 64, this);
-		this.crafter = new IsotopeSeparatorCrafter(ModRecipes.ISOTOPE_SEPARATOR, this, 1, 2,
-				this.inventory, inputs, outputs, this);
+		this.crafter = new RecipeCrafter(ModRecipes.ISOTOPE_SEPARATOR, this, 1, 2,
+				this.inventory, inputs, outputs);
 	}
 
 	@Override
@@ -128,14 +123,6 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 	public double getRpm() {
 		double limit = getRotorRpmLimit();
 		return Math.min(getRedstoneSignal() / 15.0, limit);
-	}
-
-	/**
-	 * @return {@code boolean} {@code true} when running fast enough to lose a
-	 *         separation grade
-	 */
-	public boolean isDegraded() {
-		return getRpm() > DEGRADE_THRESHOLD;
 	}
 
 	/**
@@ -295,105 +282,6 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 		} else {
 			rotorStack.setDamage(damage);
 			inventory.setStack(ROTOR_SLOT, rotorStack);
-		}
-	}
-
-	// =======================================================================
-	// output substitution
-	// =======================================================================
-
-	/**
-	 * @param recipe {@link RebornRecipe} the running recipe
-	 * @return {@link List} the outputs that should actually be produced, with
-	 *         {@code outputs[0]} swapped for the degraded grade when running
-	 *         past the sweet spot
-	 */
-	List<ItemStack> effectiveOutputs(RebornRecipe recipe) {
-		List<ItemStack> outputs = recipe.outputs();
-		if (!isDegraded() || !(recipe instanceof IsotopeSeparatorRecipe separator)) {
-			return outputs;
-		}
-		if (separator.degradedOutput().isEmpty() || outputs.isEmpty()) {
-			return outputs;
-		}
-		List<ItemStack> replaced = new java.util.ArrayList<>(outputs);
-		replaced.set(0, separator.degradedOutput().get());
-		return replaced;
-	}
-
-	/**
-	 * The crafter used by this machine.
-	 * <p>
-	 * {@code RecipeCrafter} has no hook for substituting an output stack: its
-	 * tick reads {@code currentRecipe.outputs()} directly and the multi-stack
-	 * {@code fitStack} overload is private. Since this machine runs one recipe
-	 * at a time ({@code maxParallel} stays at 1), overriding the tick and using
-	 * the public single-stack {@code fitStack} is enough to swap in the degraded
-	 * product. The rest of the logic mirrors the base implementation.
-	 */
-	private static final class IsotopeSeparatorCrafter extends RecipeCrafter {
-		private final IsotopeSeparatorBlockEntity machine;
-
-		IsotopeSeparatorCrafter(net.minecraft.recipe.RecipeType<? extends RebornRecipe> type,
-				IsotopeSeparatorBlockEntity blockEntity, int inputs, int outputs,
-				RebornInventory<?> inventory, int[] inputSlots, int[] outputSlots,
-				IsotopeSeparatorBlockEntity machine) {
-			super(type, blockEntity, inputs, outputs, inventory, inputSlots, outputSlots);
-			this.machine = machine;
-		}
-
-		@Override
-		public void updateEntity() {
-			World world = blockEntity.getWorld();
-			if (world == null || world.isClient) {
-				return;
-			}
-			if (currentRecipe == null && isInvDirty()) {
-				updateCurrentRecipe();
-			}
-			if (currentRecipe == null) {
-				setInvDirty(false);
-				return;
-			}
-
-			if (isInvDirty() && !hasAllInputs()) {
-				currentRecipe = null;
-				currentTickTime = 0;
-				setIsActive();
-				setInvDirty(false);
-				return;
-			}
-
-			if (currentTickTime >= currentNeededTicks && hasAllInputs()) {
-				// the only difference from the base class: which stacks come out
-				final List<ItemStack> outputs = machine.effectiveOutputs(currentRecipe);
-				boolean canGiveInvAll = true;
-				for (int i = 0; i < outputs.size() && i < outputSlots.length; i++) {
-					if (!canFitOutput(outputs.get(i), outputSlots[i])) {
-						canGiveInvAll = false;
-					}
-				}
-				if (canGiveInvAll && currentRecipe.onCraft(blockEntity, currentParallelCount)) {
-					for (int i = 0; i < outputs.size() && i < outputSlots.length; i++) {
-						// maxParallel is 1 for this machine, so the public
-						// single-stack overload is sufficient
-						fitStack(outputs.get(i).copy(), outputSlots[i]);
-					}
-					useAllInputs();
-					currentRecipe = null;
-					currentTickTime = 0;
-					updateCurrentRecipe();
-					if (currentRecipe == null) {
-						setIsActive();
-					}
-				}
-			} else if (currentTickTime < currentNeededTicks) {
-				long useRequirement = getEuPerTick(currentRecipe.power() * currentParallelCount);
-				if (energy.tryUseExact(useRequirement)) {
-					currentTickTime++;
-				}
-			}
-			setInvDirty(false);
 		}
 	}
 

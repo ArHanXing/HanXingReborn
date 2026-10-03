@@ -631,8 +631,8 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorMaxEnergy", comment = "Isotope Separator Max Energy")
 	public static int isotopeSeparatorMaxEnergy = 100_000;
 
-	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorTimeReduction", comment = "Isotope Separator process time reduction at full speed (0.75 = full speed takes 25% of the time)")
-	public static double isotopeSeparatorTimeReduction = 0.75;
+	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorTimeReduction", comment = "Isotope Separator process time reduction at full speed (0.5 = full speed takes half the time)")
+	public static double isotopeSeparatorTimeReduction = 0.5;
 
 	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorEnergyPenalty", comment = "Isotope Separator extra energy multiplier at full speed (3.0 = 4x power)")
 	public static double isotopeSeparatorEnergyPenalty = 3.0;

@@ -36,7 +36,6 @@ import techreborn.recipe.recipes.FluidReplicatorRecipe;
 import techreborn.recipe.recipes.FusionReactorRecipe;
 import techreborn.recipe.recipes.IndustrialGrinderRecipe;
 import techreborn.recipe.recipes.IndustrialSawmillRecipe;
-import techreborn.recipe.recipes.IsotopeSeparatorRecipe;
 import techreborn.recipe.recipes.RollingMachineRecipe;
 
 public class ModRecipes {
@@ -115,8 +114,8 @@ public class ModRecipes {
 	public static final RecipeType<RebornRecipe> LARGE_MIXER = RecipeManager.newRecipeType(Identifier.of("techreborn:large_mixer"));
 	public static final RecipeType<RebornRecipe> LARGE_REFINERY = RecipeManager.newRecipeType(Identifier.of("techreborn:large_refinery"));
 
-	// Isotope Separator: its own type because its recipes carry the optional
-	// degraded_output used when the machine is run past its sweet spot.
-	public static final RecipeType<IsotopeSeparatorRecipe> ISOTOPE_SEPARATOR = RecipeManager.newRecipeType(
-			Identifier.of("techreborn:isotope_separator"), IsotopeSeparatorRecipe.CODEC, IsotopeSeparatorRecipe.PACKET_CODEC);
+	// Isotope Separator: a standard recipe shape (2 in / 2 out). Its speed and
+	// energy come from the machine's redstone-driven rotation rather than from
+	// the recipe, so no custom recipe type is needed.
+	public static final RecipeType<RebornRecipe> ISOTOPE_SEPARATOR = RecipeManager.newRecipeType(Identifier.of("techreborn:isotope_separator"));
 }

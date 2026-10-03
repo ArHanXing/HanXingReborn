@@ -116,7 +116,6 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 			data.putDouble("iso_limit", separator.getRotorRpmLimit());
 			data.putDouble("iso_energy", separator.energyMultiplier(rpm));
 			data.putDouble("iso_time", separator.timeMultiplier(rpm));
-			data.putBoolean("iso_degraded", separator.isDegraded());
 			ItemStack rotor = separator.getRotorStack();
 			data.putBoolean("iso_has_rotor", separator.isRotorInstalled());
 			data.putInt("iso_rotor_damage", rotor.isEmpty() ? 0 : rotor.getDamage());
@@ -214,7 +213,7 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 			}
 		}
 
-		// Isotope Separator: speed, cost multipliers, grade and rotor life. Shown
+		// Isotope Separator: speed, cost multipliers and rotor life. Shown
 		// before the recipe lines so it is present even while idle.
 		if (data.contains("iso_rpm")) {
 			double rpm = data.getDouble("iso_rpm");
@@ -226,13 +225,6 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 					Text.literal(String.format("%.2fx", data.getDouble("iso_energy"))).formatted(Formatting.YELLOW)));
 			tooltip.add(Text.translatable("jade.techreborn.isotope_time",
 					Text.literal(String.format("%.2fx", data.getDouble("iso_time"))).formatted(Formatting.YELLOW)));
-			if (data.getBoolean("iso_degraded")) {
-				tooltip.add(Text.translatable("jade.techreborn.isotope_grade",
-						Text.translatable("jade.techreborn.isotope_grade_degraded").formatted(Formatting.RED)));
-			} else {
-				tooltip.add(Text.translatable("jade.techreborn.isotope_grade",
-						Text.translatable("jade.techreborn.isotope_grade_normal").formatted(Formatting.GREEN)));
-			}
 			if (data.getBoolean("iso_has_rotor")) {
 				tooltip.add(Text.translatable("jade.techreborn.isotope_rotor",
 						Text.literal(String.valueOf(data.getInt("iso_rotor_max") - data.getInt("iso_rotor_damage")))

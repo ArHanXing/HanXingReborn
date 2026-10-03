@@ -182,11 +182,6 @@ public class GuiIsotopeSeparator extends GuiBase<BuiltScreenHandler> {
 						String.format("%.0f", blockEntity.getRotorRpmLimit() * 100.0)),
 				x, y, theme.titleColor().rgba(), layer);
 
-		if (blockEntity.isDegraded()) {
-			drawText(drawContext, Text.translatable("gui.techreborn.isotope_separator.degraded"),
-					x, y + 10, 0xFF5555, layer);
-		}
-
 		// Mark the rotor slot with a label under it.
 		drawText(drawContext, Text.translatable("gui.techreborn.isotope_separator.rotor_slot"),
 				ROTOR_LABEL_X, ROTOR_LABEL_Y, theme.titleColor().rgba(), layer);
