@@ -115,26 +115,26 @@ public class MultiblockSelector {
 		if (rectMode) {
 			if (rectCorner1 == null) {
 				rectCorner1 = pos;
-				sendMessage(player, "矩形模式：已选择角点 1 §e" + pos + "§r，请右键选择角点 2");
+				sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.corner1", pos.toString()));
 			} else if (rectCorner2 == null) {
 				rectCorner2 = pos;
 				toggleRectRegion(player);
-				sendMessage(player, "矩形模式：已选择角点 2 §e" + pos + "§r，当前共选中 §e" + selected.size() + "§r 个方块");
+				sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.corner2", pos.toString(), selected.size()));
 			} else {
 				// Start a new rectangle
 				rectCorner1 = pos;
 				rectCorner2 = null;
-				sendMessage(player, "矩形模式：已重置，新的角点 1 §e" + pos + "§r");
+				sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.corner_reset", pos.toString()));
 			}
 			return;
 		}
 
 		if (selected.contains(pos)) {
 			selected.remove(pos);
-			sendMessage(player, "已取消选择 §e" + pos + "§r（剩余 " + selected.size() + " 个）");
+			sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.deselected", pos.toString(), selected.size()));
 		} else {
 			selected.add(pos);
-			sendMessage(player, "已选择 §e" + pos + "§r（共 " + selected.size() + " 个）");
+			sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.selected", pos.toString(), selected.size()));
 		}
 	}
 
@@ -159,11 +159,11 @@ public class MultiblockSelector {
 			}
 		}
 		if (added > 0 && removed > 0) {
-			sendMessage(player, "矩形区域：新增 §e" + added + "§r 个，取消 §e" + removed + "§r 个");
+			sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.region_both", added, removed));
 		} else if (added > 0) {
-			sendMessage(player, "矩形区域：新增 §e" + added + "§r 个方块");
+			sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.region_added", added));
 		} else if (removed > 0) {
-			sendMessage(player, "矩形区域：取消 §e" + removed + "§r 个方块");
+			sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.region_removed", removed));
 		}
 	}
 
@@ -177,9 +177,9 @@ public class MultiblockSelector {
 		rectCorner1 = null;
 		rectCorner2 = null;
 		if (rectMode) {
-			sendMessage(player, "已切换为 §b矩形选择模式§r（右键两次选择对角区域，选区保留，当前 " + selected.size() + " 个）");
+			sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.mode_rect", selected.size()));
 		} else {
-			sendMessage(player, "已切换为 §b单点选择模式§r（右键选择/取消，Shift+右键输出 JSON，当前 " + selected.size() + " 个）");
+			sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.mode_single", selected.size()));
 		}
 	}
 
@@ -192,7 +192,7 @@ public class MultiblockSelector {
 		selected.clear();
 		rectCorner1 = null;
 		rectCorner2 = null;
-		sendMessage(player, "已清空选择");
+		sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.cleared"));
 	}
 
 	/**
@@ -207,7 +207,7 @@ public class MultiblockSelector {
 	public void outputJson(PlayerEntity player, World world, BlockPos controller) {
 		List<BlockPos> positions = getSelectedPositions();
 		if (positions.isEmpty()) {
-			sendMessage(player, "§c没有选中任何方块，无法生成 JSON§r");
+			sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.empty"));
 			return;
 		}
 
@@ -215,11 +215,12 @@ public class MultiblockSelector {
 		LOGGER.info("Multiblock JSON (controller {}) :\n{}", controller, json);
 
 		// Copyable button + readable JSON in chat
-		sendMessage(player, "§6[Multiblock Selector]§r 已生成 JSON（控制器 §e" + controller + "§r，已清空选择）：");
-		sendMessage(player, Text.literal("§6[§n点击复制完整 JSON§r§6]§r")
+		sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.generated", controller.toString()));
+		sendMessage(player, Text.translatable("item.techreborn.multiblock_selector.copy")
 				.styled(style -> style
 						.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, json))
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("点击复制 JSON 到剪贴板")))));
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								Text.translatable("item.techreborn.multiblock_selector.copy_hover")))));
 		for (String line : json.split("\n")) {
 			sendMessage(player, line);
 		}
@@ -232,6 +233,7 @@ public class MultiblockSelector {
 		rectCorner2 = null;
 	}
 
+	/** Raw line output, used for the pretty-printed JSON body. */
 	private void sendMessage(PlayerEntity player, String message) {
 		player.sendMessage(Text.literal(message), false);
 	}

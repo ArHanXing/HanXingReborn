@@ -146,13 +146,13 @@ public class MultiblockBuilderItem extends Item {
 			}
 		}
 		if (todo.isEmpty()) {
-			player.sendMessage(Text.literal("结构已经完整，无需搭建！"));
+			player.sendMessage(Text.translatable("item.techreborn.multiblock_builder.complete"));
 			return;
 		}
 		ACTIVE_JOBS.put(player.getUuid(),
 				new BuildJob(player.getUuid(), world.getRegistryKey(), machine.getPos(), todo));
-		player.sendMessage(Text.literal("开始搭建 " + machineName(world, machine) + "，共 " + todo.size()
-				+ " 个位置需要处理"));
+		player.sendMessage(Text.translatable("item.techreborn.multiblock_builder.start",
+				machineName(world, machine), todo.size()));
 	}
 
 	/**
@@ -167,18 +167,20 @@ public class MultiblockBuilderItem extends Item {
 			}
 		}
 		if (missing.isEmpty()) {
-			player.sendMessage(Text.literal(machineName(world, machine) + "：§a结构已成型！§r"));
+			player.sendMessage(Text.translatable("item.techreborn.multiblock_builder.formed",
+					machineName(world, machine)));
 			return;
 		}
-		player.sendMessage(Text.literal(machineName(world, machine) + "：§c结构不完整§r，缺少 " + missing.size()
-				+ " 个位置"));
+		player.sendMessage(Text.translatable("item.techreborn.multiblock_builder.missing",
+				machineName(world, machine), missing.size()));
 		for (Entry entry : missing.subList(0, Math.min(missing.size(), MAX_REPORTED_POSITIONS))) {
 			BlockPos pos = entry.pos();
-			player.sendMessage(Text.literal(" §b (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")§r - 需要: §a"
-					+ blockName(entry.target())));
+			player.sendMessage(Text.translatable("item.techreborn.multiblock_builder.missing_entry",
+					pos.getX(), pos.getY(), pos.getZ(), blockName(entry.target())));
 		}
 		if (missing.size() > MAX_REPORTED_POSITIONS) {
-			player.sendMessage(Text.literal("  ... 其余 " + (missing.size() - MAX_REPORTED_POSITIONS) + " 个位置省略"));
+			player.sendMessage(Text.translatable("item.techreborn.multiblock_builder.missing_more",
+					missing.size() - MAX_REPORTED_POSITIONS));
 		}
 	}
 
@@ -221,7 +223,7 @@ public class MultiblockBuilderItem extends Item {
 		// re-scanning it forever.
 		if (job.placed == placedBefore) {
 			if (++job.emptyTicks >= MAX_EMPTY_TICKS) {
-				player.sendMessage(Text.literal("§e搭建已中止§r：有位置被其它方块占用，无法继续"));
+				player.sendMessage(Text.translatable("item.techreborn.multiblock_builder.aborted"));
 				return true;
 			}
 		} else {
@@ -230,10 +232,10 @@ public class MultiblockBuilderItem extends Item {
 
 		if (job.queue.isEmpty()) {
 			if (job.skippedOccupied > 0) {
-				player.sendMessage(Text.literal("§e搭建结束！§r共放置 §a" + job.placed
-						+ "§r 个方块，§c" + job.skippedOccupied + "§r 个位置被其它方块占用、已跳过"));
+				player.sendMessage(Text.translatable("item.techreborn.multiblock_builder.finished_skipped",
+						job.placed, job.skippedOccupied));
 			} else {
-				player.sendMessage(Text.literal("§e搭建完成！§r共放置 §a" + job.placed + "§r 个方块"));
+				player.sendMessage(Text.translatable("item.techreborn.multiblock_builder.finished", job.placed));
 			}
 			return true;
 		}
@@ -274,7 +276,8 @@ public class MultiblockBuilderItem extends Item {
 		if (placedBlock == null) {
 			// Report each missing block type once per job to avoid spam.
 			if (job.reportedMissing.add(targetBlock)) {
-				player.sendMessage(Text.literal("§c缺少 " + blockName(entry.target()) + "，跳过该位置§r"));
+				player.sendMessage(Text.translatable("item.techreborn.multiblock_builder.missing_item",
+						blockName(entry.target())));
 			}
 			return;
 		}
@@ -295,12 +298,12 @@ public class MultiblockBuilderItem extends Item {
 	private static void reportOccupied(ServerPlayerEntity player, BlockPos pos, BuildJob job) {
 		job.skippedOccupied++;
 		if (job.skippedOccupied <= MAX_OCCUPIED_MESSAGES) {
-			player.sendMessage(Text.literal("§c位置 §b(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ()
-					+ ")§c 已被方块占用，生存模式下不覆盖§r"));
+			player.sendMessage(Text.translatable("item.techreborn.multiblock_builder.occupied",
+					pos.getX(), pos.getY(), pos.getZ()));
 		} else if (!job.overflowReported) {
 			job.overflowReported = true;
-			player.sendMessage(Text.literal("§e…仍有更多位置被占用，后续不再逐条提示（已达 "
-					+ MAX_OCCUPIED_MESSAGES + " 条上限）§r"));
+			player.sendMessage(Text.translatable("item.techreborn.multiblock_builder.occupied_more",
+					MAX_OCCUPIED_MESSAGES));
 		}
 	}
 

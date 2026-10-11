@@ -20,9 +20,6 @@
     "client": [
       "techreborn.TechRebornClient"
     ],
-    "rei_client": [
-		"techreborn.client.compat.rei.ReiPlugin"
-    ],
     "emi": [
 		"techreborn.client.compat.emi.TREmiPlugin"
     ],
