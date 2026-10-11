@@ -26,13 +26,10 @@ package techreborn.client.gui;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
-import reborncore.client.gui.GuiBase;
-import reborncore.client.gui.widget.GuiButtonExtended;
 import reborncore.client.gui.GuiBuilder;
-import reborncore.common.screen.BuiltScreenHandler;
 import techreborn.blockentity.machine.multiblock.IndustrialGrinderBlockEntity;
 
-public class GuiIndustrialGrinder extends GuiBase<BuiltScreenHandler> {
+public class GuiIndustrialGrinder extends GuiMultiblockMachine {
 
 	private final IndustrialGrinderBlockEntity blockEntity;
 
@@ -60,9 +57,7 @@ public class GuiIndustrialGrinder extends GuiBase<BuiltScreenHandler> {
 		drawSlot(drawContext, 126, 54, layer);
 		drawSlot(drawContext, 126, 72, layer);
 
-		if (blockEntity.isMultiblockValid()) {
-			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, layer);
-		}
+		drawHologramButton(drawContext, mouseX, mouseY, layer);
 	}
 
 	@Override
@@ -72,17 +67,8 @@ public class GuiIndustrialGrinder extends GuiBase<BuiltScreenHandler> {
 
 		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 105, 47, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
 		builder.drawTank(drawContext, this, 53, 25, mouseX, mouseY, blockEntity.tank.getFluidInstance(), blockEntity.tank.getFluidValueCapacity(), blockEntity.tank.isEmpty(), layer);
-		if (blockEntity.isMultiblockValid()) {
-			addHologramButton(6, 4, 212, layer).clickHandler(this::onClick);
-		} else {
-			builder.drawMultiblockMissingBar(drawContext, this, layer);
-			addHologramButton(76, 56, 212, layer).clickHandler(this::onClick);
-			builder.drawHologramButton(drawContext, this, 76, 56, mouseX, mouseY, layer);
-		}
+		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 		builder.drawMultiEnergyBar(drawContext, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 	}
 
-	public void onClick(GuiButtonExtended button, double mouseX, double mouseY) {
-		blockEntity.renderMultiblock ^= !hideGuiElements();
-	}
 }

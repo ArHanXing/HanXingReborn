@@ -29,8 +29,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import reborncore.client.gui.GuiBase;
-import reborncore.client.gui.widget.GuiButtonExtended;
-import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorBlockEntity;
 
@@ -39,7 +37,7 @@ import techreborn.blockentity.machine.multiblock.SpaceElevatorBlockEntity;
  * button / missing-structure bar and a summary of the bound assembler and
  * miner units (kept alive by the host's periodic module refresh).
  */
-public class GuiSpaceElevator<T extends SpaceElevatorBlockEntity & BuiltScreenHandlerProvider> extends GuiBase<BuiltScreenHandler> {
+public class GuiSpaceElevator<T extends SpaceElevatorBlockEntity & BuiltScreenHandlerProvider> extends GuiMultiblockMachine {
 
 	private final T blockEntity;
 
@@ -53,9 +51,7 @@ public class GuiSpaceElevator<T extends SpaceElevatorBlockEntity & BuiltScreenHa
 		super.drawBackground(drawContext, f, mouseX, mouseY);
 		final GuiBase.Layer layer = Layer.BACKGROUND;
 
-		if (blockEntity.isMultiblockValid()) {
-			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, layer);
-		}
+		drawHologramButton(drawContext, mouseX, mouseY, layer);
 	}
 
 	@Override
@@ -92,16 +88,7 @@ public class GuiSpaceElevator<T extends SpaceElevatorBlockEntity & BuiltScreenHa
 			y += 7;
 		}
 
-		if (blockEntity.isMultiblockValid()) {
-			addHologramButton(6, 4, 212, layer).clickHandler(this::onClick);
-		} else {
-			builder.drawMultiblockMissingBar(drawContext, this, layer);
-			addHologramButton(76, 56, 212, layer).clickHandler(this::onClick);
-			builder.drawHologramButton(drawContext, this, 76, 56, mouseX, mouseY, layer);
-		}
+		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 	}
 
-	public void onClick(GuiButtonExtended button, Double mouseX, Double mouseY) {
-		blockEntity.renderMultiblock ^= !hideGuiElements();
-	}
 }

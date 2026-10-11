@@ -33,11 +33,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import reborncore.client.gui.GuiBase;
 import reborncore.client.gui.GuiBuilder;
-import reborncore.client.gui.widget.GuiButtonExtended;
-import reborncore.client.gui.widget.GuiButtonHologram;
-import reborncore.common.screen.BuiltScreenHandler;
 
 import techreborn.blockentity.machine.multiblock.IsotopeSeparatorBlockEntity;
 
@@ -55,7 +51,7 @@ import techreborn.blockentity.machine.multiblock.IsotopeSeparatorBlockEntity;
  * and hovering it shows the rotor's speed cap, durability and estimated
  * remaining life at the current speed.
  */
-public class GuiIsotopeSeparator extends GuiBase<BuiltScreenHandler> {
+public class GuiIsotopeSeparator extends GuiMultiblockMachine {
 
 	private static final int INPUT_SLOT_X = 35;
 	private static final int INPUT_SLOT_Y = 35;
@@ -74,41 +70,14 @@ public class GuiIsotopeSeparator extends GuiBase<BuiltScreenHandler> {
 
 	final IsotopeSeparatorBlockEntity blockEntity;
 
-	/** Hologram toggle; created once and re-positioned when the structure changes. */
-	private GuiButtonHologram hologramButton;
-	private boolean hologramValid;
 
 	public GuiIsotopeSeparator(int syncID, final PlayerEntity player, final IsotopeSeparatorBlockEntity blockEntity) {
 		super(player, blockEntity, blockEntity.createScreenHandler(syncID, player));
 		this.blockEntity = blockEntity;
 	}
 
-	@Override
-	public void init() {
-		super.init();
-		// Hologram toggle: top-left when the structure is formed, centre of the
-		// machine area (over the "structure missing" overlay) when it is not.
-		// addHologramButton() adds the GUI origin itself, so pass offsets.
-		hologramValid = blockEntity.isMultiblockValid();
-		GuiButtonHologram button = addHologramButton(hologramOffsetX(), hologramOffsetY(), 212, Layer.FOREGROUND);
-		button.clickHandler(this::onClick);
-		hologramButton = button;
-	}
 
-	/** X of the hologram toggle, relative to the GUI origin. */
-	private int hologramOffsetX() {
-		return hologramValid ? 6 : 76;
-	}
 
-	/** Y of the hologram toggle, relative to the GUI origin. */
-	private int hologramOffsetY() {
-		return hologramValid ? 4 : 56;
-	}
-
-	/** Toggles the multiblock hologram, like the other multiblock machines. */
-	public void onClick(GuiButtonExtended button, Double mouseX, Double mouseY) {
-		blockEntity.renderMultiblock ^= !hideGuiElements();
-	}
 
 	@Override
 	protected void drawBackground(DrawContext drawContext, final float f, final int mouseX, final int mouseY) {
@@ -128,18 +97,7 @@ public class GuiIsotopeSeparator extends GuiBase<BuiltScreenHandler> {
 		drawContext.drawBorder(getGuiLeft() + ROTOR_SLOT_X - 2, getGuiTop() + ROTOR_SLOT_Y - 2, 22, 22,
 				theme.titleColor().rgba());
 
-		// The structure can change while the GUI is open: keep the hologram
-		// toggle at the right spot and grey the machine area out when invalid.
-		boolean valid = blockEntity.isMultiblockValid();
-		if (valid != hologramValid) {
-			hologramValid = valid;
-			// setX/setY take absolute screen coordinates
-			hologramButton.setX(hologramOffsetX() + getGuiLeft());
-			hologramButton.setY(hologramOffsetY() + getGuiTop());
-		}
-		if (valid) {
-			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, layer);
-		}
+		drawHologramButton(drawContext, mouseX, mouseY, layer);
 	}
 
 	@Override
@@ -150,10 +108,7 @@ public class GuiIsotopeSeparator extends GuiBase<BuiltScreenHandler> {
 			return;
 		}
 
-		if (!hologramValid) {
-			builder.drawMultiblockMissingBar(drawContext, this, layer);
-			builder.drawHologramButton(drawContext, this, 76, 56, mouseX, mouseY, layer);
-		}
+		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 
 		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 76, 45,
 				mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);

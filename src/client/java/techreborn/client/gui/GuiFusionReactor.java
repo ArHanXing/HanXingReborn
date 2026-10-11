@@ -32,11 +32,9 @@ import net.minecraft.text.Text;
 import org.apache.commons.lang3.tuple.Pair;
 import reborncore.client.gui.GuiBase;
 import reborncore.client.gui.GuiBuilder;
-import reborncore.client.gui.widget.GuiButtonExtended;
 import reborncore.client.gui.widget.GuiButtonUpDown;
 import reborncore.client.gui.widget.GuiButtonUpDown.UpDownButtonType;
 import reborncore.common.powerSystem.PowerSystem;
-import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.util.Color;
 import reborncore.common.util.Torus;
 import techreborn.blockentity.machine.multiblock.FusionControlComputerBlockEntity;
@@ -44,7 +42,7 @@ import techreborn.packets.serverbound.FusionControlSizePayload;
 
 import java.util.Optional;
 
-public class GuiFusionReactor extends GuiBase<BuiltScreenHandler> {
+public class GuiFusionReactor extends GuiMultiblockMachine {
 
 	private final FusionControlComputerBlockEntity blockEntity;
 
@@ -71,9 +69,7 @@ public class GuiFusionReactor extends GuiBase<BuiltScreenHandler> {
 		drawSlot(drawContext, 126, 47, layer);
 		drawOutputSlot(drawContext, 80, 47, layer);
 
-		if (blockEntity.isMultiblockValid()) {
-			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, layer);
-		}
+		drawHologramButton(drawContext, mouseX, mouseY, layer);
 
 	}
 
@@ -84,17 +80,13 @@ public class GuiFusionReactor extends GuiBase<BuiltScreenHandler> {
 
 		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 55, 51, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
 		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 105, 51, mouseX, mouseY, GuiBuilder.ProgressDirection.LEFT, layer);
-		if (blockEntity.isMultiblockValid()) {
-			addHologramButton(6, 4, 212, layer).clickHandler(this::hologramToggle);
+		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
+		if (isStructureValid()) {
 			drawCentredText(drawContext, blockEntity.getStateText(), 20, Color.BLUE.darker().getColor(), layer);
 			if (blockEntity.state == 2) {
 				drawCentredText(drawContext, Text.literal(PowerSystem.getLocalizedPower(blockEntity.getPowerChange())).append("/t"), 30, Color.GREEN.darker().getColor(), layer);
 			}
 		} else {
-			builder.drawMultiblockMissingBar(drawContext, this, layer);
-			addHologramButton(76, 56, 212, layer).clickHandler(this::hologramToggle);
-			builder.drawHologramButton(drawContext, this, 76, 56, mouseX, mouseY, layer);
-
 			Optional<Pair<Integer, Integer>> stackSize = getCoilStackCount();
 			if (stackSize.isPresent()) {
 				if (stackSize.get().getLeft() > 0) {
@@ -117,9 +109,6 @@ public class GuiFusionReactor extends GuiBase<BuiltScreenHandler> {
 		builder.drawMultiEnergyBar(drawContext, this, 9, 19, this.blockEntity.getEnergy(), this.blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 	}
 
-	public void hologramToggle(GuiButtonExtended button, double x, double y) {
-		blockEntity.renderMultiblock ^= !hideGuiElements();
-	}
 
 	private void sendSizeChange(int sizeDelta) {
 		ClientPlayNetworking.send(new FusionControlSizePayload(blockEntity.getPos(), sizeDelta));

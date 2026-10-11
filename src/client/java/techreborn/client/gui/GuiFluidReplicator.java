@@ -27,15 +27,13 @@ package techreborn.client.gui;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import reborncore.client.gui.GuiBase;
-import reborncore.client.gui.widget.GuiButtonExtended;
 import reborncore.client.gui.GuiBuilder;
-import reborncore.common.screen.BuiltScreenHandler;
 import techreborn.blockentity.machine.multiblock.FluidReplicatorBlockEntity;
 
 /**
  * @author drcrazy
  */
-public class GuiFluidReplicator extends GuiBase<BuiltScreenHandler> {
+public class GuiFluidReplicator extends GuiMultiblockMachine {
 
 	private final FluidReplicatorBlockEntity blockEntity;
 
@@ -56,9 +54,7 @@ public class GuiFluidReplicator extends GuiBase<BuiltScreenHandler> {
 		drawSlot(drawContext, 124, 35, layer);
 		// Liquid output slot
 		drawSlot(drawContext, 124, 55, layer);
-		if (blockEntity.isMultiblockValid()) {
-			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, layer);
-		}
+		drawHologramButton(drawContext, mouseX, mouseY, layer);
 	}
 
 	@Override
@@ -68,18 +64,9 @@ public class GuiFluidReplicator extends GuiBase<BuiltScreenHandler> {
 
 		builder.drawTank(drawContext, this, 99, 25, mouseX, mouseY, blockEntity.tank.getFluidInstance(), blockEntity.tank.getFluidValueCapacity(), blockEntity.tank.isEmpty(), layer);
 		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 76, 48, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
-		if (blockEntity.isMultiblockValid()) {
-			addHologramButton(6, 4, 212, layer).clickHandler(this::onClick);
-		} else {
-			builder.drawMultiblockMissingBar(drawContext, this, layer);
-			addHologramButton(76, 56, 212, layer).clickHandler(this::onClick);
-			builder.drawHologramButton(drawContext, this, 76, 56, mouseX, mouseY, layer);
-		}
+		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 		builder.drawMultiEnergyBar(drawContext, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 	}
 
 	// GuiScreen
-	public void onClick(GuiButtonExtended button, Double x, Double y) {
-		blockEntity.renderMultiblock ^= !hideGuiElements();
-	}
 }

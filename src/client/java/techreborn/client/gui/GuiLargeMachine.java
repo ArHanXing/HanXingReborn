@@ -27,9 +27,7 @@ package techreborn.client.gui;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import reborncore.client.gui.GuiBase;
-import reborncore.client.gui.widget.GuiButtonExtended;
 import reborncore.client.gui.GuiBuilder;
-import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import techreborn.blockentity.machine.multiblock.JsonMultiblockMachineBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeLatheBlockEntity;
@@ -50,7 +48,7 @@ import techreborn.blockentity.machine.multiblock.IndustrialAlloySmelterBlockEnti
  * machine's {@code createScreenHandler} layout, plus the progress bar and the
  * multiblock hologram button.
  */
-public class GuiLargeMachine<T extends JsonMultiblockMachineBlockEntity & BuiltScreenHandlerProvider> extends GuiBase<BuiltScreenHandler> {
+public class GuiLargeMachine<T extends JsonMultiblockMachineBlockEntity & BuiltScreenHandlerProvider> extends GuiMultiblockMachine {
 
 	private final T blockEntity;
 
@@ -92,9 +90,7 @@ public class GuiLargeMachine<T extends JsonMultiblockMachineBlockEntity & BuiltS
 			drawSlot(drawContext, 101, 45, layer);
 		}
 
-		if (blockEntity.isMultiblockValid()) {
-			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, layer);
-		}
+		drawHologramButton(drawContext, mouseX, mouseY, layer);
 	}
 
 	@Override
@@ -103,19 +99,10 @@ public class GuiLargeMachine<T extends JsonMultiblockMachineBlockEntity & BuiltS
 		final GuiBase.Layer layer = Layer.FOREGROUND;
 
 		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, getProgressBarX(), getProgressBarY(), mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
-		if (blockEntity.isMultiblockValid()) {
-			addHologramButton(6, 4, 212, layer).clickHandler(this::onClick);
-		} else {
-			builder.drawMultiblockMissingBar(drawContext, this, layer);
-			addHologramButton(76, 56, 212, layer).clickHandler(this::onClick);
-			builder.drawHologramButton(drawContext, this, 76, 56, mouseX, mouseY, layer);
-		}
+		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 		builder.drawMultiEnergyBar(drawContext, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 	}
 
-	public void onClick(GuiButtonExtended button, Double mouseX, Double mouseY) {
-		blockEntity.renderMultiblock ^= !hideGuiElements();
-	}
 
 	/**
 	 * Progress arrow x position: the "large" batch machines used to sit at

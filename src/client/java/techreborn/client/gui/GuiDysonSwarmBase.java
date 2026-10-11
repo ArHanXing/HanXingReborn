@@ -28,9 +28,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import reborncore.client.gui.GuiBase;
 import reborncore.client.gui.widget.GuiButtonExtended;
-import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import techreborn.blockentity.machine.multiblock.DysonSwarmMachineBlockEntity;
 
@@ -41,7 +39,7 @@ import techreborn.blockentity.machine.multiblock.DysonSwarmMachineBlockEntity;
  * solar sail input slot of the host, the energy bar and EU/t line of the
  * receiver) and know which packet to send for the buttons.
  */
-public abstract class GuiDysonSwarmBase<T extends DysonSwarmMachineBlockEntity & BuiltScreenHandlerProvider> extends GuiBase<BuiltScreenHandler> {
+public abstract class GuiDysonSwarmBase<T extends DysonSwarmMachineBlockEntity & BuiltScreenHandlerProvider> extends GuiMultiblockMachine {
 
 	private static final int BTN_WIDTH = 40;
 	private static final int BTN_HEIGHT = 12;
@@ -77,9 +75,7 @@ public abstract class GuiDysonSwarmBase<T extends DysonSwarmMachineBlockEntity &
 	protected void drawBackground(DrawContext drawContext, final float f, final int mouseX, final int mouseY) {
 		super.drawBackground(drawContext, f, mouseX, mouseY);
 		drawMachineBackground(drawContext, mouseX, mouseY);
-		if (blockEntity.isMultiblockValid()) {
-			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, Layer.BACKGROUND);
-		}
+		drawHologramButton(drawContext, mouseX, mouseY, Layer.BACKGROUND);
 	}
 
 	@Override
@@ -105,13 +101,7 @@ public abstract class GuiDysonSwarmBase<T extends DysonSwarmMachineBlockEntity &
 				textX, TEXT_Y_SAILS, 0x404040, layer);
 		drawMachineForeground(drawContext, layer, mouseX, mouseY);
 
-		if (blockEntity.isMultiblockValid()) {
-			addHologramButton(6, 4, 212, layer).clickHandler(this::onClick);
-		} else {
-			builder.drawMultiblockMissingBar(drawContext, this, layer);
-			addHologramButton(76, 56, 212, layer).clickHandler(this::onClick);
-			builder.drawHologramButton(drawContext, this, 76, 56, mouseX, mouseY, layer);
-		}
+		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 	}
 
 	/**
@@ -134,7 +124,4 @@ public abstract class GuiDysonSwarmBase<T extends DysonSwarmMachineBlockEntity &
 		addDrawableChild(unbindButton);
 	}
 
-	public void onClick(GuiButtonExtended button, Double mouseX, Double mouseY) {
-		blockEntity.renderMultiblock ^= !hideGuiElements();
-	}
 }

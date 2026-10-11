@@ -35,12 +35,8 @@ import net.minecraft.text.Text;
 
 import org.lwjgl.glfw.GLFW;
 
-import reborncore.client.gui.GuiBase;
-import reborncore.client.gui.widget.GuiButtonExtended;
-import reborncore.client.gui.widget.GuiButtonHologram;
 import reborncore.client.gui.widget.GuiButtonUpDown;
 import reborncore.client.gui.widget.GuiButtonUpDown.UpDownButtonType;
-import reborncore.common.screen.BuiltScreenHandler;
 
 import techreborn.blockentity.machine.multiblock.DigitalMinerBlockEntity;
 import techreborn.packets.serverbound.DigitalMinerPayload;
@@ -60,7 +56,7 @@ import techreborn.packets.serverbound.DigitalMinerPayload;
  * The filter is pushed to the server when the player presses Enter or the field
  * loses focus, so a half-typed expression never restarts the scan.
  */
-public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
+public class GuiDigitalMiner extends GuiMultiblockMachine {
 
 	/**
 	 * Layout inside the machine area: the output slots and the energy slot are
@@ -121,9 +117,6 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 	/** Last text handed to the server, to avoid redundant packets. */
 	private String sentFilter;
 	private boolean filterFocused;
-	/** Hologram toggle; created once and re-positioned when the structure changes. */
-	private GuiButtonHologram hologramButton;
-	private boolean hologramValid;
 
 	public GuiDigitalMiner(int syncID, final PlayerEntity player, DigitalMinerBlockEntity blockEntity) {
 		super(player, blockEntity, blockEntity.createScreenHandler(syncID, player));
@@ -165,29 +158,6 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 		filterField.setMaxLength(128);
 		filterField.setText(miner.getFilterText());
 		addDrawableChild(filterField);
-
-		// Hologram toggle: top-left when the structure is formed, centre of the
-		// machine area (over the "structure missing" overlay) when it is not.
-		// addHologramButton() adds the GUI origin itself, so pass offsets.
-		hologramValid = miner.isMultiblockValid();
-		GuiButtonHologram button = addHologramButton(hologramOffsetX(), hologramOffsetY(), 212, Layer.FOREGROUND);
-		button.clickHandler(this::onClick);
-		hologramButton = button;
-	}
-
-	/** X of the hologram toggle, relative to the GUI origin. */
-	private int hologramOffsetX() {
-		return hologramValid ? 6 : 76;
-	}
-
-	/** Y of the hologram toggle, relative to the GUI origin. */
-	private int hologramOffsetY() {
-		return hologramValid ? 4 : 56;
-	}
-
-	/** Toggles the multiblock hologram, like the other multiblock machines. */
-	public void onClick(GuiButtonExtended button, Double mouseX, Double mouseY) {
-		miner.renderMultiblock ^= !hideGuiElements();
 	}
 
 	private Text rangeButtonText() {
@@ -265,18 +235,7 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 		drawContext.fill(getGuiLeft() + FILTER_X, getGuiTop() + FILTER_Y,
 				getGuiLeft() + FILTER_X + FILTER_WIDTH, getGuiTop() + FILTER_Y + FILTER_HEIGHT, 0xFF000000);
 
-		// The structure can change while the GUI is open: keep the hologram
-		// toggle at the right spot and grey the machine area out when invalid.
-		boolean valid = miner.isMultiblockValid();
-		if (valid != hologramValid) {
-			hologramValid = valid;
-			// setX/setY take absolute screen coordinates
-			hologramButton.setX(hologramOffsetX() + getGuiLeft());
-			hologramButton.setY(hologramOffsetY() + getGuiTop());
-		}
-		if (valid) {
-			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, layer);
-		}
+		drawHologramButton(drawContext, mouseX, mouseY, layer);
 	}
 
 	@Override
@@ -286,12 +245,7 @@ public class GuiDigitalMiner extends GuiBase<BuiltScreenHandler> {
 			return;
 		}
 
-		// The structure state can change while the GUI is open: keep the
-		// hologram toggle in the right spot and grey the machine area out.
-		if (!hologramValid) {
-			builder.drawMultiblockMissingBar(drawContext, this, Layer.FOREGROUND);
-			builder.drawHologramButton(drawContext, this, 76, 56, mouseX, mouseY, Layer.FOREGROUND);
-		}
+		drawMissingStructureOverlay(drawContext, mouseX, mouseY, Layer.FOREGROUND);
 
 		drawText(drawContext, Text.translatable("gui.techreborn.digital_miner.filter_label"),
 				FILTER_X, FILTER_LABEL_Y, theme.titleColor().rgba(), Layer.FOREGROUND);

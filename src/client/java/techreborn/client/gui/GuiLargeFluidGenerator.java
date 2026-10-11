@@ -28,8 +28,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import reborncore.client.gui.GuiBase;
 import reborncore.client.gui.GuiBuilder;
-import reborncore.client.gui.widget.GuiButtonExtended;
-import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import techreborn.blockentity.generator.multiblock.LargeFluidGeneratorBlockEntity;
 
@@ -39,7 +37,7 @@ import techreborn.blockentity.generator.multiblock.LargeFluidGeneratorBlockEntit
  * small fluid generators (cell input/output slots, tank, energy bar, progress
  * arrow) plus the multiblock hologram button and missing-structure bar.
  */
-public class GuiLargeFluidGenerator<T extends LargeFluidGeneratorBlockEntity & BuiltScreenHandlerProvider> extends GuiBase<BuiltScreenHandler> {
+public class GuiLargeFluidGenerator<T extends LargeFluidGeneratorBlockEntity & BuiltScreenHandlerProvider> extends GuiMultiblockMachine {
 
 	private final T blockEntity;
 
@@ -57,9 +55,7 @@ public class GuiLargeFluidGenerator<T extends LargeFluidGeneratorBlockEntity & B
 		drawSlot(drawContext, 25, 35, layer);
 		drawOutputSlot(drawContext, 25, 55, layer);
 
-		if (blockEntity.isMultiblockValid()) {
-			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, layer);
-		}
+		drawHologramButton(drawContext, mouseX, mouseY, layer);
 	}
 
 	@Override
@@ -71,16 +67,7 @@ public class GuiLargeFluidGenerator<T extends LargeFluidGeneratorBlockEntity & B
 		builder.drawMultiEnergyBar(drawContext, this, 130, 28, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 		builder.drawTank(drawContext, this, 44, 25, mouseX, mouseY, blockEntity.tank.getFluidInstance(), blockEntity.tank.getFluidValueCapacity(), blockEntity.tank.isEmpty(), layer);
 
-		if (blockEntity.isMultiblockValid()) {
-			addHologramButton(6, 4, 212, layer).clickHandler(this::onClick);
-		} else {
-			builder.drawMultiblockMissingBar(drawContext, this, layer);
-			addHologramButton(76, 56, 212, layer).clickHandler(this::onClick);
-			builder.drawHologramButton(drawContext, this, 76, 56, mouseX, mouseY, layer);
-		}
+		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 	}
 
-	public void onClick(GuiButtonExtended button, Double mouseX, Double mouseY) {
-		blockEntity.renderMultiblock ^= !hideGuiElements();
-	}
 }

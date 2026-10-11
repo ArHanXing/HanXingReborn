@@ -30,17 +30,42 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import reborncore.client.gui.GuiBase;
-import reborncore.client.gui.widget.GuiButtonExtended;
-import reborncore.common.screen.BuiltScreenHandler;
 import techreborn.blockentity.machine.tier1.GreenhouseControllerBlockEntity;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GuiGreenhouseController extends GuiBase<BuiltScreenHandler> {
+public class GuiGreenhouseController extends GuiMultiblockMachine {
 
 	private final GreenhouseControllerBlockEntity blockEntity;
+
+	/** The toggle sits next to the slot grid, in both structure states. */
+	@Override
+	protected int hologramButtonX() {
+		return 90;
+	}
+
+	@Override
+	protected int hologramButtonY() {
+		return 24;
+	}
+
+	@Override
+	protected int hologramMissingButtonX() {
+		return 90;
+	}
+
+	@Override
+	protected int hologramMissingButtonY() {
+		return 24;
+	}
+
+	/** This GUI draws its own "upgrade available" hint instead of the grey bar. */
+	@Override
+	protected boolean drawMultiblockMissingBar() {
+		return false;
+	}
 
 	public GuiGreenhouseController(int syncID, final PlayerEntity player, final GreenhouseControllerBlockEntity blockEntity) {
 		super(player, blockEntity, blockEntity.createScreenHandler(syncID, player));
@@ -52,6 +77,9 @@ public class GuiGreenhouseController extends GuiBase<BuiltScreenHandler> {
 		super.drawBackground(drawContext, f, mouseX, mouseY);
 		final GuiBase.Layer layer = GuiBase.Layer.BACKGROUND;
 
+		// Refresh the cached structure state first: the hint below uses it
+		drawHologramButton(drawContext, mouseX, mouseY, layer);
+
 		drawSlot(drawContext, 8, 72, layer);
 
 		int gridYPos = 22;
@@ -62,7 +90,7 @@ public class GuiGreenhouseController extends GuiBase<BuiltScreenHandler> {
 		drawSlot(drawContext, 30, gridYPos + 36, layer);
 		drawSlot(drawContext, 48, gridYPos + 36, layer);
 
-		if (!blockEntity.isMultiblockValid()) {
+		if (!isStructureValid()) {
 			drawContext.drawTexture(Identifier.of("techreborn", "textures/item/part/digital_display.png"), x + 68, y + 22, 0, 0, 16, 16, 16, 16);
 			if (isPointInRect(68, 22, 16, 16, mouseX, mouseY)) {
 				List<Text> list = Arrays.stream(I18n.translate("techreborn.tooltip.greenhouse.upgrade_available")
@@ -81,10 +109,9 @@ public class GuiGreenhouseController extends GuiBase<BuiltScreenHandler> {
 		super.drawForeground(drawContext, mouseX, mouseY);
 		final GuiBase.Layer layer = GuiBase.Layer.FOREGROUND;
 
-		addHologramButton(90, 24, 212, layer).clickHandler(this::onClick);
-		builder.drawHologramButton(drawContext, this, 90, 24, mouseX, mouseY, layer);
+		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 
-		if (!blockEntity.isMultiblockValid()) {
+		if (!isStructureValid()) {
 			if (isPointInRect(68, 22, 16, 16, mouseX, mouseY)) {
 				List<Text> list = Arrays.stream(I18n.translate("techreborn.tooltip.greenhouse.upgrade_available")
 						.split("\\r?\\n"))
@@ -98,7 +125,4 @@ public class GuiGreenhouseController extends GuiBase<BuiltScreenHandler> {
 		builder.drawMultiEnergyBar(drawContext, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 	}
 
-	public void onClick(GuiButtonExtended button, Double x, Double y) {
-		blockEntity.renderMultiblock ^= !hideGuiElements();
-	}
 }

@@ -27,31 +27,21 @@ package techreborn.client.gui;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import reborncore.client.gui.GuiBase;
-import reborncore.client.gui.widget.GuiButtonExtended;
 import reborncore.client.gui.GuiBuilder;
-import reborncore.common.screen.BuiltScreenHandler;
 import techreborn.blockentity.machine.multiblock.IndustrialBlastFurnaceBlockEntity;
 
-public class GuiBlastFurnace extends GuiBase<BuiltScreenHandler> {
+public class GuiBlastFurnace extends GuiMultiblockMachine {
 
 	private final IndustrialBlastFurnaceBlockEntity blockEntity;
-	boolean hasMultiBlock;
-
 	public GuiBlastFurnace(int syncID, final PlayerEntity player, final IndustrialBlastFurnaceBlockEntity blockEntity) {
 		super(player, blockEntity, blockEntity.createScreenHandler(syncID, player));
 		this.blockEntity = blockEntity;
 	}
 
-	@Override
-	public void init() {
-		super.init();
-		this.hasMultiBlock = this.blockEntity.getCachedHeat() != 0;
-	}
 
 	@Override
 	protected void drawBackground(DrawContext drawContext, final float f, final int mouseX, final int mouseY) {
 		super.drawBackground(drawContext, f, mouseX, mouseY);
-		this.hasMultiBlock = this.blockEntity.getCachedHeat() != 0;
 
 		final GuiBase.Layer layer = Layer.BACKGROUND;
 
@@ -61,31 +51,19 @@ public class GuiBlastFurnace extends GuiBase<BuiltScreenHandler> {
 		drawSlot(drawContext, 50, 47, layer);
 		drawOutputSlotBar(drawContext, 92, 36, 2, layer);
 
-		if (hasMultiBlock) {
-			builder.drawHologramButton(drawContext, this, 6, 4, mouseX, mouseY, layer);
-		}
+		drawHologramButton(drawContext, mouseX, mouseY, layer);
 	}
 
 	@Override
 	protected void drawForeground(DrawContext drawContext, final int mouseX, final int mouseY) {
 		super.drawForeground(drawContext, mouseX, mouseY);
-		this.hasMultiBlock = blockEntity.getCachedHeat() != 0;
 		final GuiBase.Layer layer = GuiBase.Layer.FOREGROUND;
 
 		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 71, 40, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
 
 		builder.drawBigHeatBar(drawContext, this, 31, 71, blockEntity.getCachedHeat(), 3230, layer);
-		if (hasMultiBlock) {
-			addHologramButton(4, 4, 212, layer).clickHandler(this::onClick);
-		} else {
-			builder.drawMultiblockMissingBar(drawContext, this, layer);
-			addHologramButton(76, 56, 212, layer).clickHandler(this::onClick);
-			builder.drawHologramButton(drawContext, this, 76, 56, mouseX, mouseY, layer);
-		}
+		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 		builder.drawMultiEnergyBar(drawContext, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 	}
 
-	public void onClick(GuiButtonExtended button, Double x, Double y) {
-		blockEntity.renderMultiblock ^= !hideGuiElements();
-	}
 }

@@ -25,27 +25,22 @@
 package techreborn.blockentity.machine.multiblock;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
-import reborncore.common.multiblock.IMultiblockPart;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
-import techreborn.blockentity.machine.multiblock.casing.MachineCasingBlockEntity;
 import techreborn.blocks.misc.BlockCoil;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
-import techreborn.multiblocks.MultiBlockCasing;
 import techreborn.multiblock.CoilHeatScanner;
 import techreborn.recipe.BlastFurnaceRecipeCrafter;
 
-import java.util.Optional;
 
 public class IndustrialBlastFurnaceBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
 
@@ -122,32 +117,18 @@ public class IndustrialBlastFurnaceBlockEntity extends JsonMultiblockMachineBloc
 
 	/**
 	 * Sets the ACTIVE blockstate on every {@link BlockCoil} inside the multiblock
-	 * so that coil textures switch to the bloom variant while the machine is working.
+	 * so that coil textures switch to the bloom variant while the machine is
+	 * working. Positions are derived from the JSON structure definition, exactly
+	 * like the rotary hearth furnace and the space elevator, so no legacy casing
+	 * lookup (or its controller bookkeeping) is involved.
 	 */
 	private void updateCoilBloomState(boolean bloom) {
-		getMultiblockCasing().ifPresent(casing -> {
-			for (final IMultiblockPart part : casing.connectedParts) {
-				BlockPos partPos = part.getPos();
-				BlockState partState = world.getBlockState(partPos);
-				if (partState.getBlock() instanceof BlockCoil) {
-					world.setBlockState(partPos, partState.with(BlockCoil.ACTIVE, bloom), 2);
-				}
+		if (world == null || world.isClient) return;
+		for (BlockPos position : CoilHeatScanner.collectPositions(getPos(), getFacing(), getMultiblockId())) {
+			BlockState blockState = world.getBlockState(position);
+			if (blockState.getBlock() instanceof BlockCoil) {
+				world.setBlockState(position, blockState.with(BlockCoil.ACTIVE, bloom), 2);
 			}
-		});
-	}
-
-	/**
-	 * Resolves the assembled multiblock casing from the controller position.
-	 */
-	private Optional<MultiBlockCasing> getMultiblockCasing() {
-		if (world == null || !isMultiblockValid()) return Optional.empty();
-		final BlockPos location = pos.offset(getFacing().getOpposite(), 2);
-		final BlockEntity blockEntity = world.getBlockEntity(location);
-		if (blockEntity instanceof MachineCasingBlockEntity casing
-				&& casing.isConnected()
-				&& casing.getMultiblockController().isAssembled()) {
-			return Optional.of(casing.getMultiblockController());
 		}
-		return Optional.empty();
 	}
 }
