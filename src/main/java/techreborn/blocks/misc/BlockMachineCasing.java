@@ -27,18 +27,21 @@ package techreborn.blocks.misc;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import reborncore.common.multiblock.BlockMultiblockBase;
+import reborncore.common.BaseBlockEntityProvider;
 import techreborn.blockentity.machine.multiblock.casing.MachineCasingBlockEntity;
+import techreborn.init.TRBlockEntities;
 import techreborn.init.TRBlockSettings;
 import techreborn.utils.DirectionUtils;
 
-public class BlockMachineCasing extends BlockMultiblockBase {
+public class BlockMachineCasing extends BaseBlockEntityProvider {
 
 	public final int heatCapacity;
 
@@ -80,5 +83,22 @@ public class BlockMachineCasing extends BlockMultiblockBase {
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
 		return new MachineCasingBlockEntity(pos, state);
+	}
+
+	/**
+	 * The casing block entity repairs the neighbouring-casing state once after
+	 * load, so it needs a ticker; the other blocks sharing this block entity do
+	 * not (their tick is a no-op).
+	 */
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+		if (type != TRBlockEntities.MACHINE_CASINGS) {
+			return null;
+		}
+		return (tickerWorld, tickerPos, tickerState, blockEntity) -> {
+			if (blockEntity instanceof MachineCasingBlockEntity casing) {
+				casing.tick(tickerWorld, tickerPos, tickerState, casing);
+			}
+		};
 	}
 }

@@ -26,16 +26,27 @@ package techreborn.blockentity.machine.multiblock.casing;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import reborncore.common.multiblock.MultiblockControllerBase;
-import reborncore.common.multiblock.rectangular.RectangularMultiblockBlockEntityBase;
+
 import techreborn.blocks.misc.BlockMachineCasing;
 import techreborn.init.TRBlockEntities;
-import techreborn.multiblocks.MultiBlockCasing;
 import techreborn.utils.DirectionUtils;
 
-public class MachineCasingBlockEntity extends RectangularMultiblockBlockEntityBase {
+/**
+ * Block entity of the machine casings, the coils and the structure blocks that
+ * share them.
+ * <p>
+ * It has exactly one job: on first load it repairs the neighbouring-casing
+ * blockstate so the casing textures connect again (a fix for worlds saved by
+ * older versions). The multiblock structures themselves are JSON definitions
+ * verified by {@code JsonMultiblockMachineBlockEntity}, so nothing tracks
+ * "assembled" casings any more — which is why this is a plain {@link BlockEntity}
+ * instead of a part of the removed RebornCore controller system.
+ */
+public class MachineCasingBlockEntity extends BlockEntity implements BlockEntityTicker<MachineCasingBlockEntity> {
+
 	private boolean firstLoad = true;
 
 	public MachineCasingBlockEntity(BlockPos pos, BlockState state) {
@@ -43,57 +54,7 @@ public class MachineCasingBlockEntity extends RectangularMultiblockBlockEntityBa
 	}
 
 	@Override
-	public void onMachineActivated() {
-
-	}
-
-	@Override
-	public void onMachineDeactivated() {
-
-	}
-
-	@Override
-	public MultiblockControllerBase createNewMultiblock() {
-		return new MultiBlockCasing(world);
-	}
-
-	@Override
-	public Class<? extends MultiblockControllerBase> getMultiblockControllerType() {
-		return MultiBlockCasing.class;
-	}
-
-	@Override
-	public void isGoodForFrame() {
-
-	}
-
-	@Override
-	public void isGoodForSides() {
-
-	}
-
-	@Override
-	public void isGoodForTop() {
-
-	}
-
-	@Override
-	public void isGoodForBottom() {
-
-	}
-
-	@Override
-	public void isGoodForInterior() {
-
-	}
-
-	@Override
-	public MultiBlockCasing getMultiblockController() {
-		return (MultiBlockCasing) super.getMultiblockController();
-	}
-
-	@Override
-	public void tick(World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+	public void tick(World world, BlockPos pos, BlockState state, MachineCasingBlockEntity blockEntity) {
 		// Compatible with old versions — only BlockMachineCasing has the neighbors property
 		if (firstLoad) {
 			firstLoad = false;

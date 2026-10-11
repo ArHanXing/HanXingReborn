@@ -31,7 +31,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
-import reborncore.common.multiblock.BlockMultiblockBase;
+import reborncore.common.BaseBlockEntityProvider;
 import techreborn.blockentity.machine.multiblock.casing.MachineCasingBlockEntity;
 import techreborn.init.TRBlockSettings;
 
@@ -44,7 +44,7 @@ import techreborn.init.TRBlockSettings;
  * Mirrors the coil bloom pattern of {@link BlockCoil} (self-adapting: the host
  * scans its JSON structure for these blocks, no fixed positions needed).
  */
-public class BlockSpaceElevatorPowerModule extends BlockMultiblockBase implements BlockEntityProvider {
+public class BlockSpaceElevatorPowerModule extends BaseBlockEntityProvider implements BlockEntityProvider {
 
 	public static final BooleanProperty ACTIVE = BooleanProperty.of("active");
 

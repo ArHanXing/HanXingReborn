@@ -48,7 +48,6 @@ import reborncore.common.chunkloading.ChunkLoaderManager;
 import reborncore.common.config.Configuration;
 import reborncore.common.misc.ModSounds;
 import reborncore.common.misc.RebornCoreTags;
-import reborncore.common.multiblock.MultiblockRegistry;
 import reborncore.common.network.Packets;
 import reborncore.common.network.ServerBoundPackets;
 import reborncore.common.powerSystem.PowerAcceptorBlockEntity;
@@ -98,7 +97,6 @@ public class RebornCore implements ModInitializer {
 		each game loop. SERVER and WORLD ticks only run on the server. WORLDLOAD
 		ticks run only on the server, and only when worlds are loaded.
 		 */
-		ServerTickEvents.START_WORLD_TICK.register(MultiblockRegistry::tickStart);
 
 		// packets
 		ServerBoundPackets.init();

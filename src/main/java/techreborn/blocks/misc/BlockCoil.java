@@ -36,7 +36,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
-import reborncore.common.multiblock.BlockMultiblockBase;
+import reborncore.common.BaseBlockEntityProvider;
 import techreborn.blockentity.machine.multiblock.casing.MachineCasingBlockEntity;
 import techreborn.init.TRBlockSettings;
 
@@ -45,14 +45,14 @@ import java.util.List;
 /**
  * Coil block for GT5-style multiblock machines like the Industrial Blast Furnace.
  * <p>
- * Extends {@link BlockMultiblockBase} directly (not {@link BlockMachineCasing})
+ * Extends {@link BaseBlockEntityProvider} directly (not {@link BlockMachineCasing})
  * to avoid the horizontal-neighbor connecting-texture system — coils use simple
  * cube_all models.
  * <p>
  * The {@link #heat} value is the fixed temperature this coil tier provides; in
  * the IBF, only one coil type may be used and its heat is the machine's heat.
  */
-public class BlockCoil extends BlockMultiblockBase implements BlockEntityProvider {
+public class BlockCoil extends BaseBlockEntityProvider implements BlockEntityProvider {
 
 	public static final BooleanProperty ACTIVE = BooleanProperty.of("active");
 

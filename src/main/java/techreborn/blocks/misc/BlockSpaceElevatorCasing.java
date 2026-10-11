@@ -28,7 +28,7 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
-import reborncore.common.multiblock.BlockMultiblockBase;
+import reborncore.common.BaseBlockEntityProvider;
 import techreborn.blockentity.machine.multiblock.casing.MachineCasingBlockEntity;
 import techreborn.init.TRBlockSettings;
 
@@ -36,7 +36,7 @@ import techreborn.init.TRBlockSettings;
  * Structural casing block of the Space Elevator multiblock family (host,
  * assembler and miner units). Simple cube block, no special behaviour.
  */
-public class BlockSpaceElevatorCasing extends BlockMultiblockBase implements BlockEntityProvider {
+public class BlockSpaceElevatorCasing extends BaseBlockEntityProvider implements BlockEntityProvider {
 
 	public BlockSpaceElevatorCasing() {
 		super(TRBlockSettings.machineCasing());
