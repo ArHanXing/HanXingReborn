@@ -640,6 +640,12 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorRotorWearInterval", comment = "Ticks of processing per point of rotor wear at full speed (scales inversely with speed)")
 	public static int isotopeSeparatorRotorWearInterval = 200;
 
+	@Config(config = "machines", category = "naquadah_deresonator", key = "NaquadahDeresonatorMaxInput", comment = "Naquadah Deresonator Max Input (Energy per tick)")
+	public static int naquadahDeresonatorMaxInput = 512;
+
+	@Config(config = "machines", category = "naquadah_deresonator", key = "NaquadahDeresonatorMaxEnergy", comment = "Naquadah Deresonator Max Energy")
+	public static int naquadahDeresonatorMaxEnergy = 1_000_000;
+
 	@Config(config = "machines", category = "space_elevator_miner", key = "SpaceElevatorMinerMaxInput", comment = "Space Elevator Miner Max Input (Energy per tick)")
 	public static int spaceElevatorMinerMaxInput = 128;
 

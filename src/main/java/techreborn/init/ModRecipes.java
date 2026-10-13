@@ -36,6 +36,7 @@ import techreborn.recipe.recipes.FluidReplicatorRecipe;
 import techreborn.recipe.recipes.FusionReactorRecipe;
 import techreborn.recipe.recipes.IndustrialGrinderRecipe;
 import techreborn.recipe.recipes.IndustrialSawmillRecipe;
+import techreborn.recipe.recipes.NaquadahDeresonatorRecipe;
 import techreborn.recipe.recipes.RollingMachineRecipe;
 
 public class ModRecipes {
@@ -118,4 +119,9 @@ public class ModRecipes {
 	// energy come from the machine's redstone-driven rotation rather than from
 	// the recipe, so no custom recipe type is needed.
 	public static final RecipeType<RebornRecipe> ISOTOPE_SEPARATOR = RecipeManager.newRecipeType(Identifier.of("techreborn:isotope_separator"));
+
+	// Naquadah Deresonator: every run is resolved by a chance roll, so the
+	// recipe records the fluid that feeds the probability as an id, with no
+	// fixed amount to consume up front.
+	public static final RecipeType<NaquadahDeresonatorRecipe> NAQUADAH_DERESONATOR = RecipeManager.newRecipeType(Identifier.of("techreborn:naquadah_deresonator"), NaquadahDeresonatorRecipe.CODEC, NaquadahDeresonatorRecipe.PACKET_CODEC);
 }

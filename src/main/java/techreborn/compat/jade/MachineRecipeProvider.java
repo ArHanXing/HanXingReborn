@@ -49,6 +49,7 @@ import techreborn.api.IEnergyProducerProvider;
 import techreborn.blockentity.generator.multiblock.LargeFluidGeneratorBlockEntity;
 import techreborn.blockentity.machine.multiblock.DysonSwarmMachineBlockEntity;
 import techreborn.blockentity.machine.multiblock.IsotopeSeparatorBlockEntity;
+import techreborn.blockentity.machine.multiblock.NaquadahDeresonatorBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorAssemblerBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorMinerBlockEntity;
 
@@ -121,6 +122,13 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 			data.putInt("iso_rotor_damage", rotor.isEmpty() ? 0 : rotor.getDamage());
 			data.putInt("iso_rotor_max", rotor.isEmpty() ? 0 : rotor.getMaxDamage());
 			data.putLong("iso_rotor_ticks", separator.getRotorRemainingTicks());
+		}
+
+		// Naquadah Deresonator: the chance the run in progress will pay out, plus
+		// the fluid it has already fed into that chance.
+		if (accessor.getBlockEntity() instanceof NaquadahDeresonatorBlockEntity deresonator) {
+			data.putDouble("deresonator_chance", deresonator.getCurrentSuccessRate());
+			data.putLong("deresonator_fluid", deresonator.getRunFluidMb());
 		}
 
 		if (!(accessor.getBlockEntity() instanceof IRecipeCrafterProvider provider)) {
@@ -235,6 +243,17 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 						Text.literal(IsotopeSeparatorBlockEntity.formatTicks(ticks)).formatted(Formatting.YELLOW)));
 			} else {
 				tooltip.add(Text.translatable("jade.techreborn.isotope_rotor_none").formatted(Formatting.GRAY));
+			}
+		}
+
+		// Naquadah Deresonator: the chance the run in progress will pay out.
+		if (data.contains("deresonator_chance")) {
+			tooltip.add(Text.translatable("jade.techreborn.naquadah_deresonator_chance",
+					Text.literal(String.format("%.2f%%", data.getDouble("deresonator_chance") * 100.0)).formatted(Formatting.YELLOW)));
+			long fed = data.getLong("deresonator_fluid");
+			if (fed > 0) {
+				tooltip.add(Text.translatable("jade.techreborn.naquadah_deresonator_fluid",
+						Text.literal(String.valueOf(fed)).formatted(Formatting.YELLOW)));
 			}
 		}
 

@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ICI",
+    "PBP",
+    "EME"
+  ],
+  "key": {
+    "I": {
+      "item": "techreborn:titanium_plate"
+    },
+    "C": {
+      "item": "techreborn:industrial_electrolyzer"
+    },
+    "P": {
+      "item": "techreborn:energy_flow_chip"
+    },
+    "B": {
+      "item": "techreborn:advanced_machine_frame"
+    },
+    "E": {
+      "item": "techreborn:industrial_machine_frame"
+    },
+    "M": {
+      "item": "techreborn:industrial_centrifuge"
+    }
+  },
+  "result": {
+    "id": "techreborn:naquadah_deresonator"
+  }
+}

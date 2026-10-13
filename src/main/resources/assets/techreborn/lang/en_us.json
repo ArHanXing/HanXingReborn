@@ -1325,6 +1325,7 @@
   "emi.category.techreborn.large_mixer": "Large Mixer",
   "emi.category.techreborn.large_refinery": "Large Refinery",
   "emi.category.techreborn.isotope_separator": "Isotope Separating",
+  "emi.category.techreborn.naquadah_deresonator": "Naquadah Deresonation",
   "gui.techreborn.emi.multiblock_total": "Total structure blocks: %s",
 
   "item.techreborn.basic_ore_prospector": "Basic Ore Prospector",
@@ -1362,6 +1363,10 @@
   "jade.techreborn.isotope_rotor": "Rotor durability: %s / %s",
   "jade.techreborn.isotope_rotor_time": "Estimated life: %s",
   "jade.techreborn.isotope_rotor_none": "No rotor (speed cap 25%)",
+  "block.techreborn.naquadah_deresonator": "Naquadah Deresonator",
+  "gui.techreborn.naquadah_deresonator.chance": "Success chance: %s",
+  "jade.techreborn.naquadah_deresonator_chance": "Success chance: %s",
+  "jade.techreborn.naquadah_deresonator_fluid": "Fluid fed this run: %s mB",
   "techreborn.tooltip.machine.digital_miner": "Mines blocks matching a filter inside a chunk radius (tags or regex)",
   "gui.techreborn.digital_miner.filter": "Filter...",
   "gui.techreborn.digital_miner.filter_label": "Filter (#tag or regex)",

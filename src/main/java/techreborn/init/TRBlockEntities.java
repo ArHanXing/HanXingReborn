@@ -186,6 +186,7 @@ public class TRBlockEntities {
 	public static final BlockEntityType<LargeMixerBlockEntity> LARGE_MIXER = register(LargeMixerBlockEntity::new, "large_mixer", TRContent.Machine.LARGE_MIXER);
 	public static final BlockEntityType<LargeRefineryBlockEntity> LARGE_REFINERY = register(LargeRefineryBlockEntity::new, "large_refinery", TRContent.Machine.LARGE_REFINERY);
 	public static final BlockEntityType<IsotopeSeparatorBlockEntity> ISOTOPE_SEPARATOR = register(IsotopeSeparatorBlockEntity::new, "isotope_separator", TRContent.Machine.ISOTOPE_SEPARATOR);
+	public static final BlockEntityType<NaquadahDeresonatorBlockEntity> NAQUADAH_DERESONATOR = register(NaquadahDeresonatorBlockEntity::new, "naquadah_deresonator", TRContent.Machine.NAQUADAH_DERESONATOR);
 
 	public static <T extends BlockEntity> BlockEntityType<T> register(BiFunction<BlockPos, BlockState, T> supplier, String name, ItemConvertible... items) {
 		return register(supplier, name, Arrays.stream(items).map(itemConvertible -> Block.getBlockFromItem(itemConvertible.asItem())).toArray(Block[]::new));

@@ -109,6 +109,7 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiStack LARGE_MIXER_STACK = EmiStack.of(TRContent.Machine.LARGE_MIXER);
 	public static final EmiStack LARGE_REFINERY_STACK = EmiStack.of(TRContent.Machine.LARGE_REFINERY);
 	public static final EmiStack ISOTOPE_SEPARATOR_STACK = EmiStack.of(TRContent.Machine.ISOTOPE_SEPARATOR);
+	public static final EmiStack NAQUADAH_DERESONATOR_STACK = EmiStack.of(TRContent.Machine.NAQUADAH_DERESONATOR);
 
 	public static final EmiRecipeCategory ALLOY_SMELTER_CATEGORY =
 		new EmiRecipeCategory(trId("alloy_smelter"), ALLOY_SMELTER_STACK, EmiTextures.ALLOY_SMELTING,
@@ -233,6 +234,9 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiRecipeCategory ISOTOPE_SEPARATOR_CATEGORY =
 		new EmiRecipeCategory(trId("isotope_separator"), ISOTOPE_SEPARATOR_STACK, EmiTextures.ROTOR,
 			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiRecipeCategory NAQUADAH_DERESONATOR_CATEGORY =
+		new EmiRecipeCategory(trId("naquadah_deresonator"), NAQUADAH_DERESONATOR_STACK, EmiTextures.RESONATING,
+			EmiRecipeSorting.compareOutputThenInput());
 
 	public static final EmiRecipeCategory LARGE_CHEMICAL_REACTOR_CATEGORY =
 		new EmiRecipeCategory(trId("large_chemical_reactor"), LARGE_CHEMICAL_REACTOR_STACK,
@@ -267,6 +271,7 @@ public class TREmiPlugin implements EmiPlugin {
 		Map.entry("large_mixer", TRContent.Machine.LARGE_MIXER),
 		Map.entry("large_refinery", TRContent.Machine.LARGE_REFINERY),
 		Map.entry("isotope_separator", TRContent.Machine.ISOTOPE_SEPARATOR),
+		Map.entry("naquadah_deresonator", TRContent.Machine.NAQUADAH_DERESONATOR),
 		Map.entry("fluid_replicator", TRContent.Machine.FLUID_REPLICATOR),
 		Map.entry("implosion_compressor", TRContent.Machine.IMPLOSION_COMPRESSOR),
 		Map.entry("industrial_blast_furnace", TRContent.Machine.INDUSTRIAL_BLAST_FURNACE),
@@ -591,6 +596,12 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(ISOTOPE_SEPARATOR_CATEGORY, ISOTOPE_SEPARATOR_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.ISOTOPE_SEPARATOR)) {
 			registry.addRecipe(new IsotopeSeparatorEmiRecipe(recipe));
+		}
+
+		registry.addCategory(NAQUADAH_DERESONATOR_CATEGORY);
+		registry.addWorkstation(NAQUADAH_DERESONATOR_CATEGORY, NAQUADAH_DERESONATOR_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.NAQUADAH_DERESONATOR)) {
+			registry.addRecipe(new NaquadahDeresonatorEmiRecipe(recipe));
 		}
 
 		registry.addCategory(PLASMA_GENERATOR_CATEGORY);

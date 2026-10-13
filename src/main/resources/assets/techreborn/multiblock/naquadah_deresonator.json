@@ -1,0 +1,45 @@
+{
+	"translate": [
+		1,
+		0,
+		-1
+	],
+	"layers": [
+		[
+			"BBB",
+			"BBB",
+			"BBB"
+		],
+		[
+			"III",
+			"ICI",
+			"III"
+		],
+		[
+			"III",
+			"ICI",
+			"III"
+		],
+		[
+			"III",
+			"ICI",
+			"III"
+		],
+		[
+			"BBB",
+			"BBB",
+			"BBB"
+		]
+	],
+	"keys": {
+		"B": {
+			"block": "techreborn:basic_machine_casing"
+		},
+		"I": {
+			"block": "techreborn:industrial_machine_casing"
+		},
+		"C": {
+			"air": true
+		}
+	}
+}

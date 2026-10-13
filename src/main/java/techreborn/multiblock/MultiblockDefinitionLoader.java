@@ -103,7 +103,8 @@ public class MultiblockDefinitionLoader {
 			"digital_miner",
 			"large_mixer",
 			"large_refinery",
-			"isotope_separator"
+			"isotope_separator",
+			"naquadah_deresonator"
 	};
 
 	private MultiblockDefinitionLoader() {

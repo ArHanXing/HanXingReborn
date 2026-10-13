@@ -1,0 +1,12 @@
+{
+  "type": "techreborn:naquadah_deresonator",
+  "power": 512,
+  "time": 200,
+  "fluid": "techreborn:mercury",
+  "ingredients": [
+    { "item": "techreborn:platinum_dust", "count": 2 }
+  ],
+  "outputs": [
+    { "id": "techreborn:iridium_ingot", "count": 1 }
+  ]
+}

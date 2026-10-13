@@ -188,25 +188,22 @@ public class RecipeCrafter implements IUpgradeHandler {
 				}
 				// The slots that have been filled
 				ArrayList<Integer> filledSlots = new ArrayList<>();
-				if (canGiveInvAll && currentRecipe.onCraft(blockEntity, currentParallelCount)) {
-					for (int i = 0; i < outputs.size(); i++) {
-						// Checks it has not been filled
-						if (!filledSlots.contains(outputSlots[i])) {
-							// Fills the slot with the output stack (parallel count times)
-							fitStack(outputs.get(i).copy(), outputSlots[i], currentParallelCount);
-							filledSlots.add(outputSlots[i]);
+				if (canGiveInvAll && rollCraftSuccess()) {
+					if (currentRecipe.onCraft(blockEntity, currentParallelCount)) {
+						for (int i = 0; i < outputs.size(); i++) {
+							// Checks it has not been filled
+							if (!filledSlots.contains(outputSlots[i])) {
+								// Fills the slot with the output stack (parallel count times)
+								fitStack(outputs.get(i).copy(), outputSlots[i], currentParallelCount);
+								filledSlots.add(outputSlots[i]);
+							}
 						}
+						finishCraft();
 					}
-					// This uses all the inputs
-					useAllInputs();
-					// Reset
-					currentRecipe = null;
-					currentTickTime = 0;
-					updateCurrentRecipe();
-					// Update active state if the blockEntity isn't going to start crafting again
-					if (currentRecipe == null) {
-						setIsActive();
-					}
+				} else if (canGiveInvAll) {
+					// The chance roll failed: this attempt still consumes its
+					// inputs but yields nothing, so a new run may start.
+					finishCraft();
 				}
 			} else if (currentRecipe != null && currentTickTime < currentNeededTicks) {
 				long useRequirement = getEuPerTick(currentRecipe.power() * currentParallelCount);
@@ -287,6 +284,42 @@ public class RecipeCrafter implements IUpgradeHandler {
 			return;
 		}
 		useInputs(currentRecipe, currentParallelCount);
+	}
+
+	/**
+	 * Chance-based completion hook, consulted once the processing time has
+	 * elapsed and the outputs fit, before the craft is finalised.
+	 * <p>
+	 * Returning {@code false} models a failed roll: the inputs are consumed and
+	 * the run is aborted without producing any output, so a fresh run may start
+	 * on the next tick. The default returns {@code true}, which is the
+	 * deterministic behaviour of every machine that does not override it.
+	 * <p>
+	 * The hook is only consulted when the outputs fit, so a machine whose output
+	 * slots are full does not spend attempts (and therefore inputs) while it
+	 * cannot deliver.
+	 *
+	 * @return {@code boolean} whether this attempt produces its outputs
+	 */
+	protected boolean rollCraftSuccess() {
+		return true;
+	}
+
+	/**
+	 * Consumes the inputs of the finished attempt and looks for the next
+	 * recipe, whether that attempt succeeded or failed its chance roll.
+	 */
+	private void finishCraft() {
+		// This uses all the inputs
+		useAllInputs();
+		// Reset
+		currentRecipe = null;
+		currentTickTime = 0;
+		updateCurrentRecipe();
+		// Update active state if the blockEntity isn't going to start crafting again
+		if (currentRecipe == null) {
+			setIsActive();
+		}
 	}
 
 	/**

@@ -94,6 +94,7 @@ import techreborn.blockentity.machine.multiblock.DigitalMinerBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeMixerBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeRefineryBlockEntity;
 import techreborn.blockentity.machine.multiblock.IsotopeSeparatorBlockEntity;
+import techreborn.blockentity.machine.multiblock.NaquadahDeresonatorBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeGasTurbineBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeCombustionEngineBlockEntity;
 import techreborn.blockentity.generator.multiblock.UniversalChemicalFuelEngineBlockEntity;
@@ -221,6 +222,7 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<LargeMixerBlockEntity> LARGE_MIXER = register("large_mixer");
 	public static final GuiType<LargeRefineryBlockEntity> LARGE_REFINERY = register("large_refinery");
 	public static final GuiType<IsotopeSeparatorBlockEntity> ISOTOPE_SEPARATOR = register("isotope_separator");
+	public static final GuiType<NaquadahDeresonatorBlockEntity> NAQUADAH_DERESONATOR = register("naquadah_deresonator");
 
 
 	private static <T extends BlockEntity> GuiType<T> register(String path) {
