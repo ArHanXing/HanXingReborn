@@ -100,7 +100,11 @@ class BlockLootTableProvider extends FabricBlockLootTableProvider {
 		addDrop(TRContent.RUBBER_STAIR)
 		addDrop(TRContent.RUBBER_TRAPDOOR)
 		addDrop(TRContent.RUBBER_WOOD)
-		addDrop(TRContent.RUBBER_LOG_STRIPPED)
+		// Stripped rubber wood is a separate block from the stripped log (which
+		// was listed twice here): it was missing, so breaking it voided the block.
+		addDrop(TRContent.STRIPPED_RUBBER_WOOD)
+		addDrop(TRContent.COMPUTER_CUBE)
+		addDrop(TRContent.COPPER_WALL)
 		addDrop(TRContent.RUBBER_LEAVES, leavesDrops(
 			TRContent.RUBBER_LEAVES,
 			TRContent.RUBBER_SAPLING,
