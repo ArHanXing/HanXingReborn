@@ -24,10 +24,10 @@
 
 package techreborn.blockentity.cable;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Direction;
 import team.reborn.energy.api.EnergyStorage;
 import techreborn.init.TRContent;
 
@@ -36,19 +36,28 @@ import java.util.*;
 class CableTickManager {
 	private static final List<CableBlockEntity> cableList = new ArrayList<>();
 	private static final List<OfferedEnergyStorage> targetStorages = new ArrayList<>();
-	private static final Deque<CableBlockEntity> bfsQueue = new ArrayDeque<>();
 	private static long tickCounter = 0;
 
 	static {
 		ServerTickEvents.START_SERVER_TICK.register(server -> tickCounter++);
+		// A world change must not leave cables of the previous world registered.
+		ServerLifecycleEvents.SERVER_STOPPED.register(server -> CableNetworkManager.clear());
 	}
 
 	static void handleCableTick(CableBlockEntity startingCable) {
 		if (!(startingCable.getWorld() instanceof ServerWorld)) throw new IllegalStateException();
 
+		// Membership comes from the union-find: it hands back the cached set of
+		// cables on this network, rebuilding the component only when the
+		// topology changed or a member's chunk unloaded.
+		CableNetwork network = CableNetworkManager.resolve(startingCable, tickCounter);
+		// Make sure we only gather and tick each network once per tick.
+		if (network.size() == 0 || network.lastTick() == tickCounter) return;
+		network.setLastTick(tickCounter);
+
 		try {
-			gatherCables(startingCable);
-			if (cableList.isEmpty()) return;
+			cableList.clear();
+			cableList.addAll(network.cables());
 
 			// Group all energy into the network.
 			long networkCapacity = 0;
@@ -72,9 +81,15 @@ class CableTickManager {
 			}
 
 			// Pull energy from storages.
-			networkAmount += dispatchTransfer(startingCable.getCableType(), EnergyStorage::extract, networkCapacity - networkAmount);
+			long input = dispatchTransfer(startingCable.getCableType(), EnergyStorage::extract, networkCapacity - networkAmount);
+			networkAmount += input;
 			// Push energy into storages.
-			networkAmount -= dispatchTransfer(startingCable.getCableType(), EnergyStorage::insert, networkAmount);
+			long output = dispatchTransfer(startingCable.getCableType(), EnergyStorage::insert, networkAmount);
+			networkAmount -= output;
+
+			// Publish the aggregate before it is split back across the cables, so
+			// the Jade tooltip can show what this network actually moved.
+			network.setStats(networkAmount, networkCapacity, input, output);
 
 			// Split energy evenly across cables.
 			int cableCount = cableList.size();
@@ -88,39 +103,6 @@ class CableTickManager {
 		} finally {
 			cableList.clear();
 			targetStorages.clear();
-			bfsQueue.clear();
-		}
-	}
-
-	private static boolean shouldTickCable(CableBlockEntity current) {
-		// Make sure we only gather and tick each cable once per tick.
-		if (current.lastTick == tickCounter) return false;
-		// Make sure we ignore cables in non-ticking chunks.
-		return current.getWorld() instanceof ServerWorld sw && sw.isChunkLoaded(current.getPos());
-	}
-
-	/**
-	 * Perform a BFS to gather all connected ticking cables.
-	 */
-	private static void gatherCables(CableBlockEntity start) {
-		if (!shouldTickCable(start)) return;
-
-		bfsQueue.add(start);
-		start.lastTick = tickCounter;
-		cableList.add(start);
-
-		while (!bfsQueue.isEmpty()) {
-			CableBlockEntity current = bfsQueue.removeFirst();
-
-			for (Direction direction : Direction.values()) {
-				if (current.getAdjacentBlockEntity(direction) instanceof CableBlockEntity adjCable && current.getCableType().transferRate == adjCable.getCableType().transferRate) {
-					if (shouldTickCable(adjCable)) {
-						bfsQueue.add(adjCable);
-						adjCable.lastTick = tickCounter;
-						cableList.add(adjCable);
-					}
-				}
-			}
 		}
 	}
 

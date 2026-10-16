@@ -83,7 +83,6 @@ public class CableBlockEntity extends BlockEntity
 	private TRContent.Cables cableType = null;
 	@Nullable
 	private BlockState cover = null;
-	long lastTick = 0;
 	// null means that it needs to be re-queried
 	List<CableTarget> targets = null;
 	/**
@@ -253,8 +252,20 @@ public class CableBlockEntity extends BlockEntity
 		}
 	}
 
+	/**
+	 * Called whenever a neighbouring block changes. Both the cached targets and
+	 * the network membership go stale: the neighbour may have become (or stopped
+	 * being) a cable of the same tier, which merges or splits the network.
+	 */
 	public void neighborUpdate() {
 		targets = null;
+		CableNetworkManager.invalidate(this);
+	}
+
+	@Override
+	public void markRemoved() {
+		CableNetworkManager.unregister(this);
+		super.markRemoved();
 	}
 
 	// BlockEntityTicker

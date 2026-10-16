@@ -31,26 +31,35 @@ import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
+import techreborn.blockentity.cable.CableBlockEntity;
+import techreborn.blocks.cable.CableBlock;
 
 /**
  * Jade (WAILA/Hwyla successor) plugin that shows the currently running recipe
  * on TechReborn machines: inputs, outputs, energy usage, parallel count and
- * progress. Registered through the {@code "jade"} entrypoint in fabric.mod.json.
+ * progress, plus the electrical network a cable belongs to. Registered through
+ * the {@code "jade"} entrypoint in fabric.mod.json.
  */
 @WailaPlugin
 public class TechRebornJadePlugin implements IWailaPlugin {
 
 	public static final Identifier MACHINE_RECIPE = Identifier.of("techreborn", "machine_recipe");
+	public static final Identifier CABLE_NETWORK = Identifier.of("techreborn", "cable_network");
 
 	@Override
 	public void register(IWailaCommonRegistration registration) {
 		// Server side: sync recipe state every 250ms
 		registration.registerBlockDataProvider(MachineRecipeProvider.INSTANCE, MachineBaseBlockEntity.class);
+		// Server side: cables report their network's aggregate values, which the
+		// client has no way of working out on its own.
+		registration.registerBlockDataProvider(CableNetworkProvider.INSTANCE, CableBlockEntity.class);
 	}
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
 		// Client side: render the recipe lines
 		registration.registerBlockComponent(MachineRecipeProvider.INSTANCE, BlockMachineBase.class);
+		// Client side: render the network lines
+		registration.registerBlockComponent(CableNetworkProvider.INSTANCE, CableBlock.class);
 	}
 }
