@@ -198,6 +198,7 @@ public class RecipeCrafter implements IUpgradeHandler {
 								filledSlots.add(outputSlots[i]);
 							}
 						}
+						onCraftCompleted(currentRecipe);
 						finishCraft();
 					}
 				} else if (canGiveInvAll) {
@@ -303,6 +304,16 @@ public class RecipeCrafter implements IUpgradeHandler {
 	 */
 	protected boolean rollCraftSuccess() {
 		return true;
+	}
+
+	/**
+	 * Called right after a run has produced its outputs, before the next recipe
+	 * is looked up. Machines that need to react to a completed run (wear,
+	 * fouling, counters) override this instead of copying the tick loop.
+	 *
+	 * @param recipe {@link RebornRecipe} the recipe that just finished
+	 */
+	protected void onCraftCompleted(RebornRecipe recipe) {
 	}
 
 	/**

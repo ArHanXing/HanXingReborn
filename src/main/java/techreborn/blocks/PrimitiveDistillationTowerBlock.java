@@ -28,7 +28,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import reborncore.api.blockentity.IMachineGuiHandler;
+import techreborn.blockentity.machine.multiblock.PrimitiveDistillationTowerBlockEntity;
 import techreborn.init.ModRecipes;
 
 import java.util.List;
@@ -37,11 +40,24 @@ import java.util.function.BiFunction;
 /**
  * The Primitive Distillation Tower block. Runs every distillation tower recipe
  * at 1.5x time and 0.8x power, with no parallelism.
+ * <p>
+ * Once fouled it emits a full-strength redstone signal, so automation can react
+ * without looking at the machine.
  */
 public class PrimitiveDistillationTowerBlock extends GenericMachineBlock {
 
 	public PrimitiveDistillationTowerBlock(IMachineGuiHandler gui, BiFunction<BlockPos, BlockState, BlockEntity> blockEntityClass) {
 		super(gui, blockEntityClass);
+	}
+
+	@Override
+	public boolean emitsRedstonePower(BlockState state) {
+		return true;
+	}
+
+	@Override
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+		return world.getBlockEntity(pos) instanceof PrimitiveDistillationTowerBlockEntity tower && tower.isBlocked() ? 15 : 0;
 	}
 
 	@Override

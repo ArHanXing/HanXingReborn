@@ -50,6 +50,7 @@ import techreborn.blockentity.generator.multiblock.LargeFluidGeneratorBlockEntit
 import techreborn.blockentity.machine.multiblock.DysonSwarmMachineBlockEntity;
 import techreborn.blockentity.machine.multiblock.IsotopeSeparatorBlockEntity;
 import techreborn.blockentity.machine.multiblock.NaquadahDeresonatorBlockEntity;
+import techreborn.blockentity.machine.multiblock.PrimitiveDistillationTowerBlockEntity;
 import techreborn.blockentity.machine.multiblock.VoidDrillBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorAssemblerBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorMinerBlockEntity;
@@ -136,6 +137,12 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 		if (accessor.getBlockEntity() instanceof VoidDrillBlockEntity drill) {
 			data.putLong("drill_reserve", drill.getChunkRemaining());
 			data.putDouble("drill_depletion", drill.depletionFactor());
+		}
+
+		// Primitive Distillation Tower: fouling state.
+		if (accessor.getBlockEntity() instanceof PrimitiveDistillationTowerBlockEntity tower) {
+			data.putInt("tower_impurity", tower.getImpurity());
+			data.putBoolean("tower_blocked", tower.isBlocked());
 		}
 
 		if (!(accessor.getBlockEntity() instanceof IRecipeCrafterProvider provider)) {
@@ -270,6 +277,16 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 					Text.literal(String.format("%.1f B", data.getLong("drill_reserve") / 1000.0)).formatted(Formatting.YELLOW)));
 			tooltip.add(Text.translatable("jade.techreborn.void_drill_depletion",
 					Text.literal(String.format("%.0f%%", data.getDouble("drill_depletion") * 100.0)).formatted(Formatting.YELLOW)));
+		}
+
+		// Primitive Distillation Tower: fouling, and why it stopped.
+		if (data.contains("tower_impurity")) {
+			int impurity = data.getInt("tower_impurity");
+			tooltip.add(Text.translatable("jade.techreborn.primitive_distillation_tower_impurity",
+					Text.literal(impurity + "%").formatted(data.getBoolean("tower_blocked") ? Formatting.RED : Formatting.YELLOW)));
+			if (data.getBoolean("tower_blocked")) {
+				tooltip.add(Text.translatable("jade.techreborn.primitive_distillation_tower_blocked").formatted(Formatting.RED));
+			}
 		}
 
 		// Recipe lines (machines with an active crafter)

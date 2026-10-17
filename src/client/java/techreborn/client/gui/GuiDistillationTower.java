@@ -38,7 +38,7 @@ import techreborn.blockentity.machine.multiblock.JsonMultiblockMachineBlockEntit
  */
 public class GuiDistillationTower<T extends JsonMultiblockMachineBlockEntity & BuiltScreenHandlerProvider> extends GuiMultiblockMachine {
 
-	private final T blockEntity;
+	protected final T blockEntity;
 
 	public GuiDistillationTower(int syncID, final PlayerEntity player, T blockEntity) {
 		super(player, blockEntity, blockEntity.createScreenHandler(syncID, player));

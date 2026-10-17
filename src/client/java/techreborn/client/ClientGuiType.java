@@ -141,6 +141,7 @@ import techreborn.client.gui.GuiChunkLoader;
 import techreborn.client.gui.GuiCompressor;
 import techreborn.client.gui.GuiDieselGenerator;
 import techreborn.client.gui.GuiDistillationTower;
+import techreborn.client.gui.GuiPrimitiveDistillationTower;
 import techreborn.client.gui.GuiElectricFurnace;
 import techreborn.client.gui.GuiElevator;
 import techreborn.client.gui.GuiExtractor;
@@ -229,7 +230,7 @@ public record ClientGuiType<T extends BlockEntity>(GuiType<T> guiType, GuiFactor
 	public static final ClientGuiType<NaquadahDeresonatorBlockEntity> NAQUADAH_DERESONATOR = register(GuiType.NAQUADAH_DERESONATOR, GuiNaquadahDeresonator::new);
 	public static final ClientGuiType<VoidDrillBlockEntity> VOID_DRILL = register(GuiType.VOID_DRILL, GuiVoidDrill::new);
 	public static final ClientGuiType<PreciseAssemblerBlockEntity> PRECISE_ASSEMBLER = register(GuiType.PRECISE_ASSEMBLER, GuiPreciseAssembler::new);
-	public static final ClientGuiType<PrimitiveDistillationTowerBlockEntity> PRIMITIVE_DISTILLATION_TOWER = register(GuiType.PRIMITIVE_DISTILLATION_TOWER, GuiDistillationTower::new);
+	public static final ClientGuiType<PrimitiveDistillationTowerBlockEntity> PRIMITIVE_DISTILLATION_TOWER = register(GuiType.PRIMITIVE_DISTILLATION_TOWER, GuiPrimitiveDistillationTower::new);
 	public static final ClientGuiType<RotaryHearthFurnaceBlockEntity> ROTARY_HEARTH_FURNACE = register(GuiType.ROTARY_HEARTH_FURNACE, GuiRotaryHearthFurnace::new);
 	public static final ClientGuiType<IndustrialCentrifugeBlockEntity> CENTRIFUGE = register(GuiType.CENTRIFUGE, GuiCentrifuge::new);
 	public static final ClientGuiType<ChargeOMatBlockEntity> CHARGEBENCH = register(GuiType.CHARGEBENCH, GuiChargeBench::new);

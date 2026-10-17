@@ -43,6 +43,7 @@ public enum ModFluids implements ItemConvertible {
 	CARBON,
 	CARBON_FIBER,
 	CHLORITE,
+	CLEANING_SOLVENT,
 	COMPRESSED_AIR,
 	DEUTERIUM,
 	DIESEL,
