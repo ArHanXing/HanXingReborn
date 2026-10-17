@@ -646,6 +646,9 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "naquadah_deresonator", key = "NaquadahDeresonatorMaxEnergy", comment = "Naquadah Deresonator Max Energy")
 	public static int naquadahDeresonatorMaxEnergy = 1_000_000;
 
+	@Config(config = "machines", category = "cables", key = "CableIdleIntervalTicks", comment = "How often (in ticks) an electrical network that moved no energy is re-checked anyway. A consumer can become able to accept power without any block event the cables can observe, so idle networks must still be probed. 1 disables the fast path.")
+	public static int cableIdleIntervalTicks = 4;
+
 	@Config(config = "machines", category = "space_elevator_miner", key = "SpaceElevatorMinerMaxInput", comment = "Space Elevator Miner Max Input (Energy per tick)")
 	public static int spaceElevatorMinerMaxInput = 128;
 

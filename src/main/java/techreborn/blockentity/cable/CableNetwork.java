@@ -56,6 +56,8 @@ public final class CableNetwork {
 	 * {@link CableNetworkManager#resolve} re-discovers the component.
 	 */
 	private boolean dirty = true;
+	/** {@code true} once a tick has completed and written a snapshot. */
+	private boolean processed = false;
 
 	Set<CableBlockEntity> cables() {
 		return cables;
@@ -123,6 +125,19 @@ public final class CableNetwork {
 		this.capacity = capacity;
 		this.input = input;
 		this.output = output;
+		this.processed = true;
+	}
+
+	/**
+	 * A network counts as idle once a completed tick moved no energy in either
+	 * direction. It is only a hint used to skip the transfer phase: the pump
+	 * still checks the buffered total, because a consumer that was full can
+	 * become able to accept energy without any block event the cables can see.
+	 *
+	 * @return {@code boolean} whether the last processed tick moved no energy
+	 */
+	boolean isIdle() {
+		return processed && input == 0 && output == 0;
 	}
 
 	/**

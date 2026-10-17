@@ -29,6 +29,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.server.world.ServerWorld;
 import team.reborn.energy.api.EnergyStorage;
+import techreborn.config.TechRebornConfig;
 import techreborn.init.TRContent;
 
 import java.util.*;
@@ -75,29 +76,52 @@ class CableTickManager {
 				cable.ioBlocked = true;
 			}
 
-			// Just in case.
-			if (networkAmount > networkCapacity) {
-				networkAmount = networkCapacity;
-			}
+			// An idle network whose stored total did not change cannot move any
+			// energy, so the two transfer passes are skipped - they are by far the
+			// most expensive part, costing one simulated transaction per attached
+			// storage per pass. The total is compared rather than trusting the idle
+			// flag alone, because something can push energy straight into a cable
+			// between ticks and that must still be noticed.
+			//
+			// A network that moved nothing is still probed periodically: a consumer
+			// that was full last tick can become able to accept energy without any
+			// block event the cables are able to observe.
+			boolean idle = network.isIdle() && networkAmount == network.getBuffer();
+			int interval = TechRebornConfig.cableIdleIntervalTicks;
+			boolean recheck = interval <= 1 || tickCounter % interval == 0;
 
-			// Pull energy from storages.
-			long input = dispatchTransfer(startingCable.getCableType(), EnergyStorage::extract, networkCapacity - networkAmount);
-			networkAmount += input;
-			// Push energy into storages.
-			long output = dispatchTransfer(startingCable.getCableType(), EnergyStorage::insert, networkAmount);
-			networkAmount -= output;
+			long input = 0;
+			long output = 0;
+			if (!idle || recheck) {
+				// Just in case.
+				if (networkAmount > networkCapacity) {
+					networkAmount = networkCapacity;
+				}
+
+				// Pull energy from storages.
+				input = dispatchTransfer(startingCable.getCableType(), EnergyStorage::extract, networkCapacity - networkAmount);
+				networkAmount += input;
+				// Push energy into storages.
+				output = dispatchTransfer(startingCable.getCableType(), EnergyStorage::insert, networkAmount);
+				networkAmount -= output;
+			}
 
 			// Publish the aggregate before it is split back across the cables, so
 			// the Jade tooltip can show what this network actually moved.
 			network.setStats(networkAmount, networkCapacity, input, output);
 
-			// Split energy evenly across cables.
+			// Split energy evenly across cables. markDirty() makes the chunk save,
+			// so it is only called when the amount really changed; doing it every
+			// tick kept every chunk with a cable permanently dirty.
 			int cableCount = cableList.size();
 			for (CableBlockEntity cable : cableList) {
-				cable.energyContainer.amount = networkAmount / cableCount;
-				networkAmount -= cable.energyContainer.amount;
+				long share = networkAmount / cableCount;
+				if (cable.energyContainer.amount != share) {
+					cable.energyContainer.amount = share;
+					cable.markDirty();
+				}
+				networkAmount -= share;
 				cableCount--;
-				cable.markDirty();
 				cable.ioBlocked = false;
 			}
 		} finally {
