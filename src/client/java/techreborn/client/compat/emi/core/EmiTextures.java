@@ -83,6 +83,8 @@ public class EmiTextures {
 	public static final EmiTexture ROTOR = new EmiTexture(SIMPLIFIED_ICONS, 16, 32, 16, 16);
 	/** A swirling resonance cell, used by the Naquadah Deresonator. */
 	public static final EmiTexture RESONATING = new EmiTexture(SIMPLIFIED_ICONS, 144, 16, 16, 16);
+	/** A downward extraction arrow, used by the Void Drill. */
+	public static final EmiTexture DRILLING = new EmiTexture(SIMPLIFIED_ICONS, 176, 16, 16, 16);
 
 	public static final NinePatchTexture SLOT_BG = new NinePatchTexture(WIDGETS, 0, 0, 3, 3, 1, 1, 1, 1, false);
 }

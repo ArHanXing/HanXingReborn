@@ -649,6 +649,12 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "cables", key = "CableIdleIntervalTicks", comment = "How often (in ticks) an electrical network that moved no energy is re-checked anyway. A consumer can become able to accept power without any block event the cables can observe, so idle networks must still be probed. 1 disables the fast path.")
 	public static int cableIdleIntervalTicks = 4;
 
+	@Config(config = "machines", category = "void_drill", key = "VoidDrillMaxInput", comment = "Void Drill Max Input (Energy per tick)")
+	public static int voidDrillMaxInput = 512;
+
+	@Config(config = "machines", category = "void_drill", key = "VoidDrillMaxEnergy", comment = "Void Drill Max Energy")
+	public static int voidDrillMaxEnergy = 1_000_000;
+
 	@Config(config = "machines", category = "space_elevator_miner", key = "SpaceElevatorMinerMaxInput", comment = "Space Elevator Miner Max Input (Energy per tick)")
 	public static int spaceElevatorMinerMaxInput = 128;
 

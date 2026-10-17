@@ -1,0 +1,9 @@
+{
+  "type": "techreborn:void_drill",
+  "biome": "minecraft:desert",
+  "fluid": "techreborn:silicon",
+  "amount": 10000,
+  "power": 512,
+  "time": 100,
+  "display": { "id": "minecraft:sand", "count": 1 }
+}

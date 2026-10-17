@@ -38,6 +38,7 @@ import techreborn.recipe.recipes.IndustrialGrinderRecipe;
 import techreborn.recipe.recipes.IndustrialSawmillRecipe;
 import techreborn.recipe.recipes.NaquadahDeresonatorRecipe;
 import techreborn.recipe.recipes.RollingMachineRecipe;
+import techreborn.recipe.recipes.VoidDrillRecipe;
 
 public class ModRecipes {
 	public static final RecipeType<RebornRecipe> ALLOY_SMELTER = RecipeManager.newRecipeType(Identifier.of("techreborn:alloy_smelter"));
@@ -124,4 +125,9 @@ public class ModRecipes {
 	// recipe records the fluid that feeds the probability as an id, with no
 	// fixed amount to consume up front.
 	public static final RecipeType<NaquadahDeresonatorRecipe> NAQUADAH_DERESONATOR = RecipeManager.newRecipeType(Identifier.of("techreborn:naquadah_deresonator"), NaquadahDeresonatorRecipe.CODEC, NaquadahDeresonatorRecipe.PACKET_CODEC);
+
+	// Void Drill: one recipe per biome, with no item inputs or outputs, so the
+	// recipe only carries the biome, the fluid, its amount, the cost and a
+	// display item.
+	public static final RecipeType<VoidDrillRecipe> VOID_DRILL = RecipeManager.newRecipeType(Identifier.of("techreborn:void_drill"), VoidDrillRecipe.CODEC, VoidDrillRecipe.PACKET_CODEC);
 }

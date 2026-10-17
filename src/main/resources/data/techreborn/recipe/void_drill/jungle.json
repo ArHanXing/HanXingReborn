@@ -1,0 +1,9 @@
+{
+  "type": "techreborn:void_drill",
+  "biome": "minecraft:jungle",
+  "fluid": "techreborn:biofuel",
+  "amount": 10000,
+  "power": 512,
+  "time": 100,
+  "display": { "id": "minecraft:jungle_leaves", "count": 1 }
+}

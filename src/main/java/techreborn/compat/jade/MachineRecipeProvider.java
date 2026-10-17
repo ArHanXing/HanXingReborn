@@ -50,6 +50,7 @@ import techreborn.blockentity.generator.multiblock.LargeFluidGeneratorBlockEntit
 import techreborn.blockentity.machine.multiblock.DysonSwarmMachineBlockEntity;
 import techreborn.blockentity.machine.multiblock.IsotopeSeparatorBlockEntity;
 import techreborn.blockentity.machine.multiblock.NaquadahDeresonatorBlockEntity;
+import techreborn.blockentity.machine.multiblock.VoidDrillBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorAssemblerBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorMinerBlockEntity;
 
@@ -129,6 +130,12 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 		if (accessor.getBlockEntity() instanceof NaquadahDeresonatorBlockEntity deresonator) {
 			data.putDouble("deresonator_chance", deresonator.getCurrentSuccessRate());
 			data.putLong("deresonator_fluid", deresonator.getRunFluidMb());
+		}
+
+		// Void Drill: how much the chunk has left and how fast it is being drained.
+		if (accessor.getBlockEntity() instanceof VoidDrillBlockEntity drill) {
+			data.putLong("drill_reserve", drill.getChunkRemaining());
+			data.putDouble("drill_depletion", drill.depletionFactor());
 		}
 
 		if (!(accessor.getBlockEntity() instanceof IRecipeCrafterProvider provider)) {
@@ -255,6 +262,14 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 				tooltip.add(Text.translatable("jade.techreborn.naquadah_deresonator_fluid",
 						Text.literal(String.valueOf(fed)).formatted(Formatting.YELLOW)));
 			}
+		}
+
+		// Void Drill: the chunk's remaining reserve and the current depletion.
+		if (data.contains("drill_reserve")) {
+			tooltip.add(Text.translatable("jade.techreborn.void_drill_reserve",
+					Text.literal(String.format("%.1f B", data.getLong("drill_reserve") / 1000.0)).formatted(Formatting.YELLOW)));
+			tooltip.add(Text.translatable("jade.techreborn.void_drill_depletion",
+					Text.literal(String.format("%.0f%%", data.getDouble("drill_depletion") * 100.0)).formatted(Formatting.YELLOW)));
 		}
 
 		// Recipe lines (machines with an active crafter)

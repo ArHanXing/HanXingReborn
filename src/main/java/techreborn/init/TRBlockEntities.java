@@ -187,6 +187,7 @@ public class TRBlockEntities {
 	public static final BlockEntityType<LargeRefineryBlockEntity> LARGE_REFINERY = register(LargeRefineryBlockEntity::new, "large_refinery", TRContent.Machine.LARGE_REFINERY);
 	public static final BlockEntityType<IsotopeSeparatorBlockEntity> ISOTOPE_SEPARATOR = register(IsotopeSeparatorBlockEntity::new, "isotope_separator", TRContent.Machine.ISOTOPE_SEPARATOR);
 	public static final BlockEntityType<NaquadahDeresonatorBlockEntity> NAQUADAH_DERESONATOR = register(NaquadahDeresonatorBlockEntity::new, "naquadah_deresonator", TRContent.Machine.NAQUADAH_DERESONATOR);
+	public static final BlockEntityType<VoidDrillBlockEntity> VOID_DRILL = register(VoidDrillBlockEntity::new, "void_drill", TRContent.Machine.VOID_DRILL);
 
 	public static <T extends BlockEntity> BlockEntityType<T> register(BiFunction<BlockPos, BlockState, T> supplier, String name, ItemConvertible... items) {
 		return register(supplier, name, Arrays.stream(items).map(itemConvertible -> Block.getBlockFromItem(itemConvertible.asItem())).toArray(Block[]::new));

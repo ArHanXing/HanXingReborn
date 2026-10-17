@@ -1,0 +1,9 @@
+{
+  "type": "techreborn:void_drill",
+  "biome": "minecraft:nether_wastes",
+  "fluid": "techreborn:helium3",
+  "amount": 10000,
+  "power": 512,
+  "time": 100,
+  "display": { "id": "minecraft:netherrack", "count": 1 }
+}

@@ -89,6 +89,7 @@ import techreborn.blocks.LargeMixerBlock;
 import techreborn.blocks.LargeRefineryBlock;
 import techreborn.blocks.IsotopeSeparatorBlock;
 import techreborn.blocks.NaquadahDeresonatorBlock;
+import techreborn.blocks.VoidDrillBlock;
 import techreborn.blocks.FurnaceProMaxBlock;
 import techreborn.blocks.PreciseAssemblerBlock;
 import techreborn.blocks.LargeWireMillBlock;
@@ -841,6 +842,7 @@ public class TRContent {
 		LARGE_REFINERY(new LargeRefineryBlock(GuiType.LARGE_REFINERY, LargeRefineryBlockEntity::new)),
 		ISOTOPE_SEPARATOR(new IsotopeSeparatorBlock(GuiType.ISOTOPE_SEPARATOR, IsotopeSeparatorBlockEntity::new)),
 		NAQUADAH_DERESONATOR(new NaquadahDeresonatorBlock(GuiType.NAQUADAH_DERESONATOR, NaquadahDeresonatorBlockEntity::new)),
+		VOID_DRILL(new VoidDrillBlock(GuiType.VOID_DRILL, VoidDrillBlockEntity::new)),
 		SOLID_CANNING_MACHINE(new GenericMachineBlock(GuiType.SOLID_CANNING_MACHINE, SolidCanningMachineBlockEntity::new)),
 		WIRE_MILL(new GenericMachineBlock(GuiType.WIRE_MILL, WireMillBlockEntity::new)),
 		GREENHOUSE_CONTROLLER(new GenericMachineBlock(GuiType.GREENHOUSE_CONTROLLER, GreenhouseControllerBlockEntity::new)),
