@@ -116,8 +116,11 @@ public class VoidDrillBlockEntity extends JsonMultiblockMachineBlockEntity imple
 	// =======================================================================
 
 	/**
-	 * @return {@code int} how many overclocker items are installed, counting
-	 *         stack size
+	 * Counts occupied upgrade slots, not items: like every other machine, an
+	 * upgrade applies once per slot and the stack size is irrelevant. This is
+	 * what the upgrade tooltip previews.
+	 *
+	 * @return {@code int} how many overclocker slots are filled (0..4)
 	 */
 	public int countOverclockers() {
 		Inventory upgrades = getUpgradeInventory();
@@ -128,7 +131,7 @@ public class VoidDrillBlockEntity extends JsonMultiblockMachineBlockEntity imple
 		for (int i = 0; i < getUpgradeSlotCount(); i++) {
 			ItemStack stack = upgrades.getStack(i);
 			if (!stack.isEmpty() && stack.isOf(TRContent.Upgrades.OVERCLOCKER.asItem())) {
-				count += stack.getCount();
+				count++;
 			}
 		}
 		return count;

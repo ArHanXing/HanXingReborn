@@ -111,8 +111,11 @@ public class StackToolTipHandler implements ItemTooltipCallback {
 
 		if (item instanceof UpgradeItem upgrade) {
 			ToolTipAssistUtils.addInfo(item.getTranslationKey(), lines, false);
-			// Stats of a full stack are always shown; no shift required.
-			lines.addAll(ToolTipAssistUtils.getUpgradeStats(TRContent.Upgrades.valueOf(upgrade.name.toUpperCase()), stack.getCount(), true));
+			// The preview is per upgrade slot, not per item: machines apply an
+			// upgrade once per slot and ignore the stack size, so shift shows the
+			// effect of filling every slot.
+			lines.addAll(ToolTipAssistUtils.getUpgradeStats(
+					TRContent.Upgrades.valueOf(upgrade.name.toUpperCase()), Screen.hasShiftDown()));
 		}
 
 		if (item instanceof DynamicCellItem cell) {

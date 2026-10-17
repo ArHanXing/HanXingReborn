@@ -28,6 +28,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import techreborn.blockentity.machine.multiblock.VoidDrillBlockEntity;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.TRContent;
 
@@ -48,25 +49,80 @@ public class ToolTipAssistUtils {
 	private static final Formatting posColour = Formatting.GREEN;
 	private static final Formatting negColour = Formatting.RED;
 
-	public static List<Text> getUpgradeStats(TRContent.Upgrades upgradeType, int count, boolean shiftHeld) {
+	/** Machines expose four upgrade slots; the preview models filling all of them. */
+	public static final int MAX_UPGRADE_SLOTS = 4;
+
+	/**
+	 * Builds the effect lines of an upgrade.
+	 * <p>
+	 * The count is a number of <b>slots</b>, not of items. A machine applies an
+	 * upgrade once per slot and completely ignores the stack size, so four
+	 * overclockers in one slot are worth exactly as much as a single one. The
+	 * preview therefore reports one upgrade normally and four (the slot limit)
+	 * while shift is held, which is the most a machine can ever benefit from; it
+	 * deliberately does not grow with the stack.
+	 *
+	 * @param upgradeType {@link TRContent.Upgrades} the upgrade
+	 * @param shiftHeld   {@code boolean} whether to preview every upgrade slot
+	 * @return {@link List} the tooltip lines
+	 */
+	public static List<Text> getUpgradeStats(TRContent.Upgrades upgradeType, boolean shiftHeld) {
 		List<Text> tips = new ArrayList<>();
+		int slots = shiftHeld ? MAX_UPGRADE_SLOTS : 1;
 
 		switch (upgradeType) {
 			case OVERCLOCKER -> {
-				tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.speed_increase"),
-						calculateTimeDecrease(TechRebornConfig.overclockerSpeed, count, shiftHeld), "%", true));
-				tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.energy_increase"),
-						calculateEnergyIncrease(TechRebornConfig.overclockerPower + 1, count, shiftHeld), "x", false));
+				tips.add(statLine("techreborn.tooltip.upgrade.speed_increase",
+						percent(1 - Math.pow(TechRebornConfig.overclockerSpeed, slots)), true));
+				tips.add(statLine("techreborn.tooltip.upgrade.energy_increase",
+						times(Math.pow(TechRebornConfig.overclockerPower + 1, slots)), false));
+				if (shiftHeld) {
+					appendOverclockerMachines(tips, slots);
+				}
 			}
 			case TRANSFORMER -> {
 			}
-			case ENERGY_STORAGE -> tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.storage_increase"),
-					calculateEnergyIncrease(2, count, shiftHeld), "x", true));
-			case SUPERCONDUCTOR -> tips.add(getStatStringUnit(I18n.translate("techreborn.tooltip.upgrade.flow_increase"),
-					calculateValue(Math.pow(2, (TechRebornConfig.superConductorCount + 2)) * 100, count, shiftHeld), "%", true));
+			case ENERGY_STORAGE -> tips.add(statLine("techreborn.tooltip.upgrade.storage_increase",
+					times(Math.pow(2, slots)), true));
+			case SUPERCONDUCTOR -> tips.add(statLine("techreborn.tooltip.upgrade.flow_increase",
+					FORMAT.format(Math.pow(2, TechRebornConfig.superConductorCount + 2) * 100 * slots) + "%", true));
+		}
+
+		if (!shiftHeld) {
+			tips.add(Text.translatable("techreborn.tooltip.upgrade.hold_shift",
+					Text.literal(String.valueOf(MAX_UPGRADE_SLOTS)).formatted(statColour))
+					.formatted(Formatting.DARK_GRAY));
 		}
 
 		return tips;
+	}
+
+	/**
+	 * Adds the machines whose overclocker does not follow the generic curve, so
+	 * the player can see what it is actually worth there.
+	 * <p>
+	 * The Digital Miner uses its own multipliers (0.5x break time, 2x draw per
+	 * overclocker) instead of the generic 0.5 / 1.25, and the Void Drill gets a
+	 * depletion discount on top of the usual speed and power effects.
+	 *
+	 * @param tips  {@link List} the tooltip lines to append to
+	 * @param slots {@code int} how many overclockers are being previewed
+	 */
+	private static void appendOverclockerMachines(List<Text> tips, int slots) {
+		tips.add(Text.translatable("techreborn.tooltip.upgrade.overclocker.slots",
+						Text.literal(String.valueOf(slots)).formatted(statColour))
+				.formatted(Formatting.DARK_GRAY));
+
+		tips.add(Text.translatable("techreborn.tooltip.upgrade.overclocker.digital_miner",
+						times(Math.pow(TechRebornConfig.digitalMinerSpeedMultiplierPerOverclocker, slots)),
+						times(Math.pow(TechRebornConfig.digitalMinerPowerMultiplierPerOverclocker, slots)))
+				.formatted(Formatting.AQUA));
+
+		double depletion = Math.max(VoidDrillBlockEntity.MIN_DEPLETION,
+				VoidDrillBlockEntity.BASE_DEPLETION - VoidDrillBlockEntity.DEPLETION_PER_OVERCLOCKER * slots);
+		tips.add(Text.translatable("techreborn.tooltip.upgrade.overclocker.void_drill",
+						percent(depletion), percent(VoidDrillBlockEntity.MIN_DEPLETION))
+				.formatted(Formatting.AQUA));
 	}
 
 	/**
@@ -134,40 +190,31 @@ public class ToolTipAssistUtils {
 				.append(": ").append(Text.literal(value).formatted(statColour)));
 	}
 
-	private static int calculateValue(double value, int count, boolean shiftHeld) {
-		int calculatedVal;
+	private static final NumberFormat FORMAT =
+			new DecimalFormat("##.##", new DecimalFormatSymbols(Locale.US));
 
-		if (shiftHeld) {
-			calculatedVal = (int) value * Math.min(count, 4);
-		} else {
-			calculatedVal = (int) value;
-		}
-
-		return calculatedVal;
+	private static String percent(double ratio) {
+		return FORMAT.format(ratio * 100) + "%";
 	}
 
-	private static double calculateTimeDecrease(double timeMultiplier, int count, boolean shiftHeld) {
-		int n = shiftHeld ? Math.min(count, 4) : 1;
-		// Each upgrade multiplies the craft time by timeMultiplier (e.g. 0.5),
-		// so n upgrades reduce the time by (1 - timeMultiplier^n) * 100 percent.
-		return (1 - Math.pow(timeMultiplier, n)) * 100;
+	private static String times(double multiplier) {
+		return FORMAT.format(multiplier) + "x";
 	}
 
-	private static double calculateEnergyIncrease(double value, int count, boolean shiftHeld) {
-		double calculatedVal;
-
-		if (shiftHeld) {
-			calculatedVal = Math.pow(value, Math.min(count, 4));
-		} else {
-			calculatedVal = value;
-		}
-
-		return calculatedVal;
-	}
-
-	private static Text getStatStringUnit(String text, double value, String unit, boolean isPositive) {
-		DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US); // Always use dot
-		NumberFormat formatter = new DecimalFormat("##.##", symbols); // Round to 2 decimal places
-		return Text.literal(statColour + text + ": " + ((isPositive) ? posColour : negColour) + formatter.format(value) + unit);
+	/**
+	 * A "label: value" line built from real text components. The previous
+	 * implementation concatenated {@link Formatting} constants into a single
+	 * literal, which embeds legacy section-sign codes that modern tooltips no
+	 * longer interpret.
+	 *
+	 * @param labelKey   {@link String} translation key of the label
+	 * @param value      {@link String} the formatted value
+	 * @param isPositive {@code boolean} green when positive, red otherwise
+	 * @return {@link Text} the line
+	 */
+	private static Text statLine(String labelKey, String value, boolean isPositive) {
+		return Text.translatable(labelKey).formatted(infoColour)
+				.append(Text.literal(": ").formatted(infoColour))
+				.append(Text.literal(value).formatted(isPositive ? posColour : negColour));
 	}
 }
