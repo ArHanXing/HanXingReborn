@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "TIT",
+    "PBP",
+    "ECE"
+  ],
+  "key": {
+    "T": {
+      "item": "techreborn:titanium_plate"
+    },
+    "I": {
+      "item": "techreborn:industrial_machine_frame"
+    },
+    "P": {
+      "item": "techreborn:energy_flow_chip"
+    },
+    "B": {
+      "item": "techreborn:advanced_machine_frame"
+    },
+    "E": {
+      "item": "techreborn:industrial_electrolyzer"
+    },
+    "C": {
+      "item": "techreborn:industrial_centrifuge"
+    }
+  },
+  "result": {
+    "id": "techreborn:gas_collector"
+  }
+}

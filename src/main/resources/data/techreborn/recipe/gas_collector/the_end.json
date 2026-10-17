@@ -1,0 +1,9 @@
+{
+  "type": "techreborn:gas_collector",
+  "dimension": "minecraft:the_end",
+  "fluid": "techreborn:helium3",
+  "amount": 10000,
+  "power": 512,
+  "time": 100,
+  "display": { "id": "minecraft:end_stone", "count": 1 }
+}

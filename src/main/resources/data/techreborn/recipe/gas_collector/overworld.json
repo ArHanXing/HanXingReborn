@@ -1,0 +1,9 @@
+{
+  "type": "techreborn:gas_collector",
+  "dimension": "minecraft:overworld",
+  "fluid": "techreborn:compressed_air",
+  "amount": 10000,
+  "power": 512,
+  "time": 100,
+  "display": { "id": "minecraft:glass", "count": 1 }
+}

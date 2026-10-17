@@ -655,6 +655,12 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "void_drill", key = "VoidDrillMaxEnergy", comment = "Void Drill Max Energy")
 	public static int voidDrillMaxEnergy = 1_000_000;
 
+	@Config(config = "machines", category = "gas_collector", key = "GasCollectorMaxInput", comment = "Gas Collector Max Input (Energy per tick)")
+	public static int gasCollectorMaxInput = 512;
+
+	@Config(config = "machines", category = "gas_collector", key = "GasCollectorMaxEnergy", comment = "Gas Collector Max Energy")
+	public static int gasCollectorMaxEnergy = 1_000_000;
+
 	@Config(config = "machines", category = "space_elevator_miner", key = "SpaceElevatorMinerMaxInput", comment = "Space Elevator Miner Max Input (Energy per tick)")
 	public static int spaceElevatorMinerMaxInput = 128;
 

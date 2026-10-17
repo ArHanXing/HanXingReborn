@@ -111,6 +111,7 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiStack ISOTOPE_SEPARATOR_STACK = EmiStack.of(TRContent.Machine.ISOTOPE_SEPARATOR);
 	public static final EmiStack NAQUADAH_DERESONATOR_STACK = EmiStack.of(TRContent.Machine.NAQUADAH_DERESONATOR);
 	public static final EmiStack VOID_DRILL_STACK = EmiStack.of(TRContent.Machine.VOID_DRILL);
+	public static final EmiStack GAS_COLLECTOR_STACK = EmiStack.of(TRContent.Machine.GAS_COLLECTOR);
 
 	public static final EmiRecipeCategory ALLOY_SMELTER_CATEGORY =
 		new EmiRecipeCategory(trId("alloy_smelter"), ALLOY_SMELTER_STACK, EmiTextures.ALLOY_SMELTING,
@@ -241,6 +242,9 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiRecipeCategory VOID_DRILL_CATEGORY =
 		new EmiRecipeCategory(trId("void_drill"), VOID_DRILL_STACK, EmiTextures.DRILLING,
 			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiRecipeCategory GAS_COLLECTOR_CATEGORY =
+		new EmiRecipeCategory(trId("gas_collector"), GAS_COLLECTOR_STACK, EmiTextures.COLLECTING,
+			EmiRecipeSorting.compareOutputThenInput());
 
 	public static final EmiRecipeCategory LARGE_CHEMICAL_REACTOR_CATEGORY =
 		new EmiRecipeCategory(trId("large_chemical_reactor"), LARGE_CHEMICAL_REACTOR_STACK,
@@ -277,6 +281,7 @@ public class TREmiPlugin implements EmiPlugin {
 		Map.entry("isotope_separator", TRContent.Machine.ISOTOPE_SEPARATOR),
 		Map.entry("naquadah_deresonator", TRContent.Machine.NAQUADAH_DERESONATOR),
 		Map.entry("void_drill", TRContent.Machine.VOID_DRILL),
+		Map.entry("gas_collector", TRContent.Machine.GAS_COLLECTOR),
 		Map.entry("fluid_replicator", TRContent.Machine.FLUID_REPLICATOR),
 		Map.entry("implosion_compressor", TRContent.Machine.IMPLOSION_COMPRESSOR),
 		Map.entry("industrial_blast_furnace", TRContent.Machine.INDUSTRIAL_BLAST_FURNACE),
@@ -613,6 +618,12 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(VOID_DRILL_CATEGORY, VOID_DRILL_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.VOID_DRILL)) {
 			registry.addRecipe(new VoidDrillEmiRecipe(recipe));
+		}
+
+		registry.addCategory(GAS_COLLECTOR_CATEGORY);
+		registry.addWorkstation(GAS_COLLECTOR_CATEGORY, GAS_COLLECTOR_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.GAS_COLLECTOR)) {
+			registry.addRecipe(new GasCollectorEmiRecipe(recipe));
 		}
 
 		registry.addCategory(PLASMA_GENERATOR_CATEGORY);

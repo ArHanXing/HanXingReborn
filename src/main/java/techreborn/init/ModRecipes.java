@@ -34,6 +34,7 @@ import techreborn.recipe.recipes.CentrifugeRecipe;
 import techreborn.recipe.recipes.FluidGeneratorRecipe;
 import techreborn.recipe.recipes.FluidReplicatorRecipe;
 import techreborn.recipe.recipes.FusionReactorRecipe;
+import techreborn.recipe.recipes.GasCollectorRecipe;
 import techreborn.recipe.recipes.IndustrialGrinderRecipe;
 import techreborn.recipe.recipes.IndustrialSawmillRecipe;
 import techreborn.recipe.recipes.NaquadahDeresonatorRecipe;
@@ -130,4 +131,7 @@ public class ModRecipes {
 	// recipe only carries the biome, the fluid, its amount, the cost and a
 	// display item.
 	public static final RecipeType<VoidDrillRecipe> VOID_DRILL = RecipeManager.newRecipeType(Identifier.of("techreborn:void_drill"), VoidDrillRecipe.CODEC, VoidDrillRecipe.PACKET_CODEC);
+
+	// Gas Collector: keyed on the dimension instead of the biome, with no reserve.
+	public static final RecipeType<GasCollectorRecipe> GAS_COLLECTOR = RecipeManager.newRecipeType(Identifier.of("techreborn:gas_collector"), GasCollectorRecipe.CODEC, GasCollectorRecipe.PACKET_CODEC);
 }

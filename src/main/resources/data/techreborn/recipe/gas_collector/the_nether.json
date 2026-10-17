@@ -1,0 +1,9 @@
+{
+  "type": "techreborn:gas_collector",
+  "dimension": "minecraft:the_nether",
+  "fluid": "techreborn:sulfur",
+  "amount": 10000,
+  "power": 512,
+  "time": 100,
+  "display": { "id": "minecraft:netherrack", "count": 1 }
+}

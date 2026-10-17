@@ -85,6 +85,8 @@ public class EmiTextures {
 	public static final EmiTexture RESONATING = new EmiTexture(SIMPLIFIED_ICONS, 144, 16, 16, 16);
 	/** A downward extraction arrow, used by the Void Drill. */
 	public static final EmiTexture DRILLING = new EmiTexture(SIMPLIFIED_ICONS, 176, 16, 16, 16);
+	/** A machine-with-intake icon, used by the Gas Collector. */
+	public static final EmiTexture COLLECTING = new EmiTexture(SIMPLIFIED_ICONS, 208, 16, 16, 16);
 
 	public static final NinePatchTexture SLOT_BG = new NinePatchTexture(WIDGETS, 0, 0, 3, 3, 1, 1, 1, 1, false);
 }

@@ -1343,6 +1343,7 @@
   "emi.category.techreborn.isotope_separator": "Isotope Separating",
   "emi.category.techreborn.naquadah_deresonator": "Naquadah Deresonation",
   "emi.category.techreborn.void_drill": "Void Drilling",
+  "emi.category.techreborn.gas_collector": "Gas Collecting",
   "gui.techreborn.emi.multiblock_total": "Total structure blocks: %s",
 
   "item.techreborn.basic_ore_prospector": "Basic Ore Prospector",
@@ -1389,6 +1390,9 @@
   "gui.techreborn.void_drill.reserve": "Chunk reserve: %s",
   "jade.techreborn.void_drill_reserve": "Chunk reserve: %s",
   "jade.techreborn.void_drill_depletion": "Depletion per run: %s",
+  "block.techreborn.gas_collector": "Gas Collector",
+  "item.techreborn.gas_collector.display": "Collects in: %s (%s)",
+  "gui.techreborn.gas_collector.dimension": "Dimension: %s",
   "techreborn.tooltip.machine.digital_miner": "Mines blocks matching a filter inside a chunk radius (tags or regex)",
   "gui.techreborn.digital_miner.filter": "Filter...",
   "gui.techreborn.digital_miner.filter_label": "Filter (#tag or regex)",
