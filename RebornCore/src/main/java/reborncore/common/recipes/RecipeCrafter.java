@@ -186,25 +186,42 @@ public class RecipeCrafter implements IUpgradeHandler {
 						canGiveInvAll = false;
 					}
 				}
+				// A failed roll may still hand material back (an unsuccessful
+				// isotope separation returns its feed unchanged), so the room for
+				// that has to be verified *before* the dice are thrown. Checking
+				// afterwards would either void the returned items or make the same
+				// run re-roll every tick while the outputs are blocked.
+				List<ItemStack> onFailure = failureOutputs();
+				boolean canGiveFailure = true;
+				for (int i = 0; i < onFailure.size(); i++) {
+					if (!canFitOutput(onFailure.get(i), outputSlots[i])) {
+						canGiveFailure = false;
+					}
+				}
 				// The slots that have been filled
 				ArrayList<Integer> filledSlots = new ArrayList<>();
-				if (canGiveInvAll && rollCraftSuccess()) {
-					if (currentRecipe.onCraft(blockEntity, currentParallelCount)) {
-						for (int i = 0; i < outputs.size(); i++) {
-							// Checks it has not been filled
-							if (!filledSlots.contains(outputSlots[i])) {
-								// Fills the slot with the output stack (parallel count times)
-								fitStack(outputs.get(i).copy(), outputSlots[i], currentParallelCount);
-								filledSlots.add(outputSlots[i]);
+				if (canGiveInvAll && canGiveFailure) {
+					if (rollCraftSuccess()) {
+						if (currentRecipe.onCraft(blockEntity, currentParallelCount)) {
+							for (int i = 0; i < outputs.size(); i++) {
+								// Checks it has not been filled
+								if (!filledSlots.contains(outputSlots[i])) {
+									// Fills the slot with the output stack (parallel count times)
+									fitStack(outputs.get(i).copy(), outputSlots[i], currentParallelCount);
+									filledSlots.add(outputSlots[i]);
+								}
 							}
+							onCraftCompleted(currentRecipe);
+							finishCraft();
 						}
-						onCraftCompleted(currentRecipe);
+					} else {
+						// The roll failed: hand back whatever the machine says a
+						// failed attempt still produces, then consume the run.
+						for (int i = 0; i < onFailure.size(); i++) {
+							fitStack(onFailure.get(i).copy(), outputSlots[i]);
+						}
 						finishCraft();
 					}
-				} else if (canGiveInvAll) {
-					// The chance roll failed: this attempt still consumes its
-					// inputs but yields nothing, so a new run may start.
-					finishCraft();
 				}
 			} else if (currentRecipe != null && currentTickTime < currentNeededTicks) {
 				long useRequirement = getEuPerTick(currentRecipe.power() * currentParallelCount);
@@ -304,6 +321,25 @@ public class RecipeCrafter implements IUpgradeHandler {
 	 */
 	protected boolean rollCraftSuccess() {
 		return true;
+	}
+
+	/**
+	 * The items a <em>failed</em> roll still hands back, placed into
+	 * {@link #outputSlots} in order before the run's inputs are consumed.
+	 * <p>
+	 * Most machines return nothing, so a failed attempt simply costs its inputs.
+	 * A machine that models an unsuccessful attempt as "the feed comes out
+	 * unchanged" - an isotope separator, a fractionator - returns the feed here.
+	 * The failure then costs time and energy instead of material, and the
+	 * returned stack can be piped straight back into the input.
+	 * <p>
+	 * The counts must already account for {@link #currentParallelCount}: the
+	 * stacks are placed exactly as returned, they are not multiplied again.
+	 *
+	 * @return {@link List} one stack per output slot, empty for "nothing"
+	 */
+	protected List<ItemStack> failureOutputs() {
+		return List.of();
 	}
 
 	/**

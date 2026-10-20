@@ -119,6 +119,7 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 			data.putDouble("iso_limit", separator.getRotorRpmLimit());
 			data.putDouble("iso_energy", separator.energyMultiplier(rpm));
 			data.putDouble("iso_time", separator.timeMultiplier(rpm));
+			data.putDouble("iso_success", separator.successRate(rpm));
 			ItemStack rotor = separator.getRotorStack();
 			data.putBoolean("iso_has_rotor", separator.isRotorInstalled());
 			data.putInt("iso_rotor_damage", rotor.isEmpty() ? 0 : rotor.getDamage());
@@ -247,6 +248,8 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 					Text.literal(String.format("%.2fx", data.getDouble("iso_energy"))).formatted(Formatting.YELLOW)));
 			tooltip.add(Text.translatable("jade.techreborn.isotope_time",
 					Text.literal(String.format("%.2fx", data.getDouble("iso_time"))).formatted(Formatting.YELLOW)));
+			tooltip.add(Text.translatable("jade.techreborn.isotope_success",
+					Text.literal(String.format("%.0f%%", data.getDouble("iso_success") * 100.0)).formatted(Formatting.YELLOW)));
 			if (data.getBoolean("iso_has_rotor")) {
 				tooltip.add(Text.translatable("jade.techreborn.isotope_rotor",
 						Text.literal(String.valueOf(data.getInt("iso_rotor_max") - data.getInt("iso_rotor_damage")))

@@ -136,6 +136,13 @@ public class GuiIsotopeSeparator extends GuiMultiblockMachine {
 		drawText(drawContext, Text.translatable("gui.techreborn.isotope_separator.limit",
 						String.format("%.0f", blockEntity.getRotorRpmLimit() * 100.0)),
 				x, y, theme.titleColor().rgba(), layer);
+		y += 10;
+
+		// Odds of the attempt currently spinning. A failed pass hands its feed
+		// back unchanged, so this is the number the player trades against.
+		drawText(drawContext, Text.translatable("gui.techreborn.isotope_separator.success",
+						String.format("%.0f", blockEntity.getSuccessRate() * 100.0)),
+				x, y, theme.titleColor().rgba(), layer);
 
 		// Mark the rotor slot with a label under it.
 		drawText(drawContext, Text.translatable("gui.techreborn.isotope_separator.rotor_slot"),

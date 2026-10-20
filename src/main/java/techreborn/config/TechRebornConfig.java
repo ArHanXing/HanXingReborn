@@ -640,6 +640,12 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorRotorWearInterval", comment = "Ticks of processing per point of rotor wear at full speed (scales inversely with speed)")
 	public static int isotopeSeparatorRotorWearInterval = 200;
 
+	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorBaseSuccess", comment = "Isotope Separator success chance of one attempt at a standstill (0.95 = 95%)")
+	public static double isotopeSeparatorBaseSuccess = 0.95;
+
+	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorFailureSlope", comment = "Isotope Separator success chance lost per unit of speed (0.45 = 45% at full speed). Keep it below IsotopeSeparatorTimeReduction, otherwise spinning faster gives less output per second instead of more")
+	public static double isotopeSeparatorFailureSlope = 0.45;
+
 	@Config(config = "machines", category = "naquadah_deresonator", key = "NaquadahDeresonatorMaxInput", comment = "Naquadah Deresonator Max Input (Energy per tick)")
 	public static int naquadahDeresonatorMaxInput = 512;
 

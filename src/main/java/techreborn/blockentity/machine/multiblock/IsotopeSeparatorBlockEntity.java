@@ -33,16 +33,15 @@ import net.minecraft.world.World;
 
 import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.crafting.RebornRecipe;
-import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
 
 import techreborn.config.TechRebornConfig;
-import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
+import techreborn.recipe.IsotopeSeparatorCrafter;
 
 /**
  * The Isotope Separator: a tier 2 multiblock that separates a feed into a
@@ -52,11 +51,19 @@ import techreborn.init.TRContent;
  * applied to the controller itself (0..15 scaled to 0..1) and is capped by the
  * rotor in slot 1. A missing rotor still runs, at a 25% floor.
  * <p>
- * <b>The trade-off.</b> Faster rotation shortens the process but costs more
- * energy: the process time scales with {@code 1 - 0.5r} while the draw scales
- * with {@code 1 + 3r}. Speed is therefore always paid for in power, so
- * time-accelerating upgrades can make the machine burn more energy but never
- * remove the cost of running fast.
+ * <b>The trade-off.</b> Faster rotation shortens the process
+ * ({@code 1 - 0.5r}) and costs more energy ({@code 1 + 3r}), and it also makes
+ * an attempt more likely to fail: the success chance falls as
+ * {@code base * (1 - slope * r)}. A failed attempt is not a loss of material,
+ * though - the feed comes back out of the product slot unchanged, like a Dyson
+ * Sphere fractionator - so it only costs the time and the energy of that pass,
+ * and it can be piped straight back in.
+ * <p>
+ * Because the process shortens faster than the odds worsen
+ * ({@code slope < timeReduction}), the output per second still rises with the
+ * speed. Running fast is therefore <em>slightly</em> better throughput, paid for
+ * in power and rotor wear; the exact numbers live in
+ * {@link #successRate(double)}.
  * <p>
  * Rotors wear out while the machine actually processes, faster at higher speed.
  */
@@ -85,8 +92,7 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 		final int[] inputs = new int[]{INPUT_SLOT, ROTOR_SLOT};
 		final int[] outputs = new int[]{PRODUCT_SLOT, TAILS_SLOT};
 		this.inventory = new RebornInventory<>(ENERGY_SLOT + 1, "IsotopeSeparatorBlockEntity", 64, this);
-		this.crafter = new RecipeCrafter(ModRecipes.ISOTOPE_SEPARATOR, this, 1, 2,
-				this.inventory, inputs, outputs);
+		this.crafter = new IsotopeSeparatorCrafter(this, this.inventory, inputs, outputs);
 	}
 
 	@Override
@@ -140,6 +146,52 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 	 */
 	public double timeMultiplier(double rpm) {
 		return Math.max(0.01, 1.0 - TechRebornConfig.isotopeSeparatorTimeReduction * rpm);
+	}
+
+	/**
+	 * The chance that one attempt at the given speed actually separates.
+	 * <p>
+	 * Spinning faster makes an attempt more likely to fail, but the pass
+	 * shortens at the same time. Since a failed attempt only costs time and
+	 * energy (the feed comes back out unchanged, see
+	 * {@link IsotopeSeparatorCrafter}), what matters is:
+	 *
+	 * <pre>output rate &prop; successRate(rpm) / timeMultiplier(rpm)</pre>
+	 *
+	 * With {@code successRate = base * (1 - slope * rpm)} and
+	 * {@code timeMultiplier = 1 - timeReduction * rpm}, that rate grows with the
+	 * speed as long as {@code slope < timeReduction}. The defaults ({@code 0.45}
+	 * against {@code 0.50}) make full speed worth about 10% more output per
+	 * second than a standstill, paid for in energy and rotor wear - so faster is
+	 * slightly better, not a cliff.
+	 *
+	 * @param rpm {@code double} the effective rotation speed
+	 * @return {@code double} the success chance of one attempt (0..1)
+	 */
+	public double successRate(double rpm) {
+		double rate = TechRebornConfig.isotopeSeparatorBaseSuccess
+				* (1.0 - TechRebornConfig.isotopeSeparatorFailureSlope * rpm);
+		return Math.max(0.0, Math.min(1.0, rate));
+	}
+
+	/**
+	 * @return {@code double} the success chance at the current speed
+	 */
+	public double getSuccessRate() {
+		return successRate(getRpm());
+	}
+
+	/**
+	 * Resolves the attempt that just finished its processing time.
+	 *
+	 * @return {@code boolean} whether the attempt produced its outputs
+	 */
+	public boolean rollCraftSuccess() {
+		World world = getWorld();
+		if (world == null) {
+			return false;
+		}
+		return world.random.nextDouble() < getSuccessRate();
 	}
 
 	/**
