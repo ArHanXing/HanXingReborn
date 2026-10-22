@@ -52,17 +52,17 @@ import techreborn.recipe.IsotopeSeparatorCrafter;
  * rotor in slot 1. A missing rotor still runs, at a 25% floor.
  * <p>
  * <b>The trade-off.</b> Faster rotation shortens the process
- * ({@code 1 - 0.5r}) and costs more energy ({@code 1 + 3r}), and it also makes
+ * ({@code 1 - 0.75r}) and costs more energy ({@code 1 + 3r}), and it also makes
  * an attempt more likely to fail: the success chance falls as
- * {@code base * (1 - slope * r)}. A failed attempt is not a loss of material,
- * though - the feed comes back out of the product slot unchanged, like a Dyson
- * Sphere fractionator - so it only costs the time and the energy of that pass,
- * and it can be piped straight back in.
+ * {@code base * (1 - slope * r)}, from 80% at a standstill to 40% at full speed.
+ * A failed attempt is not a loss of material, though - the feed comes back out of
+ * the tails slot unchanged, like a Dyson Sphere fractionator - so it only costs
+ * the time and the energy of that pass, and it can be piped straight back in.
  * <p>
  * Because the process shortens faster than the odds worsen
  * ({@code slope < timeReduction}), the output per second still rises with the
- * speed. Running fast is therefore <em>slightly</em> better throughput, paid for
- * in power and rotor wear; the exact numbers live in
+ * speed: full speed reaches exactly <b>2x</b> the throughput of a standstill,
+ * for 4x the power and double the rotor wear. The exact numbers live in
  * {@link #successRate(double)}.
  * <p>
  * Rotors wear out while the machine actually processes, faster at higher speed.
@@ -160,10 +160,11 @@ public class IsotopeSeparatorBlockEntity extends JsonMultiblockMachineBlockEntit
 	 *
 	 * With {@code successRate = base * (1 - slope * rpm)} and
 	 * {@code timeMultiplier = 1 - timeReduction * rpm}, that rate grows with the
-	 * speed as long as {@code slope < timeReduction}. The defaults ({@code 0.45}
-	 * against {@code 0.50}) make full speed worth about 10% more output per
-	 * second than a standstill, paid for in energy and rotor wear - so faster is
-	 * slightly better, not a cliff.
+	 * speed as long as {@code slope < timeReduction}, and its full-speed value
+	 * is simply {@code (1 - slope) / (1 - timeReduction)}. The defaults
+	 * ({@code base 0.80}, {@code slope 0.50}, {@code timeReduction 0.75}) give
+	 * 0.80 at a standstill, 0.40 at full speed and exactly <b>2x</b> the output
+	 * per second - paid for with 4x the power and double the rotor wear.
 	 *
 	 * @param rpm {@code double} the effective rotation speed
 	 * @return {@code double} the success chance of one attempt (0..1)

@@ -631,8 +631,8 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorMaxEnergy", comment = "Isotope Separator Max Energy")
 	public static int isotopeSeparatorMaxEnergy = 100_000;
 
-	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorTimeReduction", comment = "Isotope Separator process time reduction at full speed (0.5 = full speed takes half the time)")
-	public static double isotopeSeparatorTimeReduction = 0.5;
+	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorTimeReduction", comment = "Isotope Separator process time reduction at full speed (0.75 = full speed takes a quarter of the time). Full-speed throughput is (1 - FailureSlope) / (1 - TimeReduction), i.e. 2x with the defaults")
+	public static double isotopeSeparatorTimeReduction = 0.75;
 
 	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorEnergyPenalty", comment = "Isotope Separator extra energy multiplier at full speed (3.0 = 4x power)")
 	public static double isotopeSeparatorEnergyPenalty = 3.0;
@@ -640,11 +640,11 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorRotorWearInterval", comment = "Ticks of processing per point of rotor wear at full speed (scales inversely with speed)")
 	public static int isotopeSeparatorRotorWearInterval = 200;
 
-	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorBaseSuccess", comment = "Isotope Separator success chance of one attempt at a standstill (0.95 = 95%)")
-	public static double isotopeSeparatorBaseSuccess = 0.95;
+	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorBaseSuccess", comment = "Isotope Separator success chance of one attempt at a standstill (0.8 = 80%)")
+	public static double isotopeSeparatorBaseSuccess = 0.8;
 
-	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorFailureSlope", comment = "Isotope Separator success chance lost per unit of speed (0.45 = 45% at full speed). Keep it below IsotopeSeparatorTimeReduction, otherwise spinning faster gives less output per second instead of more")
-	public static double isotopeSeparatorFailureSlope = 0.45;
+	@Config(config = "machines", category = "isotope_separator", key = "IsotopeSeparatorFailureSlope", comment = "Isotope Separator success chance lost per unit of speed (0.5 = 40% left at full speed). Keep it below IsotopeSeparatorTimeReduction, otherwise spinning faster gives less output per second instead of more")
+	public static double isotopeSeparatorFailureSlope = 0.5;
 
 	@Config(config = "machines", category = "naquadah_deresonator", key = "NaquadahDeresonatorMaxInput", comment = "Naquadah Deresonator Max Input (Energy per tick)")
 	public static int naquadahDeresonatorMaxInput = 512;
