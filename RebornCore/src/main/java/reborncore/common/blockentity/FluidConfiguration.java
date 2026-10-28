@@ -108,10 +108,10 @@ public class FluidConfiguration implements NBTSerializable {
 			@Nullable
 			Storage<FluidVariant> tank = getTank(machineBase, facing);
 			if (autoInput() && fluidConfig.getIoConfig().isInsert()) {
-				StorageUtil.move(tank, machineBase.getTank(), fv -> true, machineBase.fluidTransferAmount().getRawValue(), null);
+				StorageUtil.move(tank, machineBase.getTank(), FluidConfiguration::isTransferable, machineBase.fluidTransferAmount().getRawValue(), null);
 			}
 			if (autoOutput() && fluidConfig.getIoConfig().isExtract()) {
-				StorageUtil.move(machineBase.getTank(), tank, fv -> true, machineBase.fluidTransferAmount().getRawValue(), null);
+				StorageUtil.move(machineBase.getTank(), tank, FluidConfiguration::isTransferable, machineBase.fluidTransferAmount().getRawValue(), null);
 			}
 		}
 	}
@@ -120,6 +120,29 @@ public class FluidConfiguration implements NBTSerializable {
 	private Storage<FluidVariant> getTank(MachineBaseBlockEntity machine, Direction facing) {
 		BlockPos pos = machine.getPos().offset(facing);
 		return FluidStorage.SIDED.find(machine.getWorld(), pos, facing.getOpposite());
+	}
+
+	/**
+	 * Filter for {@link StorageUtil#move}, rejecting blank variants.
+	 * <p>
+	 * {@code move} walks the source's non-empty views and hands the view's
+	 * resource straight to the target's {@code insert}, which enforces
+	 * {@code StoragePreconditions.notBlank}. Fabric documents that a filter is
+	 * never called with a blank resource, but that guarantee only holds while
+	 * the source honours its own contract ({@code isResourceBlank() == false}
+	 * implies {@code getResource()} is not blank).
+	 * <p>
+	 * Refined Storage 2's fluid storage does not, which turned an ordinary
+	 * machine tick into {@code IllegalArgumentException: Transfer variant may
+	 * not be blank}. Returning {@code false} here drops that view before the
+	 * insert, so a misbehaving neighbour can no longer crash the machine; a
+	 * well-behaved storage never reaches this branch and behaves as before.
+	 *
+	 * @param variant {@link FluidVariant} the resource a view offers
+	 * @return {@code boolean} whether it is safe to move
+	 */
+	private static boolean isTransferable(FluidVariant variant) {
+		return !variant.isBlank();
 	}
 
 	public boolean autoInput() {

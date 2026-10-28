@@ -31,9 +31,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.blockentity.MultiblockWriter;
 import techreborn.TechReborn;
 import techreborn.blockentity.machine.GenericMachineBlockEntity;
+import techreborn.multiblock.CoilBloomController;
+import techreborn.multiblock.CoilHeatScanner;
 import techreborn.multiblock.IMultiblockStructureMember;
 import techreborn.multiblock.MultiblockDefinition;
 import techreborn.multiblock.MultiblockDefinitionLoader;
@@ -80,6 +83,12 @@ public abstract class JsonMultiblockMachineBlockEntity extends GenericMachineBlo
 	private int structureMaxY = Integer.MIN_VALUE;
 	private int structureMaxZ = Integer.MIN_VALUE;
 
+	/**
+	 * Whether this machine currently holds the structure's coils lit. Kept so
+	 * the coil scan only runs on a state change instead of every tick.
+	 */
+	private boolean coilsLit = false;
+
 	public JsonMultiblockMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, String name,
 			int maxInput, int maxEnergy, Block toolDrop, int energySlot) {
 		super(type, pos, state, name, maxInput, maxEnergy, toolDrop, energySlot);
@@ -111,12 +120,58 @@ public abstract class JsonMultiblockMachineBlockEntity extends GenericMachineBlo
 	public void onLoad() {
 		super.onLoad();
 		MultiblockStructureTracker.register(this);
+		// Put the structure's coils back in sync with this machine's state. A
+		// crash, a chunk reload or a replaced coil can leave a coil lit while
+		// nothing holds it, and this is the only point where that is cheap to
+		// notice.
+		coilsLit = false;
+		updateCoilBloom();
 	}
 
 	@Override
 	public void markRemoved() {
 		MultiblockStructureTracker.unregister(this);
+		CoilBloomController.release(getWorld(), this);
+		coilsLit = false;
 		super.markRemoved();
+	}
+
+	/**
+	 * @return {@code boolean} whether this machine is currently running a recipe
+	 */
+	protected boolean isRunningRecipe() {
+		return crafter != null && crafter.currentRecipe != null && crafter.currentTickTime > 0;
+	}
+
+	/**
+	 * Lights the structure's coils while the machine runs and lets go of them
+	 * when it stops.
+	 * <p>
+	 * The actual switching is reference counted in {@link CoilBloomController},
+	 * so a shared structure stays lit as long as any of its machines is running.
+	 * The scan only happens on a state change, never every tick.
+	 */
+	private void updateCoilBloom() {
+		World world = getWorld();
+		if (world == null || world.isClient) {
+			return;
+		}
+		boolean running = isRunningRecipe();
+		if (running == coilsLit) {
+			return;
+		}
+		coilsLit = running;
+		CoilBloomController.refresh(world, this,
+				CoilHeatScanner.collectPositions(getPos(), getFacing(), getMultiblockId()), running);
+	}
+
+	@Override
+	public void tick(World world, BlockPos pos, BlockState state, MachineBaseBlockEntity blockEntity) {
+		super.tick(world, pos, state, blockEntity);
+		if (world == null || world.isClient) {
+			return;
+		}
+		updateCoilBloom();
 	}
 
 	/**

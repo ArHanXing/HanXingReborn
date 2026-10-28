@@ -28,13 +28,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
-import techreborn.blocks.misc.BlockCoil;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
@@ -56,7 +53,6 @@ public class RotaryHearthFurnaceBlockEntity extends JsonMultiblockMachineBlockEn
 	public static final int BASE_HEAT = 1000;
 
 	private int cachedHeat;
-	private boolean coilsActive = false;
 
 	public RotaryHearthFurnaceBlockEntity(BlockPos pos, BlockState state) {
 		super(TRBlockEntities.ROTARY_HEARTH_FURNACE, pos, state, "RotaryHearthFurnace",
@@ -109,31 +105,10 @@ public class RotaryHearthFurnaceBlockEntity extends JsonMultiblockMachineBlockEn
 				.sync(PacketCodecs.INTEGER, this::getHeat, this::setHeat).addInventory().create(this, syncID);
 	}
 
-	// ---- tick with coil bloom ----
-
-	@Override
-	public void tick(World world, BlockPos pos, BlockState state, MachineBaseBlockEntity blockEntity) {
-		super.tick(world, pos, state, blockEntity);
-		if (world.isClient) return;
-
-		boolean shouldBloom = crafter.currentRecipe != null && crafter.currentTickTime > 0;
-		if (shouldBloom != coilsActive) {
-			coilsActive = shouldBloom;
-			updateCoilBloomState(shouldBloom);
-		}
-	}
-
-	/**
-	 * Sets the ACTIVE blockstate on every {@link BlockCoil} inside the multiblock
-	 * so that coil textures switch to the bloom variant while the machine is working.
-	 */
-	private void updateCoilBloomState(boolean bloom) {
-		if (world == null || world.isClient) return;
-		for (BlockPos position : CoilHeatScanner.collectPositions(getPos(), getFacing(), getMultiblockId())) {
-			BlockState blockState = world.getBlockState(position);
-			if (blockState.getBlock() instanceof BlockCoil) {
-				world.setBlockState(position, blockState.with(BlockCoil.ACTIVE, bloom), 2);
-			}
-		}
-	}
+	// ---- coil bloom ----
+	//
+	// The coils are lit by JsonMultiblockMachineBlockEntity#updateCoilBloom,
+	// which every multiblock machine shares and which reference counts the
+	// holders, so a structure shared with another machine stays lit while any
+	// of them runs. Nothing machine-specific is needed here any more.
 }
