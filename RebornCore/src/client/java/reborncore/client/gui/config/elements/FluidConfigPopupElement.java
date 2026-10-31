@@ -28,7 +28,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.ColorCode;
 import net.minecraft.util.math.Direction;
-import reborncore.RebornCore;
+import org.jetbrains.annotations.Nullable;
 import reborncore.client.gui.GuiBase;
 import reborncore.client.gui.GuiSprites;
 import reborncore.common.blockentity.FluidConfiguration;
@@ -69,27 +69,43 @@ public class FluidConfigPopupElement extends AbstractConfigPopupElement {
 				default -> FluidConfiguration.ExtractConfig.NONE;
 			};
 		} else {
-			FluidConfiguration.FluidConfig config = guiBase.getMachine().fluidConfiguration.getSideDetail(side);
+			FluidConfiguration.TankConfigHolder holder = holder(guiBase);
+			if (holder == null) {
+				return;
+			}
+			FluidConfiguration.FluidConfig config = holder.getSideDetail(side);
 
 			fluidIO = config.getIoConfig().getNext();
 		}
 		FluidConfiguration.FluidConfig newConfig = new FluidConfiguration.FluidConfig(side, fluidIO);
 
-		ClientPlayNetworking.send(new FluidConfigSavePayload(guiBase.be.getPos(), newConfig));
+		ClientPlayNetworking.send(new FluidConfigSavePayload(guiBase.be.getPos(), newConfig, fluidElement.getSelectedTank()));
 	}
 
 	public void updateCheckBox(String type, GuiBase<?> guiBase) {
-		FluidConfiguration configHolder = guiBase.getMachine().fluidConfiguration;
-		boolean input = configHolder.autoInput();
-		boolean output = configHolder.autoOutput();
+		FluidConfiguration.TankConfigHolder holder = holder(guiBase);
+		if (holder == null) {
+			return;
+		}
+		boolean input = holder.autoInput();
+		boolean output = holder.autoOutput();
 		if (type.equalsIgnoreCase("input")) {
-			input = !configHolder.autoInput();
+			input = !holder.autoInput();
 		}
 		if (type.equalsIgnoreCase("output")) {
-			output = !configHolder.autoOutput();
+			output = !holder.autoOutput();
 		}
 
-		ClientPlayNetworking.send(new FluidIoSavePayload(guiBase.be.getPos(), input, output));
+		ClientPlayNetworking.send(new FluidIoSavePayload(guiBase.be.getPos(), input, output, fluidElement.getSelectedTank()));
+	}
+
+	/**
+	 * @param guiBase {@link GuiBase} the open GUI
+	 * @return {@link FluidConfiguration.TankConfigHolder} the tank being edited
+	 */
+	@Nullable
+	private FluidConfiguration.TankConfigHolder holder(GuiBase<?> guiBase) {
+		return guiBase.getMachine().fluidConfiguration.getTankDetails(fluidElement.getSelectedTank());
 	}
 
 	@Override
@@ -97,12 +113,11 @@ public class FluidConfigPopupElement extends AbstractConfigPopupElement {
 		iny += 4;
 		int sx = inx + getX() + gui.getGuiLeft();
 		int sy = iny + getY() + gui.getGuiTop();
-		FluidConfiguration fluidConfiguration = gui.getMachine().fluidConfiguration;
-		if (fluidConfiguration == null) {
-			RebornCore.LOGGER.debug("Hmm, this isn't supposed to happen");
+		FluidConfiguration.TankConfigHolder holder = holder(gui);
+		if (holder == null) {
 			return;
 		}
-		FluidConfiguration.FluidConfig fluidConfig = fluidConfiguration.getSideDetail(side);
+		FluidConfiguration.FluidConfig fluidConfig = holder.getSideDetail(side);
 		ColorCode color = switch (fluidConfig.getIoConfig()) {
 			case NONE -> new ColorCode(0);
 			case INPUT -> theme.ioInputColor();

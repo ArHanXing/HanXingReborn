@@ -41,6 +41,8 @@
   "reborncore.gui.slotconfigtip.side3": "绿色面表示既可输入也可输出。",
   "reborncore.gui.slotconfigtip.copy1": "按下 Ctrl+C 复制配置。",
   "reborncore.gui.slotconfigtip.copy2": "按下 Ctrl+V 粘贴配置。",
+  "reborncore.gui.fluidconfig.tank_selector": "储罐选择器",
+  "reborncore.gui.fluidconfig.tank_current": "当前选择的流体储罐：%s",
   "reborncore.gui.fluidconfig.pullin": "抽取",
   "reborncore.gui.fluidconfig.pumpout": "泵出",
   "reborncore.gui.fluidconfig.item_io": "物品 I/O",

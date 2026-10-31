@@ -69,9 +69,12 @@ public class ClientBoundPacketHandlers {
 				RebornCore.LOGGER.error("Failed to sync fluid config data to " + payload.pos());
 				return;
 			}
-			fluidConfiguration.getAllSides().forEach(fluidConfig -> machineBase.fluidConfiguration.updateFluidConfig(fluidConfig));
-			machineBase.fluidConfiguration.setInput(fluidConfiguration.autoInput());
-			machineBase.fluidConfiguration.setOutput(fluidConfiguration.autoOutput());;
+			// Replace the per-tank holders wholesale: the payload carries the full
+			// configuration, so merging side by side would leave stale tanks behind.
+			machineBase.fluidConfiguration.getTankDetails().clear();
+			for (FluidConfiguration.TankConfigHolder holder : fluidConfiguration.getTankDetails()) {
+				machineBase.fluidConfiguration.updateTankDetails(holder);
+			}
 		});
 
 		ClientPlayNetworking.registerGlobalReceiver(SlotSyncPayload.ID, (payload, context) -> {

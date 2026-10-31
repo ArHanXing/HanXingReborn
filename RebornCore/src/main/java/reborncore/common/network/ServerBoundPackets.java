@@ -42,7 +42,11 @@ public class ServerBoundPackets {
 	public static void init() {
 		ServerPlayNetworking.registerGlobalReceiver(FluidConfigSavePayload.ID, (payload, context) -> {
 			var machine = payload.getBlockEntity(MachineBaseBlockEntity.class, context.player());
-			machine.fluidConfiguration.updateFluidConfig(payload.fluidConfiguration());
+			FluidConfiguration.TankConfigHolder holder = machine.fluidConfiguration.getTankDetails(payload.tankID());
+			if (holder == null) {
+				return;
+			}
+			holder.updateFluidConfig(payload.fluidConfiguration());
 			machine.markDirty();
 
 			NetworkManager.sendToTracking(new FluidConfigSyncPayload(payload.pos(), machine.fluidConfiguration), machine);
@@ -70,8 +74,12 @@ public class ServerBoundPackets {
 			if (config == null) {
 				return;
 			}
-			config.setInput(payload.input());
-			config.setOutput(payload.output());
+			FluidConfiguration.TankConfigHolder holder = config.getTankDetails(payload.tankID());
+			if (holder == null) {
+				return;
+			}
+			holder.setInput(payload.input());
+			holder.setOutput(payload.output());
 
 			// Syncs back to the client
 			NetworkManager.sendToTracking(new FluidConfigSyncPayload(payload.pos(), machine.fluidConfiguration), machine);

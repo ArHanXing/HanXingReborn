@@ -396,8 +396,31 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 		return null;
 	}
 
+	/**
+	 * The tank a machine exposes for per-tank fluid IO configuration.
+	 * <p>
+	 * Machines with a single tank only override {@link #getTank()}; this default
+	 * routes tank 0 there. A machine with several tanks overrides both this and
+	 * {@link #getTankCount()} so each tank can be configured separately.
+	 *
+	 * @param index {@code int} the tank index, {@code 0} based
+	 * @return {@link Tank} the tank, or {@code null} if there is no such tank
+	 */
+	@Nullable
+	public Tank getTank(int index) {
+		return index == 0 ? getTank() : null;
+	}
+
+	/**
+	 * @return {@code int} how many tanks this machine exposes to the fluid IO
+	 *         config, one entry per configurable tank
+	 */
+	public int getTankCount() {
+		return getTank() == null ? 0 : 1;
+	}
+
 	public boolean showTankConfig() {
-		return getTank() != null;
+		return getTankCount() > 0;
 	}
 
 	//The amount of ticks between a slot transfer attempt, less is faster

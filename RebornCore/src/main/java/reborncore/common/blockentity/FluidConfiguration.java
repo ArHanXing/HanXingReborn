@@ -37,89 +37,127 @@ import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import reborncore.common.util.NBTSerializable;
+import reborncore.common.util.Tank;
 
 import java.util.*;
 
+/**
+ * Per-tank fluid IO configuration.
+ * <p>
+ * The tanks are picked first and configured second, mirroring the item side:
+ * every tank of a machine gets its own {@link TankConfigHolder} carrying a face
+ * map plus the pull-in / pump-out switches. A machine with a single tank simply
+ * has one holder, so the UI degenerates to the old behaviour without the code
+ * having to special-case it.
+ * <p>
+ * The number of tanks comes from {@link MachineBaseBlockEntity#getTankCount()}.
+ */
 public class FluidConfiguration implements NBTSerializable {
 	private static final PacketCodec<ByteBuf, Map<Direction, FluidConfig>> SIDE_MAP_PACKET_CODEC = PacketCodecs.map(
 		HashMap::new,
 		Direction.PACKET_CODEC,
 		FluidConfig.PACKET_CODEC
 	);
-	public static final PacketCodec<ByteBuf, FluidConfiguration> PACKET_CODEC = PacketCodec.tuple(
-		SIDE_MAP_PACKET_CODEC, FluidConfiguration::getSideMap,
-		PacketCodecs.BOOL, FluidConfiguration::autoInput,
-		PacketCodecs.BOOL, FluidConfiguration::autoOutput,
-		FluidConfiguration::new
-	);
+	public static final PacketCodec<ByteBuf, FluidConfiguration> PACKET_CODEC = TankConfigHolder.PACKET_CODEC
+		.collect(PacketCodecs.toList())
+		.xmap(FluidConfiguration::new, FluidConfiguration::getTankDetails);
 
-	Map<Direction, FluidConfig> sideMap;
-	boolean input, output;
+	List<TankConfigHolder> tankDetails = new ArrayList<>();
 
 	public FluidConfiguration() {
-		sideMap = new HashMap<>();
-		Arrays.stream(Direction.values()).forEach(facing -> sideMap.put(facing, new FluidConfig(facing)));
+		updateTankDetails(new TankConfigHolder(0));
 	}
 
 	public FluidConfiguration(NbtCompound tagCompound) {
-		sideMap = new HashMap<>();
 		read(tagCompound);
 	}
 
-	private FluidConfiguration(Map<Direction, FluidConfig> sideMap, boolean input, boolean output) {
-		this.sideMap = sideMap;
-		this.input = input;
-		this.output = output;
+	private FluidConfiguration(List<TankConfigHolder> tankDetails) {
+		this.tankDetails = tankDetails;
 	}
 
-	public FluidConfig getSideDetail(Direction side) {
-		if (side == null) {
-			return sideMap.get(Direction.NORTH);
+	/**
+	 * @return {@link List} the holder of every configurable tank
+	 */
+	public List<TankConfigHolder> getTankDetails() {
+		return tankDetails;
+	}
+
+	/**
+	 * @param tankID {@code int} the tank index
+	 * @return {@link TankConfigHolder} the holder, or {@code null} if absent
+	 */
+	@Nullable
+	public TankConfigHolder getTankDetails(int tankID) {
+		for (TankConfigHolder holder : tankDetails) {
+			if (holder.getTankID() == tankID) {
+				return holder;
+			}
 		}
-		return sideMap.get(side);
+		return null;
 	}
 
-	public List<FluidConfig> getAllSides() {
-		return new ArrayList<>(sideMap.values());
+	/**
+	 * Adds the holder or replaces the existing one with the same tank index.
+	 *
+	 * @param holder {@link TankConfigHolder} the holder to store
+	 * @return {@link TankConfigHolder} the stored holder
+	 */
+	public TankConfigHolder updateTankDetails(TankConfigHolder holder) {
+		for (int i = 0; i < tankDetails.size(); i++) {
+			if (tankDetails.get(i).getTankID() == holder.getTankID()) {
+				tankDetails.set(i, holder);
+				return holder;
+			}
+		}
+		tankDetails.add(holder);
+		return holder;
 	}
 
-	public Map<Direction, FluidConfig> getSideMap() {
-		return sideMap;
-	}
-
-	public void updateFluidConfig(FluidConfig config) {
-		FluidConfig toEdit = sideMap.get(config.side);
-		toEdit.ioConfig = config.ioConfig;
+	/**
+	 * Makes sure a holder exists for every tank the machine exposes, so a machine
+	 * that gained a tank, or a save that predates per-tank config, still has
+	 * something to edit.
+	 *
+	 * @param machineBase {@link MachineBaseBlockEntity} the machine
+	 */
+	public void ensureTanks(MachineBaseBlockEntity machineBase) {
+		for (int i = 0; i < machineBase.getTankCount(); i++) {
+			if (getTankDetails(i) == null) {
+				updateTankDetails(new TankConfigHolder(i));
+			}
+		}
 	}
 
 	public void update(MachineBaseBlockEntity machineBase) {
-		if (!input && !output) {
+		ensureTanks(machineBase);
+		if (machineBase.getWorld() == null || machineBase.getWorld().getTime() % machineBase.slotTransferSpeed() != 0) {
 			return;
 		}
-		if (machineBase.getTank() == null || machineBase.getWorld().getTime() % machineBase.slotTransferSpeed() != 0) {
-			return;
-		}
-		for (Direction facing : Direction.values()) {
-			FluidConfig fluidConfig = getSideDetail(facing);
-			if (fluidConfig == null || !fluidConfig.getIoConfig().isEnabled()) {
+
+		for (TankConfigHolder holder : tankDetails) {
+			if (!holder.autoInput() && !holder.autoOutput()) {
 				continue;
 			}
-
-			@Nullable
-			Storage<FluidVariant> tank = getTank(machineBase, facing);
-			if (autoInput() && fluidConfig.getIoConfig().isInsert()) {
-				StorageUtil.move(tank, machineBase.getTank(), FluidConfiguration::isTransferable, machineBase.fluidTransferAmount().getRawValue(), null);
+			@Nullable Tank tank = machineBase.getTank(holder.getTankID());
+			if (tank == null) {
+				continue;
 			}
-			if (autoOutput() && fluidConfig.getIoConfig().isExtract()) {
-				StorageUtil.move(machineBase.getTank(), tank, FluidConfiguration::isTransferable, machineBase.fluidTransferAmount().getRawValue(), null);
+			for (Direction facing : Direction.values()) {
+				FluidConfig fluidConfig = holder.getSideDetail(facing);
+				if (fluidConfig == null || !fluidConfig.getIoConfig().isEnabled()) {
+					continue;
+				}
+
+				@Nullable Storage<FluidVariant> neighbour = getTank(machineBase, facing);
+				if (holder.autoInput() && fluidConfig.getIoConfig().isInsert()) {
+					StorageUtil.move(neighbour, tank, FluidConfiguration::isTransferable, machineBase.fluidTransferAmount().getRawValue(), null);
+				}
+				if (holder.autoOutput() && fluidConfig.getIoConfig().isExtract()) {
+					StorageUtil.move(tank, neighbour, FluidConfiguration::isTransferable, machineBase.fluidTransferAmount().getRawValue(), null);
+				}
 			}
 		}
-	}
-
-	@Nullable
-	private Storage<FluidVariant> getTank(MachineBaseBlockEntity machine, Direction facing) {
-		BlockPos pos = machine.getPos().offset(facing);
-		return FluidStorage.SIDED.find(machine.getWorld(), pos, facing.getOpposite());
 	}
 
 	/**
@@ -135,8 +173,7 @@ public class FluidConfiguration implements NBTSerializable {
 	 * Refined Storage 2's fluid storage does not, which turned an ordinary
 	 * machine tick into {@code IllegalArgumentException: Transfer variant may
 	 * not be blank}. Returning {@code false} here drops that view before the
-	 * insert, so a misbehaving neighbour can no longer crash the machine; a
-	 * well-behaved storage never reaches this branch and behaves as before.
+	 * insert, so a misbehaving neighbour can no longer crash the machine.
 	 *
 	 * @param variant {@link FluidVariant} the resource a view offers
 	 * @return {@code boolean} whether it is safe to move
@@ -145,42 +182,137 @@ public class FluidConfiguration implements NBTSerializable {
 		return !variant.isBlank();
 	}
 
-	public boolean autoInput() {
-		return input;
-	}
-
-	public boolean autoOutput() {
-		return output;
-	}
-
-	public void setInput(boolean input) {
-		this.input = input;
-	}
-
-	public void setOutput(boolean output) {
-		this.output = output;
+	@Nullable
+	private Storage<FluidVariant> getTank(MachineBaseBlockEntity machine, Direction facing) {
+		BlockPos pos = machine.getPos().offset(facing);
+		return FluidStorage.SIDED.find(machine.getWorld(), pos, facing.getOpposite());
 	}
 
 	@NotNull
 	@Override
 	public NbtCompound write() {
 		NbtCompound compound = new NbtCompound();
-		Arrays.stream(Direction.values()).forEach(facing -> compound.put("side_" + facing.ordinal(), sideMap.get(facing).write()));
-		compound.putBoolean("input", input);
-		compound.putBoolean("output", output);
+		NbtCompound tanks = new NbtCompound();
+		for (TankConfigHolder holder : tankDetails) {
+			tanks.put(String.valueOf(holder.getTankID()), holder.write());
+		}
+		compound.put("tanks", tanks);
 		return compound;
 	}
 
 	@Override
 	public void read(@NotNull NbtCompound nbt) {
-		sideMap.clear();
-		Arrays.stream(Direction.values()).forEach(facing -> {
-			NbtCompound compound = nbt.getCompound("side_" + facing.ordinal());
-			FluidConfig config = new FluidConfig(compound);
-			sideMap.put(facing, config);
-		});
-		input = nbt.getBoolean("input");
-		output = nbt.getBoolean("output");
+		tankDetails.clear();
+		if (nbt.contains("tanks")) {
+			NbtCompound tanks = nbt.getCompound("tanks");
+			for (String key : tanks.getKeys()) {
+				try {
+					tankDetails.add(new TankConfigHolder(Integer.parseInt(key), tanks.getCompound(key)));
+				} catch (NumberFormatException ignored) {
+					// Not a tank entry, nothing sensible to do with it.
+				}
+			}
+		}
+		if (tankDetails.isEmpty()) {
+			// Legacy layout: one flat side map plus input/output switches. Migrate
+			// it onto tank 0 so existing worlds keep their plumbing.
+			tankDetails.add(new TankConfigHolder(0, nbt));
+		}
+	}
+
+	/**
+	 * One tank's configuration: a face map plus the pull-in / pump-out switches.
+	 */
+	public static class TankConfigHolder implements NBTSerializable {
+		public static final PacketCodec<ByteBuf, TankConfigHolder> PACKET_CODEC = PacketCodec.tuple(
+			PacketCodecs.INTEGER, TankConfigHolder::getTankID,
+			SIDE_MAP_PACKET_CODEC, TankConfigHolder::getSideMap,
+			PacketCodecs.BOOL, TankConfigHolder::autoInput,
+			PacketCodecs.BOOL, TankConfigHolder::autoOutput,
+			TankConfigHolder::new
+		);
+
+		private final int tankID;
+		Map<Direction, FluidConfig> sideMap = new HashMap<>();
+		boolean input, output;
+
+		public TankConfigHolder(int tankID) {
+			this.tankID = tankID;
+			Arrays.stream(Direction.values()).forEach(facing -> sideMap.put(facing, new FluidConfig(facing)));
+		}
+
+		public TankConfigHolder(int tankID, Map<Direction, FluidConfig> sideMap, boolean input, boolean output) {
+			this.tankID = tankID;
+			this.sideMap = sideMap;
+			this.input = input;
+			this.output = output;
+		}
+
+		public TankConfigHolder(int tankID, NbtCompound tagCompound) {
+			this.tankID = tankID;
+			read(tagCompound);
+		}
+
+		public int getTankID() {
+			return tankID;
+		}
+
+		public Map<Direction, FluidConfig> getSideMap() {
+			return sideMap;
+		}
+
+		public FluidConfig getSideDetail(Direction side) {
+			if (side == null) {
+				return sideMap.get(Direction.NORTH);
+			}
+			return sideMap.get(side);
+		}
+
+		public void updateFluidConfig(FluidConfig config) {
+			FluidConfig toEdit = sideMap.get(config.side);
+			if (toEdit != null) {
+				toEdit.ioConfig = config.ioConfig;
+			}
+		}
+
+		public boolean autoInput() {
+			return input;
+		}
+
+		public boolean autoOutput() {
+			return output;
+		}
+
+		public void setInput(boolean input) {
+			this.input = input;
+		}
+
+		public void setOutput(boolean output) {
+			this.output = output;
+		}
+
+		@NotNull
+		@Override
+		public NbtCompound write() {
+			NbtCompound compound = new NbtCompound();
+			Arrays.stream(Direction.values()).forEach(facing ->
+				compound.put("side_" + facing.ordinal(), sideMap.get(facing).write()));
+			compound.putBoolean("input", input);
+			compound.putBoolean("output", output);
+			return compound;
+		}
+
+		@Override
+		public void read(@NotNull NbtCompound nbt) {
+			sideMap.clear();
+			Arrays.stream(Direction.values()).forEach(facing -> {
+				NbtCompound compound = nbt.getCompound("side_" + facing.ordinal());
+				FluidConfig config = new FluidConfig(compound);
+				sideMap.put(facing, config);
+			});
+			input = nbt.getBoolean("input");
+			output = nbt.getBoolean("output");
+		}
 	}
 
 	public static class FluidConfig implements NBTSerializable {
