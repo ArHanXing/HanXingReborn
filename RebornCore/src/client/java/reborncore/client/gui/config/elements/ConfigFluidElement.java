@@ -75,7 +75,7 @@ public class ConfigFluidElement extends ParentElement {
 		int tankCount = Math.max(1, gui.getMachine().getTankCount());
 		for (int i = 0; i < tankCount; i++) {
 			final int tankID = i;
-			elements.add(new ButtonElement(TANK_X + i * TANK_STEP, TANK_Y, GuiSprites.EXIT_BUTTON, 13, 13,
+			elements.add(new ButtonElement(x + TANK_X + i * TANK_STEP, y + TANK_Y, GuiSprites.EXIT_BUTTON, 13, 13,
 				() -> selectTank(tankID, gui)));
 		}
 
@@ -96,10 +96,17 @@ public class ConfigFluidElement extends ParentElement {
 		}
 	}
 
-	/** Right column: where the tank selector buttons start, and their pitch. */
-	private static final int TANK_X = 96;
-	private static final int TANK_Y = 20;
+	/**
+	 * Right column, in panel-relative coordinates: the heading sits at TANK_X,
+	 * TANK_Y keeps the buttons under it, and the current-selection line goes below
+	 * them. Everything here is offset by the panel origin when placed, so the
+	 * selector cannot drift away from its heading.
+	 */
+	private static final int TANK_X = 92;
+	private static final int TANK_Y = 18;
 	private static final int TANK_STEP = 16;
+	private static final int TANK_HEADING_Y = 4;
+	private static final int TANK_CURRENT_Y = 36;
 
 	/**
 	 * Cycles the redstone gate that enables fluid IO, the same way the redstone
@@ -170,15 +177,15 @@ public class ConfigFluidElement extends ParentElement {
 
 		// Coordinates below are panel-relative: drawText and drawSprite add the GUI
 		// origin themselves.
-		int col2 = getX() + 92;
+		int col2 = getX() + TANK_X;
 
 		// Right column: tank selector heading, buttons (drawn by the elements) and
 		// the current selection under them.
 		drawText(drawContext, gui, Text.translatable("reborncore.gui.fluidconfig.tank_selector"),
-			col2, getY() + 8, 0xFFFFFFFF);
+			col2, getY() + TANK_HEADING_Y, 0xFFFFFFFF);
 		int tankCount = Math.max(1, gui.getMachine().getTankCount());
 		drawText(drawContext, gui, Text.translatable("reborncore.gui.fluidconfig.tank_current", selectedTank + 1),
-			col2, getY() + 40, 0xFFA0A0A0);
+			col2, getY() + TANK_CURRENT_Y, 0xFFA0A0A0);
 
 		// Highlight the selected tank, matching the buttons' own coordinates.
 		for (int i = 0; i < tankCount; i++) {

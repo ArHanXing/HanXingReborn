@@ -63,12 +63,12 @@ public class GuiLargeFluidGenerator<T extends LargeFluidGeneratorBlockEntity & B
 		super.drawForeground(drawContext, mouseX, mouseY);
 		final GuiBase.Layer layer = Layer.FOREGROUND;
 
-		// One gauge per tank, packed at 22px (the gauge's own width). Extra gauges
-		// push the tank block to the left rather than pushing the energy bar to the
-		// right, so the energy bar keeps its place on the GUI frame.
+		// Three gauges sit side by side between the cell slots (x 25..43) and the
+		// progress arrow: pitch 24 keeps each 22-wide gauge separated by 2px, and
+		// the arrow starts right after the last one. The energy bar never moves.
 		int tankCount = Math.max(1, blockEntity.getTankCount());
-		final int tankPitch = 22;
-		final int tankX = 44 - Math.max(0, tankCount - 1) * 7;
+		final int tankX = 48;
+		final int tankPitch = 24;
 		for (int i = 0; i < tankCount; i++) {
 			reborncore.common.util.Tank tank = blockEntity.getTank(i);
 			if (tank == null) {
@@ -78,7 +78,6 @@ public class GuiLargeFluidGenerator<T extends LargeFluidGeneratorBlockEntity & B
 				tank.getFluidInstance(), tank.getFluidValueCapacity(), tank.isEmpty(), layer);
 		}
 
-		// The arrow sits right after the last gauge; the energy bar never moves.
 		int progressX = tankX + tankCount * tankPitch + 2;
 		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(10), 100, progressX, 48, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
 		builder.drawMultiEnergyBar(drawContext, this, 130, 28, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
