@@ -45,7 +45,6 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
-import reborncore.common.blockentity.MachineBaseBlockEntity;
 import techreborn.api.IEnergyProducerProvider;
 import techreborn.blockentity.generator.multiblock.LargeFluidGeneratorBlockEntity;
 import techreborn.blockentity.machine.multiblock.DysonSwarmMachineBlockEntity;
@@ -99,25 +98,6 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 			data.putBoolean("oxygen_boosted", true);
 		}
 
-		// Every tank of a multi-tank machine. Machines with a single tank keep
-		// using Jade's own fluid component, so this only fires when there is more
-		// than one and the built-in display would hide the rest.
-		if (accessor.getBlockEntity() instanceof MachineBaseBlockEntity machine && machine.getTankCount() > 1) {
-			NbtList tanks = new NbtList();
-			for (int i = 0; i < machine.getTankCount(); i++) {
-				reborncore.common.util.Tank tank = machine.getTank(i);
-				if (tank == null) {
-					continue;
-				}
-				NbtCompound entry = new NbtCompound();
-				entry.putInt("index", i + 1);
-				entry.putLong("amount", tank.getFluidAmount().getRawValue());
-				entry.putLong("capacity", tank.getFluidValueCapacity().getRawValue());
-				entry.putString("fluid", net.minecraft.registry.Registries.FLUID.getId(tank.getFluid()).toString());
-				tanks.add(entry);
-			}
-			data.put("tanks", tanks);
-		}
 
 		// Dyson Swarm binding (host and receiver)
 		if (accessor.getBlockEntity() instanceof DysonSwarmMachineBlockEntity dyson) {
@@ -241,26 +221,6 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 				tooltip.add(Text.translatable("gui.techreborn.dyson.bound_to",
 						Text.literal(boundPlayer).formatted(Formatting.YELLOW)));
 			}
-		}
-
-		// Per-tank fluid contents for multi-tank machines.
-		NbtList tanks = data.getList("tanks", NbtElement.COMPOUND_TYPE);
-		for (int i = 0; i < tanks.size(); i++) {
-			NbtCompound tank = tanks.getCompound(i);
-			long amount = tank.getLong("amount");
-			long capacity = tank.getLong("capacity");
-			String fluidId = tank.getString("fluid");
-			Text fluidName = net.minecraft.registry.Registries.FLUID.get(
-					net.minecraft.util.Identifier.tryParse(fluidId)) == net.minecraft.fluid.Fluids.EMPTY
-					? Text.translatable("reborncore.gui.tooltip.tank_empty")
-					: net.minecraft.registry.Registries.FLUID.get(net.minecraft.util.Identifier.tryParse(fluidId))
-						.getBucketItem().getName();
-			tooltip.add(Text.translatable("jade.techreborn.tank_entry",
-					Text.literal(String.valueOf(tank.getInt("index"))).formatted(Formatting.GOLD),
-					fluidName.copy().formatted(Formatting.GOLD),
-					Text.literal(reborncore.common.powerSystem.PowerSystem.getLocalizedPowerNoSuffix(amount)
-							+ " / " + reborncore.common.powerSystem.PowerSystem.getLocalizedPowerNoSuffix(capacity))
-							.formatted(Formatting.GOLD)));
 		}
 
 		// Space Elevator unit -> host binding line

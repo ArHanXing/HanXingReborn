@@ -72,16 +72,49 @@ public class MultiTankStorage implements Storage<FluidVariant> {
 		return true;
 	}
 
+	/**
+	 * Inserts into the tank that already holds this fluid, otherwise into the
+	 * first empty one, and only then tops up any tank that will accept it.
+	 * <p>
+	 * Filling "the first tank that fits" would be wrong for a machine whose tanks
+	 * have distinct roles: a bucket of compressed air would end up in the fuel
+	 * tank and the engine would never see its oxidiser. Preferring the tank that
+	 * already contains the fluid keeps a half-full tank filling up instead of
+	 * spraying the same fluid across several, and an empty tank is the natural
+	 * place for a fluid nobody is holding yet.
+	 */
 	@Override
 	public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
+		List<Tank> tanks = tanks();
+
+		// 1. A tank that already holds this exact fluid.
+		for (Tank tank : tanks) {
+			if (!tank.isEmpty() && tank.getResource().equals(resource)) {
+				long inserted = tank.insert(resource, maxAmount, transaction);
+				if (inserted > 0) {
+					return inserted;
+				}
+			}
+		}
+
+		// 2. An empty tank.
+		for (Tank tank : tanks) {
+			if (tank.isEmpty()) {
+				long inserted = tank.insert(resource, maxAmount, transaction);
+				if (inserted > 0) {
+					return inserted;
+				}
+			}
+		}
+
+		// 3. Fall back to whatever will take it (e.g. a tank holding the same
+		// fluid but reported non-empty above through a different path).
 		long inserted = 0;
-		for (Tank tank : tanks()) {
+		for (Tank tank : tanks) {
 			long remaining = maxAmount - inserted;
 			if (remaining <= 0) {
 				break;
 			}
-			// A tank that already holds something else rejects the variant itself,
-			// so there is no need to pre-filter here.
 			inserted += tank.insert(resource, remaining, transaction);
 		}
 		return inserted;

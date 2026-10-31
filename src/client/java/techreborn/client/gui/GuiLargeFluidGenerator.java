@@ -63,20 +63,25 @@ public class GuiLargeFluidGenerator<T extends LargeFluidGeneratorBlockEntity & B
 		super.drawForeground(drawContext, mouseX, mouseY);
 		final GuiBase.Layer layer = Layer.FOREGROUND;
 
-		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(10), 100, 83, 48, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
-		builder.drawMultiEnergyBar(drawContext, this, 130, 28, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
-		// One tank gauge per tank, so a multi-tank generator shows every one of
-		// them instead of only the fuel tank. Single-tank machines render the
-		// exact same single gauge at the old position.
+		// One gauge per tank. The tanks are packed at 22px pitch (the gauge is
+		// 22 wide) so three of them stay clear of the progress bar, which moves
+		// right to make room. A single-tank machine lands on the old layout.
 		int tankCount = Math.max(1, blockEntity.getTankCount());
+		final int tankX = 44;
+		final int tankPitch = 22;
 		for (int i = 0; i < tankCount; i++) {
 			reborncore.common.util.Tank tank = blockEntity.getTank(i);
 			if (tank == null) {
 				continue;
 			}
-			builder.drawTank(drawContext, this, 44 + i * 26, 25, mouseX, mouseY,
+			builder.drawTank(drawContext, this, tankX + i * tankPitch, 25, mouseX, mouseY,
 				tank.getFluidInstance(), tank.getFluidValueCapacity(), tank.isEmpty(), layer);
 		}
+
+		// Progress and energy shift right by whatever the extra gauges need.
+		int shift = Math.max(0, tankCount - 1) * tankPitch;
+		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(10), 100, 83 + shift, 48, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
+		builder.drawMultiEnergyBar(drawContext, this, 130 + shift, 28, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 
 		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 	}
