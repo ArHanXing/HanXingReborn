@@ -96,7 +96,7 @@ public record RedstoneConfiguration(Map<Element, State> stateMap) {
 	public record Element(String name, Predicate<MachineBaseBlockEntity> isApplicable, Supplier<ItemStack> icon) implements StringIdentifiable {
 		public static Element ITEM_IO = new Element("item_io", () -> new ItemStack(Blocks.HOPPER));
 		public static Element POWER_IO = new Element("power_io", () -> powerStack);
-		public static Element FLUID_IO = new Element("fluid_io", type -> type.getTank() != null, () -> fluidStack);
+		public static Element FLUID_IO = new Element("fluid_io", type -> type.getTankCount() > 0, () -> fluidStack);
 		public static Element RECIPE_PROCESSING = new Element("recipe_processing", type -> type instanceof IRecipeCrafterProvider, () -> new ItemStack(Blocks.CRAFTING_TABLE));
 		private static final List<Element> ELEMENTS = List.of(
 			ITEM_IO, POWER_IO, FLUID_IO, RECIPE_PROCESSING

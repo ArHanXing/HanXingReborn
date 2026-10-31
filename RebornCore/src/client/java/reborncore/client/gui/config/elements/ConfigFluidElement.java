@@ -24,11 +24,14 @@
 
 package reborncore.client.gui.config.elements;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import reborncore.client.gui.GuiBase;
 import reborncore.client.gui.GuiSprites;
 import reborncore.common.blockentity.FluidConfiguration;
+import reborncore.common.blockentity.RedstoneConfiguration;
+import reborncore.common.network.serverbound.SetRedstoneStatePayload;
 
 /**
  * The fluid IO panel.
@@ -67,6 +70,32 @@ public class ConfigFluidElement extends ParentElement {
 		elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.fluidconfig.pumpout"), x - 26, y + 74,
 			checkBoxElement -> holder(gui).autoOutput(),
 			() -> popupElement.updateCheckBox("output", gui)));
+
+		// The redstone gate that decides whether fluid IO runs at all used to sit
+		// on its own page, splitting one concern across two screens. It belongs to
+		// this panel: the tank selector picks *which* tank, this decides whether
+		// its IO is live at all.
+		if (gui.getMachine().getRedstoneElements().contains(RedstoneConfiguration.Element.FLUID_IO)) {
+			elements.add(new ButtonElement(x - 26, y + 89, GuiSprites.EXIT_BUTTON, 13, 13,
+				() -> cycleFluidGate(gui)));
+		}
+	}
+
+	/**
+	 * Cycles the redstone gate that enables fluid IO, the same way the redstone
+	 * page does.
+	 *
+	 * @param gui {@link GuiBase} the open GUI
+	 */
+	private void cycleFluidGate(GuiBase<?> gui) {
+		RedstoneConfiguration configuration = gui.getMachine().getRedstoneConfiguration();
+		RedstoneConfiguration.State current = configuration.getState(RedstoneConfiguration.Element.FLUID_IO);
+		int next = current.ordinal() + 1;
+		if (next >= RedstoneConfiguration.State.values().length) {
+			next = 0;
+		}
+		ClientPlayNetworking.send(new SetRedstoneStatePayload(gui.be.getPos(),
+			RedstoneConfiguration.Element.FLUID_IO, RedstoneConfiguration.State.values()[next]));
 	}
 
 	/**
@@ -122,6 +151,18 @@ public class ConfigFluidElement extends ParentElement {
 		drawContext.drawText(gui.getTextRenderer(),
 			Text.translatable("reborncore.gui.fluidconfig.tank_current", selectedTank + 1),
 			getX() - 22 + gui.getGuiLeft(), getY() - 4 + gui.getGuiTop(), 0xFFA0A0A0, false);
+
+		// State of the fluid IO gate, next to its checkbox.
+		if (gui.getMachine().getRedstoneElements().contains(RedstoneConfiguration.Element.FLUID_IO)) {
+			RedstoneConfiguration configuration = gui.getMachine().getRedstoneConfiguration();
+			drawContext.drawText(gui.getTextRenderer(),
+				Text.translatable("reborncore.gui.fluidconfig.fluid_io"), getX() - 4 + gui.getGuiLeft(),
+				getY() + 90 + gui.getGuiTop(), 0xFFFFFFFF, false);
+			drawContext.drawText(gui.getTextRenderer(),
+				Text.translatable("reborncore.gui.fluidconfig."
+					+ configuration.getState(RedstoneConfiguration.Element.FLUID_IO).name().toLowerCase(java.util.Locale.ROOT)),
+				getX() + 44 + gui.getGuiLeft(), getY() + 90 + gui.getGuiTop(), 0xFFA0A0A0, false);
+		}
 
 		// Highlight the current tank so the selector reads as a radio group rather
 		// than as unrelated actions.
