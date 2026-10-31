@@ -79,10 +79,10 @@ public class ConfigFluidElement extends ParentElement {
 				() -> selectTank(tankID, gui)));
 		}
 
-		elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.fluidconfig.pullin"), x + 2, y + 68,
+		elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.fluidconfig.pullin"), x + TANK_X, y + TANK_CURRENT_Y + 16,
 			checkBoxElement -> holder(gui).autoInput(),
 			() -> popupElement.updateCheckBox("input", gui)));
-		elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.fluidconfig.pumpout"), x + 2, y + 83,
+		elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.fluidconfig.pumpout"), x + TANK_X, y + TANK_CURRENT_Y + 31,
 			checkBoxElement -> holder(gui).autoOutput(),
 			() -> popupElement.updateCheckBox("output", gui)));
 

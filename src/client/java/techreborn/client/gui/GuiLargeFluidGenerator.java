@@ -63,9 +63,10 @@ public class GuiLargeFluidGenerator<T extends LargeFluidGeneratorBlockEntity & B
 		super.drawForeground(drawContext, mouseX, mouseY);
 		final GuiBase.Layer layer = Layer.FOREGROUND;
 
-		// Three gauges sit side by side between the cell slots (x 25..43) and the
-		// progress arrow: pitch 24 keeps each 22-wide gauge separated by 2px, and
-		// the arrow starts right after the last one. The energy bar never moves.
+		// Horizontal order: cell slots (25..43) | three gauges | progress arrow |
+		// energy bar. Gauges are 22 wide and packed flush at pitch 24, so the three
+		// of them span 48..118; the arrow then sits at 120..136 and the energy bar
+		// at 140..154, which stays inside the 176-wide GUI and off the arrow.
 		int tankCount = Math.max(1, blockEntity.getTankCount());
 		final int tankX = 48;
 		final int tankPitch = 24;
@@ -78,9 +79,10 @@ public class GuiLargeFluidGenerator<T extends LargeFluidGeneratorBlockEntity & B
 				tank.getFluidInstance(), tank.getFluidValueCapacity(), tank.isEmpty(), layer);
 		}
 
-		int progressX = tankX + tankCount * tankPitch + 2;
+		int progressX = tankX + tankCount * tankPitch;
 		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(10), 100, progressX, 48, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
-		builder.drawMultiEnergyBar(drawContext, this, 130, 28, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
+		// 14 wide, placed clear of the arrow and still inside the GUI frame.
+		builder.drawMultiEnergyBar(drawContext, this, progressX + 20, 28, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 
 		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 	}
