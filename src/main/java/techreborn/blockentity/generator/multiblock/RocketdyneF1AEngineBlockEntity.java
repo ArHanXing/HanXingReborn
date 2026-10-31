@@ -38,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 import reborncore.common.util.Tank;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.crafting.RecipeUtils;
+import reborncore.common.fluid.FluidUtils;
 import reborncore.common.fluid.FluidValue;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
@@ -266,6 +267,39 @@ public class RocketdyneF1AEngineBlockEntity extends LargeFluidGeneratorBlockEnti
 		if (world.getTime() % 20 == 0) {
 			syncWithAll();
 		}
+	}
+
+	/**
+	 * Routes a cell to the tank that owns its fluid.
+	 * <p>
+	 * The base class only knows about one tank, which would send every cell into
+	 * the fuel tank. Here compressed air lands in the propellant tank, hydrogen in
+	 * the liquid hydrogen tank, and everything else in the fuel tank, matching what
+	 * the machine actually reads while it runs.
+	 */
+	@Override
+	protected void handleCellSlot() {
+		ItemStack inputStack = inventory.getStack(0);
+		if (inputStack.isEmpty()) {
+			return;
+		}
+
+		// Drain side: pick the tank by the fluid the cell holds.
+		if (FluidUtils.containsMatchingFluid(inputStack, f -> f.matchesType(ModFluids.COMPRESSED_AIR.getFluid()))) {
+			FluidUtils.drainContainers(propellantTank, inventory, 0, 1);
+			return;
+		}
+		if (FluidUtils.containsMatchingFluid(inputStack, f -> f.matchesType(ModFluids.HYDROGEN.getFluid()))) {
+			FluidUtils.drainContainers(liquidHydrogenTank, inventory, 0, 1);
+			return;
+		}
+		if (FluidUtils.containsMatchingFluid(inputStack, f -> getRecipeForFluid(f) != null)) {
+			FluidUtils.drainContainers(fuelTank, inventory, 0, 1);
+			return;
+		}
+
+		// Fill side: an empty cell takes whatever the fuel tank holds.
+		FluidUtils.fillContainers(fuelTank, inventory, 0, 1);
 	}
 
 	/**

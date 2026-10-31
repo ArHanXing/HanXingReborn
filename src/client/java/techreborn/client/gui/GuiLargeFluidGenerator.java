@@ -63,12 +63,12 @@ public class GuiLargeFluidGenerator<T extends LargeFluidGeneratorBlockEntity & B
 		super.drawForeground(drawContext, mouseX, mouseY);
 		final GuiBase.Layer layer = Layer.FOREGROUND;
 
-		// One gauge per tank. The tanks are packed at 22px pitch (the gauge is
-		// 22 wide) so three of them stay clear of the progress bar, which moves
-		// right to make room. A single-tank machine lands on the old layout.
+		// One gauge per tank, packed at 22px (the gauge's own width). Extra gauges
+		// push the tank block to the left rather than pushing the energy bar to the
+		// right, so the energy bar keeps its place on the GUI frame.
 		int tankCount = Math.max(1, blockEntity.getTankCount());
-		final int tankX = 44;
 		final int tankPitch = 22;
+		final int tankX = 44 - Math.max(0, tankCount - 1) * 7;
 		for (int i = 0; i < tankCount; i++) {
 			reborncore.common.util.Tank tank = blockEntity.getTank(i);
 			if (tank == null) {
@@ -78,10 +78,10 @@ public class GuiLargeFluidGenerator<T extends LargeFluidGeneratorBlockEntity & B
 				tank.getFluidInstance(), tank.getFluidValueCapacity(), tank.isEmpty(), layer);
 		}
 
-		// Progress and energy shift right by whatever the extra gauges need.
-		int shift = Math.max(0, tankCount - 1) * tankPitch;
-		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(10), 100, 83 + shift, 48, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
-		builder.drawMultiEnergyBar(drawContext, this, 130 + shift, 28, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
+		// The arrow sits right after the last gauge; the energy bar never moves.
+		int progressX = tankX + tankCount * tankPitch + 2;
+		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(10), 100, progressX, 48, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
+		builder.drawMultiEnergyBar(drawContext, this, 130, 28, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 
 		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 	}

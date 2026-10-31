@@ -48,6 +48,15 @@ public class FluidConfigPopupElement extends AbstractConfigPopupElement {
 		this.fluidElement = fluidElement;
 	}
 
+	/**
+	 * Wider than the default 84: this panel carries the tank selector and the
+	 * fluid IO gate underneath the face grid.
+	 */
+	@Override
+	protected int getBackgroundWidth() {
+		return 110;
+	}
+
 	@Override
 	public int getPencilColor(String pencil) {
 		return switch (pencil) {

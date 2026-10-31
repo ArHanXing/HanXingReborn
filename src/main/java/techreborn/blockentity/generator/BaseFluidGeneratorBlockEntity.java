@@ -89,15 +89,7 @@ public abstract class BaseFluidGeneratorBlockEntity extends PowerAcceptorBlockEn
 
 		// Check cells input slot 2 time per second
 		if (ticksSinceLastChange >= 10) {
-			ItemStack inputStack = inventory.getStack(0);
-			if (!inputStack.isEmpty()) {
-				if (FluidUtils.containsMatchingFluid(inputStack, f -> getRecipeForFluid(f) != null)) {
-					FluidUtils.drainContainers(tank, inventory, 0, 1);
-				} else {
-					FluidUtils.fillContainers(tank, inventory, 0, 1);
-				}
-			}
-
+			handleCellSlot();
 			ticksSinceLastChange = 0;
 		}
 
@@ -145,6 +137,26 @@ public abstract class BaseFluidGeneratorBlockEntity extends PowerAcceptorBlockEn
 			return ticksSinceLastChange * scale;
 		}
 		return 0;
+	}
+
+	/**
+	 * Empties or fills the cell in the input slot against {@link #tank}.
+	 * <p>
+	 * Machines with more than one tank override this to route each fluid into the
+	 * tank that actually owns it; the default keeps the single-tank behaviour of
+	 * draining anything that is a valid fuel and otherwise filling a cell from the
+	 * tank.
+	 */
+	protected void handleCellSlot() {
+		ItemStack inputStack = inventory.getStack(0);
+		if (inputStack.isEmpty()) {
+			return;
+		}
+		if (FluidUtils.containsMatchingFluid(inputStack, f -> getRecipeForFluid(f) != null)) {
+			FluidUtils.drainContainers(tank, inventory, 0, 1);
+		} else {
+			FluidUtils.fillContainers(tank, inventory, 0, 1);
+		}
 	}
 
 	protected boolean tryAddingEnergy(int amount) {

@@ -88,6 +88,16 @@ public abstract class AbstractConfigPopupElement extends ElementBase {
 		}
 	}
 
+	/**
+	 * Width of the popup's background box. Defaults to the original 84; panels
+	 * that gained content override it instead of stretching into the GUI.
+	 *
+	 * @return {@code int} background width in pixels
+	 */
+	protected int getBackgroundWidth() {
+		return 84;
+	}
+
 	@Override
 	public boolean isMouseWithinRect(GuiBase<?> gui, double mouseX, double mouseY) {
 		// sprite size is 62x62, expands to 84x79
@@ -103,7 +113,7 @@ public abstract class AbstractConfigPopupElement extends ElementBase {
 			drawContext,
 			x,
 			y,
-			84,
+			getBackgroundWidth(),
 			height
 		);
 		drawContext.getMatrices().pop();
