@@ -54,7 +54,7 @@ public class FluidConfigPopupElement extends AbstractConfigPopupElement {
 	 */
 	@Override
 	protected int getBackgroundWidth() {
-		return 110;
+		return 156;
 	}
 
 	@Override

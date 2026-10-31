@@ -53,23 +53,36 @@ public class ConfigFluidElement extends ParentElement {
 
 		FluidConfigPopupElement popupElement;
 
-		elements.add(popupElement = new FluidConfigPopupElement(x - 22, y + 4, getHeight(), this));
-		elements.add(new ButtonElement(x + 37, y - 25, GuiSprites.EXIT_BUTTON, 13, 13, gui::closeSelectedTab));
+		// Layout, in panel-relative coordinates:
+		//
+		//   +------------------------------------------------+
+		//   |  [ six-face grid ]        储罐选择器            |
+		//   |  [               ]        [1] [2] [3]          |
+		//   |                           当前: 1              |
+		//   |  [ ] 抽取                                      |
+		//   |  [ ] 泵出                                      |
+		//   |  --------------------------------------------  |
+		//   |  [X] 流体 I/O                          忽略     |
+		//   +------------------------------------------------+
+		//
+		// Two columns keep the height near the size of the face grid instead of
+		// stacking every control downwards, which used to push the panel well past
+		// the GUI's own frame.
+		elements.add(popupElement = new FluidConfigPopupElement(x + 4, y + 4, getHeight(), this));
+		elements.add(new ButtonElement(x + 136, y - 25, GuiSprites.EXIT_BUTTON, 13, 13, gui::closeSelectedTab));
 
-		// The tank selector: one entry per configurable tank, stacked vertically
-		// on the left edge so a machine with several tanks does not push the row
-		// off the panel.
+		// Tank selector: a horizontal row in the right column, under its heading.
 		int tankCount = Math.max(1, gui.getMachine().getTankCount());
 		for (int i = 0; i < tankCount; i++) {
 			final int tankID = i;
-			elements.add(new ButtonElement(x - 6, y + 132 + i * 15, GuiSprites.EXIT_BUTTON, 13, 13,
+			elements.add(new ButtonElement(TANK_X + i * TANK_STEP, TANK_Y, GuiSprites.EXIT_BUTTON, 13, 13,
 				() -> selectTank(tankID, gui)));
 		}
 
-		elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.fluidconfig.pullin"), x - 26, y + 96,
+		elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.fluidconfig.pullin"), x + 2, y + 68,
 			checkBoxElement -> holder(gui).autoInput(),
 			() -> popupElement.updateCheckBox("input", gui)));
-		elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.fluidconfig.pumpout"), x - 26, y + 111,
+		elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.fluidconfig.pumpout"), x + 2, y + 83,
 			checkBoxElement -> holder(gui).autoOutput(),
 			() -> popupElement.updateCheckBox("output", gui)));
 
@@ -78,10 +91,15 @@ public class ConfigFluidElement extends ParentElement {
 		// this panel: the tank selector picks *which* tank, this decides whether
 		// its IO is live at all.
 		if (gui.getMachine().getRedstoneElements().contains(RedstoneConfiguration.Element.FLUID_IO)) {
-			elements.add(new ButtonElement(x - 26, y + 186, GuiSprites.EXIT_BUTTON, 13, 13,
+			elements.add(new ButtonElement(x + 4, y + 102, GuiSprites.EXIT_BUTTON, 13, 13,
 				() -> cycleFluidGate(gui)));
 		}
 	}
+
+	/** Right column: where the tank selector buttons start, and their pitch. */
+	private static final int TANK_X = 96;
+	private static final int TANK_Y = 20;
+	private static final int TANK_STEP = 16;
 
 	/**
 	 * Cycles the redstone gate that enables fluid IO, the same way the redstone
@@ -131,16 +149,16 @@ public class ConfigFluidElement extends ParentElement {
 
 	@Override
 	public int getWidth() {
-		// Wide enough for the tank selector column on the left plus the face grid.
-		return 110;
+		// Two columns: the face grid plus switches on the left, the tank selector
+		// on the right.
+		return 156;
 	}
 
 	@Override
 	public int getHeight() {
-		// Taller than the old 122: the panel now carries the tank selector, the
-		// face grid, both switches and the fluid IO gate, and at 122 the last two
-		// rows ran past the background.
-		return 206;
+		// Roughly one face grid plus the switches and the gate row; the selector
+		// sits beside the grid instead of below it.
+		return 124;
 	}
 
 	@Override
@@ -150,36 +168,36 @@ public class ConfigFluidElement extends ParentElement {
 		}
 		super.draw(drawContext, gui, mouseX, mouseY);
 
-		// The coordinates here are GUI-relative: drawText and drawSprite add the
-		// GUI origin themselves. Adding it here as well shifted the labels away
-		// from the panel and left the buttons' hit boxes behind.
-		// The selector lives inside the panel, under the switches, so it cannot
-		// spill outside the background box the way it did when it sat at x-30.
+		// Coordinates below are panel-relative: drawText and drawSprite add the GUI
+		// origin themselves.
+		int col2 = getX() + 92;
+
+		// Right column: tank selector heading, buttons (drawn by the elements) and
+		// the current selection under them.
 		drawText(drawContext, gui, Text.translatable("reborncore.gui.fluidconfig.tank_selector"),
-			getX() - 6, getY() + 124, 0xFFFFFFFF);
-		drawText(drawContext, gui, Text.translatable("reborncore.gui.fluidconfig.tank_current", selectedTank + 1),
-			getX() + 12, getY() + 132, 0xFFA0A0A0);
-
-		// State of the fluid IO gate, next to its button.
-		if (gui.getMachine().getRedstoneElements().contains(RedstoneConfiguration.Element.FLUID_IO)) {
-			RedstoneConfiguration configuration = gui.getMachine().getRedstoneConfiguration();
-			drawText(drawContext, gui, Text.translatable("reborncore.gui.fluidconfig.fluid_io"),
-				getX() - 4, getY() + 187, 0xFFFFFFFF);
-			drawText(drawContext, gui, Text.translatable("reborncore.gui.fluidconfig."
-					+ configuration.getState(RedstoneConfiguration.Element.FLUID_IO).name().toLowerCase(java.util.Locale.ROOT)),
-				getX() + 44, getY() + 187, 0xFFA0A0A0);
-		}
-
-		// Highlight the current tank so the selector reads as a radio group rather
-		// than as unrelated actions.
+			col2, getY() + 8, 0xFFFFFFFF);
 		int tankCount = Math.max(1, gui.getMachine().getTankCount());
+		drawText(drawContext, gui, Text.translatable("reborncore.gui.fluidconfig.tank_current", selectedTank + 1),
+			col2, getY() + 40, 0xFFA0A0A0);
+
+		// Highlight the selected tank, matching the buttons' own coordinates.
 		for (int i = 0; i < tankCount; i++) {
 			if (i != selectedTank) {
 				continue;
 			}
-			int sx = getX() - 6 + gui.getGuiLeft();
-			int sy = getY() + 132 + i * 15 + gui.getGuiTop();
+			int sx = getX() + TANK_X + i * TANK_STEP + gui.getGuiLeft();
+			int sy = getY() + TANK_Y + gui.getGuiTop();
 			drawContext.fill(sx - 1, sy - 1, sx + 14, sy + 14, 0x80FFFFFF);
+		}
+
+		// Bottom row: fluid IO gate.
+		if (gui.getMachine().getRedstoneElements().contains(RedstoneConfiguration.Element.FLUID_IO)) {
+			RedstoneConfiguration configuration = gui.getMachine().getRedstoneConfiguration();
+			drawText(drawContext, gui, Text.translatable("reborncore.gui.fluidconfig.fluid_io"),
+				getX() + 22, getY() + 104, 0xFFFFFFFF);
+			drawText(drawContext, gui, Text.translatable("reborncore.gui.fluidconfig."
+					+ configuration.getState(RedstoneConfiguration.Element.FLUID_IO).name().toLowerCase(java.util.Locale.ROOT)),
+				getX() + 92, getY() + 104, 0xFFA0A0A0);
 		}
 	}
 }
