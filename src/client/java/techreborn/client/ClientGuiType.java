@@ -80,6 +80,7 @@ import techreborn.blockentity.machine.multiblock.IrradiatedMutagensisChamberBloc
 import techreborn.blockentity.machine.multiblock.SupercriticalPolymerizationChamberBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeGasTurbineBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeCombustionEngineBlockEntity;
+import techreborn.blockentity.generator.multiblock.RocketdyneF1AEngineBlockEntity;
 import techreborn.blockentity.generator.multiblock.UniversalChemicalFuelEngineBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockBreakerBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockPlacerBlockEntity;
@@ -213,6 +214,7 @@ public record ClientGuiType<T extends BlockEntity>(GuiType<T> guiType, GuiFactor
 	public static final ClientGuiType<LargeGasTurbineBlockEntity> LARGE_GAS_TURBINE = register(GuiType.LARGE_GAS_TURBINE, GuiLargeFluidGenerator::new);
 	public static final ClientGuiType<LargeCombustionEngineBlockEntity> LARGE_COMBUSTION_ENGINE = register(GuiType.LARGE_COMBUSTION_ENGINE, GuiLargeFluidGenerator::new);
 	public static final ClientGuiType<UniversalChemicalFuelEngineBlockEntity> UNIVERSAL_CHEMICAL_FUEL_ENGINE = register(GuiType.UNIVERSAL_CHEMICAL_FUEL_ENGINE, GuiLargeFluidGenerator::new);
+	public static final ClientGuiType<RocketdyneF1AEngineBlockEntity> ROCKETDYNE_F1A_ENGINE = register(GuiType.ROCKETDYNE_F1A_ENGINE, GuiLargeFluidGenerator::new);
 	public static final ClientGuiType<SpaceElevatorBlockEntity> SPACE_ELEVATOR = register(GuiType.SPACE_ELEVATOR, GuiSpaceElevator::new);
 	public static final ClientGuiType<SpaceElevatorAssemblerBlockEntity> SPACE_ELEVATOR_ASSEMBLER = register(GuiType.SPACE_ELEVATOR_ASSEMBLER, GuiSpaceElevatorAssembler::new);
 	public static final ClientGuiType<SpaceElevatorMinerBlockEntity> SPACE_ELEVATOR_MINER = register(GuiType.SPACE_ELEVATOR_MINER, GuiSpaceElevatorMiner::new);

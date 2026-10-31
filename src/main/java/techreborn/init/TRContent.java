@@ -104,6 +104,7 @@ import techreborn.blocks.LargeGreenhouseBlock;
 import techreborn.blocks.LargeRanchBlock;
 import techreborn.blocks.LargeGasTurbineBlock;
 import techreborn.blocks.LargeCombustionEngineBlock;
+import techreborn.blocks.RocketdyneF1AEngineBlock;
 import techreborn.blocks.UniversalChemicalFuelEngineBlock;
 import techreborn.blocks.RotaryHearthFurnaceBlock;
 import techreborn.blocks.cable.CableBlock;
@@ -828,6 +829,7 @@ public class TRContent {
 		LARGE_GAS_TURBINE(new LargeGasTurbineBlock(GuiType.LARGE_GAS_TURBINE, LargeGasTurbineBlockEntity::new)),
 		LARGE_COMBUSTION_ENGINE(new LargeCombustionEngineBlock(GuiType.LARGE_COMBUSTION_ENGINE, LargeCombustionEngineBlockEntity::new)),
 		UNIVERSAL_CHEMICAL_FUEL_ENGINE(new UniversalChemicalFuelEngineBlock(GuiType.UNIVERSAL_CHEMICAL_FUEL_ENGINE, UniversalChemicalFuelEngineBlockEntity::new)),
+		ROCKETDYNE_F1A_ENGINE(new RocketdyneF1AEngineBlock(GuiType.ROCKETDYNE_F1A_ENGINE, RocketdyneF1AEngineBlockEntity::new)),
 		SPACE_ELEVATOR(new GenericMachineBlock(GuiType.SPACE_ELEVATOR, SpaceElevatorBlockEntity::new)),
 		SPACE_ELEVATOR_ASSEMBLER(new GenericMachineBlock(GuiType.SPACE_ELEVATOR_ASSEMBLER, SpaceElevatorAssemblerBlockEntity::new)),
 		SPACE_ELEVATOR_MINER(new GenericMachineBlock(GuiType.SPACE_ELEVATOR_MINER, SpaceElevatorMinerBlockEntity::new)),

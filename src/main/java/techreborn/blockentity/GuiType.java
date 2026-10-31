@@ -99,6 +99,7 @@ import techreborn.blockentity.machine.multiblock.GasCollectorBlockEntity;
 import techreborn.blockentity.machine.multiblock.VoidDrillBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeGasTurbineBlockEntity;
 import techreborn.blockentity.generator.multiblock.LargeCombustionEngineBlockEntity;
+import techreborn.blockentity.generator.multiblock.RocketdyneF1AEngineBlockEntity;
 import techreborn.blockentity.generator.multiblock.UniversalChemicalFuelEngineBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockBreakerBlockEntity;
 import techreborn.blockentity.machine.tier0.block.BlockPlacerBlockEntity;
@@ -210,6 +211,7 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<LargeGasTurbineBlockEntity> LARGE_GAS_TURBINE = register("large_gas_turbine");
 	public static final GuiType<LargeCombustionEngineBlockEntity> LARGE_COMBUSTION_ENGINE = register("large_combustion_engine");
 	public static final GuiType<UniversalChemicalFuelEngineBlockEntity> UNIVERSAL_CHEMICAL_FUEL_ENGINE = register("universal_chemical_fuel_engine");
+	public static final GuiType<RocketdyneF1AEngineBlockEntity> ROCKETDYNE_F1A_ENGINE = register("rocketdyne_f1a_engine");
 	public static final GuiType<SpaceElevatorBlockEntity> SPACE_ELEVATOR = register("space_elevator");
 	public static final GuiType<SpaceElevatorAssemblerBlockEntity> SPACE_ELEVATOR_ASSEMBLER = register("space_elevator_assembler");
 	public static final GuiType<SpaceElevatorMinerBlockEntity> SPACE_ELEVATOR_MINER = register("space_elevator_miner");

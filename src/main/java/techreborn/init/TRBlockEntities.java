@@ -132,6 +132,7 @@ public class TRBlockEntities {
 	public static final BlockEntityType<LargeGasTurbineBlockEntity> LARGE_GAS_TURBINE = register(LargeGasTurbineBlockEntity::new, "large_gas_turbine", TRContent.Machine.LARGE_GAS_TURBINE);
 	public static final BlockEntityType<LargeCombustionEngineBlockEntity> LARGE_COMBUSTION_ENGINE = register(LargeCombustionEngineBlockEntity::new, "large_combustion_engine", TRContent.Machine.LARGE_COMBUSTION_ENGINE);
 	public static final BlockEntityType<UniversalChemicalFuelEngineBlockEntity> UNIVERSAL_CHEMICAL_FUEL_ENGINE = register(UniversalChemicalFuelEngineBlockEntity::new, "universal_chemical_fuel_engine", TRContent.Machine.UNIVERSAL_CHEMICAL_FUEL_ENGINE);
+	public static final BlockEntityType<RocketdyneF1AEngineBlockEntity> ROCKETDYNE_F1A_ENGINE = register(RocketdyneF1AEngineBlockEntity::new, "rocketdyne_f1a_engine", TRContent.Machine.ROCKETDYNE_F1A_ENGINE);
 	public static final BlockEntityType<LargeGrinderBlockEntity> LARGE_GRINDER = register(LargeGrinderBlockEntity::new, "large_grinder", TRContent.Machine.LARGE_GRINDER);
 	public static final BlockEntityType<LargeLatheBlockEntity> LARGE_LATHE = register(LargeLatheBlockEntity::new, "large_lathe", TRContent.Machine.LARGE_LATHE);
 	public static final BlockEntityType<FurnaceProMaxBlockEntity> FURNACE_PRO_MAX = register(FurnaceProMaxBlockEntity::new, "furnace_pro_max", TRContent.Machine.FURNACE_PRO_MAX);

@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "techreborn:crafting_table/machine/rocketdyne_f1a_engine"
+    ]
+  },
+  "criteria": {
+    "has_industrial_machine_frame": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "techreborn:industrial_machine_frame"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "techreborn:crafting_table/machine/rocketdyne_f1a_engine"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_industrial_machine_frame",
+      "has_the_recipe"
+    ]
+  ]
+}

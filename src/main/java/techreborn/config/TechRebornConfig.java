@@ -171,6 +171,15 @@ public class TechRebornConfig {
 	@Config(config = "generators", category = "universal_chemical_fuel_engine", key = "UniversalChemicalFuelEngineEnergyPerTick", comment = "Universal Chemical Fuel Engine Energy Per Tick")
 	public static int universalChemicalFuelEngineEnergyPerTick = 256;
 
+	@Config(config = "generators", category = "rocketdyne_f1a_engine", key = "RocketdyneF1AEngineMaxOutput", comment = "Rocketdyne F-1A Engine max output (EU/t). Priming doubles this; the hard pipe limit is 8192, so priming needs a higher tier than the base value")
+	public static int rocketdyneF1AEngineMaxOutput = 8192;
+
+	@Config(config = "generators", category = "rocketdyne_f1a_engine", key = "RocketdyneF1AEngineMaxEnergy", comment = "Rocketdyne F-1A Engine internal energy buffer")
+	public static int rocketdyneF1AEngineMaxEnergy = 2_000_000;
+
+	@Config(config = "generators", category = "rocketdyne_f1a_engine", key = "RocketdyneF1AEngineEnergyPerTick", comment = "Rocketdyne F-1A Engine nominal generation (EU/t). The actual figure comes from the fuel's EU/mB against the max output; this only has to be non-zero so the machine is recognised as a generator")
+	public static int rocketdyneF1AEngineEnergyPerTick = 8192;
+
 	@Config(config = "generators", category = "dragon_egg_siphoner", key = "DragonEggSiphonerMaxOutput", comment = "Dragon Egg Siphoner Max Output (Energy per tick)")
 	public static int dragonEggSyphonMaxOutput = 128;
 

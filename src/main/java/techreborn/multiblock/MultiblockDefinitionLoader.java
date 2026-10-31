@@ -105,6 +105,7 @@ public class MultiblockDefinitionLoader {
 			"large_refinery",
 			"isotope_separator",
 			"naquadah_deresonator",
+			"rocketdyne_f1a_engine",
 			"void_drill",
 			"gas_collector"
 	};

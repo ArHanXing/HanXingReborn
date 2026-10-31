@@ -51,6 +51,8 @@
   "block.techreborn.large_gas_turbine": "大型燃气涡轮",
   "block.techreborn.large_combustion_engine": "大型柴油引擎",
   "block.techreborn.universal_chemical_fuel_engine": "通用化学能引擎",
+  "block.techreborn.rocketdyne_f1a_engine": "火箭引擎 F-1A",
+  "item.techreborn.rocketdyne_f1a_engine.propellant": "每 5 秒消耗 1B 压缩空气；断供则直接关机",
   "block.techreborn.space_elevator": "太空电梯主机",
   "block.techreborn.space_elevator_assembler": "太空电梯组装单元",
   "block.techreborn.space_elevator_miner": "太空电梯采矿单元",

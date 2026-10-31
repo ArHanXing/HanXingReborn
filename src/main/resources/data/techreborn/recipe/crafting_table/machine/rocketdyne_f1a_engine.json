@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ITI",
+    "TGT",
+    "MEM"
+  ],
+  "key": {
+    "I": {
+      "item": "techreborn:industrial_machine_frame"
+    },
+    "T": {
+      "item": "techreborn:titanium_plate"
+    },
+    "G": {
+      "item": "techreborn:gas_turbine"
+    },
+    "M": {
+      "item": "techreborn:industrial_blast_furnace"
+    },
+    "E": {
+      "item": "techreborn:energy_flow_chip"
+    }
+  },
+  "result": {
+    "id": "techreborn:rocketdyne_f1a_engine"
+  }
+}
