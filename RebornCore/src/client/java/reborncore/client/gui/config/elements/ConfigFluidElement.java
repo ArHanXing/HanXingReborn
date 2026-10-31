@@ -131,12 +131,16 @@ public class ConfigFluidElement extends ParentElement {
 
 	@Override
 	public int getWidth() {
-		return 85;
+		// Wide enough for the tank selector column on the left plus the face grid.
+		return 110;
 	}
 
 	@Override
 	public int getHeight() {
-		return 122;
+		// Taller than the old 122: the panel now carries the tank selector, the
+		// face grid, both switches and the fluid IO gate, and at 122 the last two
+		// rows ran past the background.
+		return 170;
 	}
 
 	@Override

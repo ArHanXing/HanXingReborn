@@ -65,7 +65,18 @@ public class GuiLargeFluidGenerator<T extends LargeFluidGeneratorBlockEntity & B
 
 		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(10), 100, 83, 48, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
 		builder.drawMultiEnergyBar(drawContext, this, 130, 28, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
-		builder.drawTank(drawContext, this, 44, 25, mouseX, mouseY, blockEntity.tank.getFluidInstance(), blockEntity.tank.getFluidValueCapacity(), blockEntity.tank.isEmpty(), layer);
+		// One tank gauge per tank, so a multi-tank generator shows every one of
+		// them instead of only the fuel tank. Single-tank machines render the
+		// exact same single gauge at the old position.
+		int tankCount = Math.max(1, blockEntity.getTankCount());
+		for (int i = 0; i < tankCount; i++) {
+			reborncore.common.util.Tank tank = blockEntity.getTank(i);
+			if (tank == null) {
+				continue;
+			}
+			builder.drawTank(drawContext, this, 44 + i * 26, 25, mouseX, mouseY,
+				tank.getFluidInstance(), tank.getFluidValueCapacity(), tank.isEmpty(), layer);
+		}
 
 		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 	}
