@@ -28,10 +28,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+import reborncore.common.util.Tank;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.crafting.RecipeUtils;
 import reborncore.common.fluid.FluidValue;
@@ -84,6 +88,31 @@ public class RocketdyneF1AEngineBlockEntity extends LargeFluidGeneratorBlockEnti
 	/** Primed output and calorific multiplier. */
 	public static final int PRIMED_MULTIPLIER = 2;
 
+	/** Tank indices, also the order the fluid IO config lists them in. */
+	public static final int TANK_FUEL = 0;
+	public static final int TANK_PROPELLANT = 1;
+	public static final int TANK_LIQUID_HYDROGEN = 2;
+
+	/**
+	 * Capacity of the tanks. The fuel tank comes from the generator base class,
+	 * which sizes it itself; only the two extra tanks are declared here.
+	 */
+	public static final FluidValue PROPELLANT_CAPACITY = FluidValue.BUCKET.multiply(64);
+	public static final FluidValue LIQUID_HYDROGEN_CAPACITY = FluidValue.BUCKET.multiply(16);
+
+	/**
+	 * Fuel tank (inherited from the generator base), the compressed air tank and
+	 * the liquid hydrogen tank.
+	 * <p>
+	 * Three separate tanks rather than one shared one: the oxidiser must not mix
+	 * with the fuel, and liquid hydrogen is a distinct priming charge with its own
+	 * supply line. Splitting them also gives the per-tank fluid IO config
+	 * something real to select between.
+	 */
+	public final Tank fuelTank;
+	public final Tank propellantTank;
+	public final Tank liquidHydrogenTank;
+
 	/** Ticks of priming left, synced for the GUI and Jade. */
 	private int primedTicks = 0;
 
@@ -96,6 +125,27 @@ public class RocketdyneF1AEngineBlockEntity extends LargeFluidGeneratorBlockEnti
 	public RocketdyneF1AEngineBlockEntity(BlockPos pos, BlockState state) {
 		super(TRBlockEntities.ROCKETDYNE_F1A_ENGINE, pos, state, ModRecipes.ROCKETDYNE_ENGINE,
 				"RocketdyneF1AEngineBlockEntity", TechRebornConfig.rocketdyneF1AEngineEnergyPerTick);
+		// The base class already built the fuel tank for us; reuse it as tank 0 so
+		// the existing base-class fuel handling keeps pointing at the right one.
+		this.fuelTank = tank;
+		this.propellantTank = new Tank("RocketdyneF1AEnginePropellant", PROPELLANT_CAPACITY);
+		this.liquidHydrogenTank = new Tank("RocketdyneF1AEngineLiquidHydrogen", LIQUID_HYDROGEN_CAPACITY);
+	}
+
+	@Override
+	public int getTankCount() {
+		return 3;
+	}
+
+	@Override
+	@Nullable
+	public Tank getTank(int index) {
+		return switch (index) {
+			case TANK_FUEL -> fuelTank;
+			case TANK_PROPELLANT -> propellantTank;
+			case TANK_LIQUID_HYDROGEN -> liquidHydrogenTank;
+			default -> null;
+		};
 	}
 
 	@Override
@@ -224,13 +274,13 @@ public class RocketdyneF1AEngineBlockEntity extends LargeFluidGeneratorBlockEnti
 	 * @return {@code boolean} whether the bucket was available
 	 */
 	private boolean consumePropellant() {
-		if (!tank.getFluid().matchesType(ModFluids.COMPRESSED_AIR.getFluid())) {
+		if (!propellantTank.getFluid().matchesType(ModFluids.COMPRESSED_AIR.getFluid())) {
 			return false;
 		}
-		if (tank.getFluidAmount().lessThan(ONE_BUCKET)) {
+		if (propellantTank.getFluidAmount().lessThan(ONE_BUCKET)) {
 			return false;
 		}
-		tank.modifyFluid(instance -> instance.subtractAmount(ONE_BUCKET));
+		propellantTank.modifyFluid(instance -> instance.subtractAmount(ONE_BUCKET));
 		return true;
 	}
 
@@ -241,14 +291,23 @@ public class RocketdyneF1AEngineBlockEntity extends LargeFluidGeneratorBlockEnti
 	 * so the fuel currently being burned is never swallowed by the priming step.
 	 */
 	private void chargeFuel() {
-		Fluid fuel = tank.getFluid();
+		// Liquid hydrogen is the priming charge when the engine has it: one bucket
+		// buys the same window as a bucket of the main fuel, which is what makes a
+		// dedicated hydrogen line worth plumbing to the third tank.
+		if (liquidHydrogenTank.getFluid().matchesType(ModFluids.HYDROGEN.getFluid())
+				&& liquidHydrogenTank.getFluidAmount().moreThan(ONE_BUCKET)) {
+			liquidHydrogenTank.modifyFluid(instance -> instance.subtractAmount(ONE_BUCKET));
+			primedTicks = PRIMED_DURATION_TICKS;
+			return;
+		}
+		Fluid fuel = fuelTank.getFluid();
 		if (getRecipeForFluid(fuel) == null) {
 			return;
 		}
-		if (tank.getFluidAmount().lessThanOrEqual(ONE_BUCKET)) {
+		if (fuelTank.getFluidAmount().lessThanOrEqual(ONE_BUCKET)) {
 			return;
 		}
-		tank.modifyFluid(instance -> instance.subtractAmount(ONE_BUCKET));
+		fuelTank.modifyFluid(instance -> instance.subtractAmount(ONE_BUCKET));
 		primedTicks = PRIMED_DURATION_TICKS;
 	}
 
@@ -276,6 +335,29 @@ public class RocketdyneF1AEngineBlockEntity extends LargeFluidGeneratorBlockEnti
 				.sync(FluidValue.PACKET_CODEC, this::getTankAmount, this::setTankAmount)
 				.sync(tank)
 				.addInventory().create(this, syncID);
+	}
+
+	@Override
+	public void writeNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(tagCompound, registryLookup);
+		tagCompound.put("propellantTank", tankToNbt(propellantTank, registryLookup));
+		tagCompound.put("liquidHydrogenTank", tankToNbt(liquidHydrogenTank, registryLookup));
+	}
+
+	@Override
+	public void readNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(tagCompound, registryLookup);
+		propellantTank.read(tagCompound.getCompound("propellantTank"), registryLookup);
+		liquidHydrogenTank.read(tagCompound.getCompound("liquidHydrogenTank"), registryLookup);
+	}
+
+	/**
+	 * {@link Tank#write} writes in place, so serialize through a scratch tag.
+	 */
+	private static NbtCompound tankToNbt(Tank tank, RegistryWrapper.WrapperLookup registryLookup) {
+		NbtCompound scratch = new NbtCompound();
+		tank.write(scratch, registryLookup);
+		return scratch;
 	}
 
 	@Override

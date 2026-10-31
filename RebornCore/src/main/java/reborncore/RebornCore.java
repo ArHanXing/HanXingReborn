@@ -43,6 +43,7 @@ import reborncore.api.items.ArmorRemoveHandler;
 import reborncore.common.RebornCoreCommands;
 import reborncore.common.RebornCoreConfig;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
+import reborncore.common.blockentity.MultiTankStorage;
 import reborncore.common.blocks.BlockWrenchEventHandler;
 import reborncore.common.chunkloading.ChunkLoaderManager;
 import reborncore.common.config.Configuration;
@@ -125,10 +126,13 @@ public class RebornCore implements ModInitializer {
 		});
 
 		FluidStorage.SIDED.registerFallback((world, pos, state, be, direction) -> {
-			if (be instanceof MachineBaseBlockEntity machineBase) {
-				return machineBase.getTank();
+			if (!(be instanceof MachineBaseBlockEntity machineBase)) {
+				return null;
 			}
-			return null;
+			// Machines with a single tank expose it directly. Machines with several
+			// expose a view over all of them, so pipes and other mods can reach the
+			// extra tanks instead of only ever seeing tank 0.
+			return machineBase.getTankCount() <= 1 ? machineBase.getTank() : new MultiTankStorage(machineBase);
 		});
 		EnergyStorage.SIDED.registerFallback((world, pos, state, be, direction) -> {
 			if (be instanceof PowerAcceptorBlockEntity powerAcceptor) {
