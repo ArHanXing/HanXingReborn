@@ -43,6 +43,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -421,6 +422,43 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 
 	public boolean showTankConfig() {
 		return getTankCount() > 0;
+	}
+
+	/**
+	 * Default ticks between two cell (fluid container) operations on a machine's
+	 * input slot. Two ticks is ten operations per second, five times the original
+	 * twice-a-second pacing.
+	 */
+	public static final int DEFAULT_CELL_TRANSFER_INTERVAL = 2;
+
+	/**
+	 * Ticks between two attempts to empty or fill a cell in the input slot.
+	 * <p>
+	 * This used to be hardcoded to ten ticks (twice a second) in every machine
+	 * that owned a tank, which made the cell slot the bottleneck of any machine
+	 * with a large buffer. The default is now five times faster and machines can
+	 * still override it to trade speed for a cheaper tick.
+	 *
+	 * @return {@code int} ticks between cell operations
+	 */
+	protected int cellTransferInterval() {
+		return DEFAULT_CELL_TRANSFER_INTERVAL;
+	}
+
+	/**
+	 * The tank an external machine should fill when it inserts this fluid.
+	 * <p>
+	 * Without a hint, a multi-tank machine can only fall back to "first empty
+	 * tank", which puts a bucket of compressed air into the fuel tank. Machines
+	 * whose tanks have distinct roles override this so pipes, hoppers and other
+	 * mods land in the right one.
+	 *
+	 * @param variant {@link FluidVariant} the fluid being inserted
+	 * @return {@code int} the preferred tank index, or {@code -1} for "no
+	 *         preference"
+	 */
+	public int preferredTankFor(FluidVariant variant) {
+		return -1;
 	}
 
 	//The amount of ticks between a slot transfer attempt, less is faster

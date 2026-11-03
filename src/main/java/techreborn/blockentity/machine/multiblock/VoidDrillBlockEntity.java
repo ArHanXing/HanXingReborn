@@ -259,7 +259,7 @@ public class VoidDrillBlockEntity extends JsonMultiblockMachineBlockEntity imple
 
 		ticksSinceLastChange++;
 		// Check cells twice per second, like the fluid replicator.
-		if (ticksSinceLastChange >= 10) {
+		if (ticksSinceLastChange >= cellTransferInterval()) {
 			if (!inventory.getStack(CONTAINER_INPUT_SLOT).isEmpty()) {
 				FluidUtils.fillContainers(tank, inventory, CONTAINER_INPUT_SLOT, CONTAINER_OUTPUT_SLOT);
 			}

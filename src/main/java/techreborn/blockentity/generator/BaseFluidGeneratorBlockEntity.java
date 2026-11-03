@@ -87,8 +87,8 @@ public abstract class BaseFluidGeneratorBlockEntity extends PowerAcceptorBlockEn
 
 		ticksSinceLastChange++;
 
-		// Check cells input slot 2 time per second
-		if (ticksSinceLastChange >= 10) {
+		// Process the cell slot on the machine's own cadence.
+		if (ticksSinceLastChange >= cellTransferInterval()) {
 			handleCellSlot();
 			ticksSinceLastChange = 0;
 		}

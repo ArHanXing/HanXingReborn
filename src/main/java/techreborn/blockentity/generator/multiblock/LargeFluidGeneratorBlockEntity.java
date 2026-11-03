@@ -34,10 +34,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.blockentity.MultiblockWriter;
 import reborncore.common.fluid.FluidUtils;
 import reborncore.common.fluid.FluidValue;
+import reborncore.common.util.Tank;
 import techreborn.blockentity.generator.BaseFluidGeneratorBlockEntity;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.ModFluids;
@@ -88,6 +90,28 @@ public abstract class LargeFluidGeneratorBlockEntity extends BaseFluidGeneratorB
 	private int oxygenTicks = 0;
 	private int oxygenCheckCounter = 0;
 
+	/** Tank indices, also the order the fluid IO config lists them in. */
+	public static final int TANK_FUEL = 0;
+	public static final int TANK_PROPELLANT = 1;
+
+	/** Capacity of the compressed air tank. */
+	public static final FluidValue PROPELLANT_CAPACITY = FluidValue.BUCKET.multiply(64);
+
+	/**
+	 * Compressed air consumed per boost window. One bucket buys
+	 * {@link #OXYGEN_DURATION_TICKS} ticks, the same trade as a compressed air
+	 * cell, so the tank is simply the bulk way to feed the same mechanic.
+	 */
+	public static final FluidValue PROPELLANT_PER_BOOST = FluidValue.BUCKET;
+
+	/**
+	 * The oxidiser tank: compressed air burned for the output boost.
+	 * <p>
+	 * Kept apart from the fuel tank so the two never mix, and so the per-tank
+	 * fluid IO config can pipe them separately.
+	 */
+	public final Tank propellantTank;
+
 	// Multiblock validation cache (self-contained copy of the JSON multiblock logic)
 	private static final int CACHE_TTL_TICKS = 20;
 	@Nullable
@@ -107,6 +131,47 @@ public abstract class LargeFluidGeneratorBlockEntity extends BaseFluidGeneratorB
 	public LargeFluidGeneratorBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state,
 			RecipeType<FluidGeneratorRecipe> type, String blockEntityName, int euTick) {
 		super(blockEntityType, pos, state, type, blockEntityName, FluidValue.BUCKET.multiply(160), euTick);
+		this.propellantTank = new Tank(blockEntityName + "Propellant", PROPELLANT_CAPACITY);
+	}
+
+	/**
+	 * Tank 0 is the fuel, tank 1 the compressed air that drives the boost.
+	 */
+	@Override
+	public int getTankCount() {
+		return 2;
+	}
+
+	@Override
+	@Nullable
+	public Tank getTank(int index) {
+		return switch (index) {
+			case TANK_FUEL -> tank;
+			case TANK_PROPELLANT -> propellantTank;
+			default -> null;
+		};
+	}
+
+	/**
+	 * Compressed air belongs in the oxidiser tank, everything burnable in the fuel
+	 * tank, so a pipe hooked up to the machine fills the right one instead of
+	 * whichever tank is empty first.
+	 */
+	@Override
+	public int preferredTankFor(FluidVariant variant) {
+		if (variant.getFluid().matchesType(ModFluids.COMPRESSED_AIR.getFluid())) {
+			return TANK_PROPELLANT;
+		}
+		return TANK_FUEL;
+	}
+
+	/**
+	 * @return {@code boolean} whether compressed air boosts this generator. Machines
+	 *         with their own use for the air tank (the rocket engine burns it as a
+	 *         hard requirement instead) opt out.
+	 */
+	protected boolean usesPropellantBoost() {
+		return true;
 	}
 
 	// Explicitly re-declared even though BlockEntity already provides them:
@@ -193,18 +258,47 @@ public abstract class LargeFluidGeneratorBlockEntity extends BaseFluidGeneratorB
 		if (oxygenTicks > 0) {
 			oxygenTicks--;
 		}
-		// Feed compressed air cells from the input slot: one cell = 1 second of
-		// boost, the empty cell is ejected into the output slot.
-		if (++oxygenCheckCounter >= OXYGEN_CHECK_INTERVAL) {
-			oxygenCheckCounter = 0;
-			ItemStack stack = inventory.getStack(0);
-			if (!stack.isEmpty() && FluidUtils.containsMatchingFluid(stack, f -> f == ModFluids.COMPRESSED_AIR.getFluid())) {
-				// voidFluid=true: extract the air without filling the fuel tank
-				if (FluidUtils.drainContainers(tank, inventory, 0, 1, true)) {
-					oxygenTicks = OXYGEN_DURATION_TICKS;
-				}
+		// Top the boost up when it has run out: the compressed air tank first, then
+		// a cell from the input slot as the fallback, so a machine plumbed for air
+		// no longer needs to be fed cells.
+		if (!usesPropellantBoost() || oxygenTicks > 0) {
+			return;
+		}
+		if (++oxygenCheckCounter < OXYGEN_CHECK_INTERVAL) {
+			return;
+		}
+		oxygenCheckCounter = 0;
+
+		if (consumePropellant()) {
+			oxygenTicks = OXYGEN_DURATION_TICKS;
+			return;
+		}
+
+		// Cell fallback: one cell = 1 second of boost, the empty cell is ejected
+		// into the output slot.
+		ItemStack stack = inventory.getStack(0);
+		if (!stack.isEmpty() && FluidUtils.containsMatchingFluid(stack, f -> f == ModFluids.COMPRESSED_AIR.getFluid())) {
+			// voidFluid=true: extract the air without filling the fuel tank
+			if (FluidUtils.drainContainers(tank, inventory, 0, 1, true)) {
+				oxygenTicks = OXYGEN_DURATION_TICKS;
 			}
 		}
+	}
+
+	/**
+	 * Takes one boost's worth of compressed air out of the propellant tank.
+	 *
+	 * @return {@code boolean} whether the tank had enough air
+	 */
+	private boolean consumePropellant() {
+		if (!propellantTank.getFluid().matchesType(ModFluids.COMPRESSED_AIR.getFluid())) {
+			return false;
+		}
+		if (propellantTank.getFluidAmount().lessThan(PROPELLANT_PER_BOOST)) {
+			return false;
+		}
+		propellantTank.modifyFluid(instance -> instance.subtractAmount(PROPELLANT_PER_BOOST));
+		return true;
 	}
 
 	@Override
@@ -322,11 +416,15 @@ public abstract class LargeFluidGeneratorBlockEntity extends BaseFluidGeneratorB
 	public void readNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tagCompound, registryLookup);
 		oxygenTicks = tagCompound.getInt("oxygenTicks");
+		propellantTank.read(tagCompound.getCompound("propellantTank"), registryLookup);
 	}
 
 	@Override
 	public void writeNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(tagCompound, registryLookup);
 		tagCompound.putInt("oxygenTicks", oxygenTicks);
+		NbtCompound propellant = new NbtCompound();
+		propellantTank.write(propellant, registryLookup);
+		tagCompound.put("propellantTank", propellant);
 	}
 }

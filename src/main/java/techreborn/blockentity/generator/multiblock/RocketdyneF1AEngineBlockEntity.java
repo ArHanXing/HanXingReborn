@@ -89,16 +89,16 @@ public class RocketdyneF1AEngineBlockEntity extends LargeFluidGeneratorBlockEnti
 	/** Primed output and calorific multiplier. */
 	public static final int PRIMED_MULTIPLIER = 2;
 
-	/** Tank indices, also the order the fluid IO config lists them in. */
-	public static final int TANK_FUEL = 0;
-	public static final int TANK_PROPELLANT = 1;
+	/**
+	 * Tank indices. The fuel and propellant indices come from the generator base
+	 * class; only the third tank is specific to this machine.
+	 */
 	public static final int TANK_LIQUID_HYDROGEN = 2;
 
 	/**
-	 * Capacity of the tanks. The fuel tank comes from the generator base class,
-	 * which sizes it itself; only the two extra tanks are declared here.
+	 * Capacity of the liquid hydrogen tank. The fuel and propellant tanks come from
+	 * the generator base class, which sizes them itself.
 	 */
-	public static final FluidValue PROPELLANT_CAPACITY = FluidValue.BUCKET.multiply(64);
 	public static final FluidValue LIQUID_HYDROGEN_CAPACITY = FluidValue.BUCKET.multiply(16);
 
 	/**
@@ -111,7 +111,6 @@ public class RocketdyneF1AEngineBlockEntity extends LargeFluidGeneratorBlockEnti
 	 * something real to select between.
 	 */
 	public final Tank fuelTank;
-	public final Tank propellantTank;
 	public final Tank liquidHydrogenTank;
 
 	/** Ticks of priming left, synced for the GUI and Jade. */
@@ -129,7 +128,6 @@ public class RocketdyneF1AEngineBlockEntity extends LargeFluidGeneratorBlockEnti
 		// The base class already built the fuel tank for us; reuse it as tank 0 so
 		// the existing base-class fuel handling keeps pointing at the right one.
 		this.fuelTank = tank;
-		this.propellantTank = new Tank("RocketdyneF1AEnginePropellant", PROPELLANT_CAPACITY);
 		this.liquidHydrogenTank = new Tank("RocketdyneF1AEngineLiquidHydrogen", LIQUID_HYDROGEN_CAPACITY);
 	}
 
@@ -141,12 +139,16 @@ public class RocketdyneF1AEngineBlockEntity extends LargeFluidGeneratorBlockEnti
 	@Override
 	@Nullable
 	public Tank getTank(int index) {
-		return switch (index) {
-			case TANK_FUEL -> fuelTank;
-			case TANK_PROPELLANT -> propellantTank;
-			case TANK_LIQUID_HYDROGEN -> liquidHydrogenTank;
-			default -> null;
-		};
+		return index == TANK_LIQUID_HYDROGEN ? liquidHydrogenTank : super.getTank(index);
+	}
+
+	/**
+	 * The rocket engine burns compressed air as a hard requirement rather than as a
+	 * damage boost, so the base class's boost must stay out of its air tank.
+	 */
+	@Override
+	protected boolean usesPropellantBoost() {
+		return false;
 	}
 
 	@Override
@@ -374,14 +376,12 @@ public class RocketdyneF1AEngineBlockEntity extends LargeFluidGeneratorBlockEnti
 	@Override
 	public void writeNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(tagCompound, registryLookup);
-		tagCompound.put("propellantTank", tankToNbt(propellantTank, registryLookup));
 		tagCompound.put("liquidHydrogenTank", tankToNbt(liquidHydrogenTank, registryLookup));
 	}
 
 	@Override
 	public void readNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tagCompound, registryLookup);
-		propellantTank.read(tagCompound.getCompound("propellantTank"), registryLookup);
 		liquidHydrogenTank.read(tagCompound.getCompound("liquidHydrogenTank"), registryLookup);
 	}
 

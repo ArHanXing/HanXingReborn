@@ -87,6 +87,20 @@ public class MultiTankStorage implements Storage<FluidVariant> {
 	public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
 		List<Tank> tanks = tanks();
 
+		// 0. The tank the machine says this fluid belongs in. This is what keeps a
+		// machine with role-specific tanks (fuel vs. oxidiser) from routing a
+		// bucket into whichever tank happens to be empty first.
+		int preferred = machine.preferredTankFor(resource);
+		if (preferred >= 0) {
+			Tank target = machine.getTank(preferred);
+			if (target != null) {
+				long inserted = target.insert(resource, maxAmount, transaction);
+				if (inserted > 0) {
+					return inserted;
+				}
+			}
+		}
+
 		// 1. A tank that already holds this exact fluid.
 		for (Tank tank : tanks) {
 			if (!tank.isEmpty() && tank.getResource().equals(resource)) {

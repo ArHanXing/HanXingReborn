@@ -77,7 +77,7 @@ public class IndustrialSawmillBlockEntity extends JsonMultiblockMachineBlockEnti
 
 		ticksSinceLastChange++;
 		// Check cells input slot 2 time per second
-		if (ticksSinceLastChange >= 10) {
+		if (ticksSinceLastChange >= cellTransferInterval()) {
 			if (!inventory.getStack(1).isEmpty()) {
 				FluidUtils.drainContainers(tank, inventory, 1, 5);
 				FluidUtils.fillContainers(tank, inventory, 1, 5);
