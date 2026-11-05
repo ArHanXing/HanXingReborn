@@ -57,6 +57,7 @@ import techreborn.init.TRBlockEntities;
 import techreborn.init.TRCauldronBehavior;
 import techreborn.init.TRContent;
 import techreborn.init.TRDispenserBehavior;
+import techreborn.energybind.EnergyBindManager;
 import techreborn.init.template.TechRebornTemplates;
 import techreborn.items.DynamicCellItem;
 import techreborn.items.tool.MultiblockBuilderItem;
@@ -173,6 +174,10 @@ public class TechReborn implements ModInitializer {
 		ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.put(TRContent.SmallDusts.SAW.asItem(), 0.1F);
 
 		TechRebornTemplates.init();
+
+		// Pushes bound cable-network stats to the players who asked for them; the
+		// InGame Info XML tags read the client-side copy.
+		EnergyBindManager.init();
 
 		LOGGER.info("TechReborn setup done!");
 	}

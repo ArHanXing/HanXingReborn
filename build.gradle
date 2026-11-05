@@ -202,6 +202,13 @@ dependencies {
 
 	optionalDependency("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
 
+    // InGame Info XML is not on Modrinth/Maven, so the jar is vendored in libs/.
+    // Deliberately not the mod* configurations: the published jar was built with a
+    // newer Loom than this project uses, and Loom 1.8 refuses to accept its
+    // metadata. We only need its API classes, so a plain classpath entry works.
+    // Runtime is optional - the tag registration is guarded by isModLoaded.
+    compileOnly files("libs/ingameinfoxml-2.9.2.101.jar")
+
     modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
     modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
 

@@ -26,6 +26,7 @@ package techreborn.packets;
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.RegistryByteBuf;
+import techreborn.packets.clientbound.EnergyBindPayload;
 import techreborn.packets.clientbound.OpenManualPayload;
 import techreborn.packets.serverbound.AESUConfigPayload;
 import techreborn.packets.serverbound.AutoCraftingLockPayload;
@@ -54,6 +55,7 @@ public class Packets {
 
 	private static void clientbound(PayloadTypeRegistry<RegistryByteBuf> registry) {
 		registry.register(OpenManualPayload.ID, OpenManualPayload.CODEC);
+		registry.register(EnergyBindPayload.ID, EnergyBindPayload.CODEC);
 	}
 
 	private static void serverbound(PayloadTypeRegistry<RegistryByteBuf> registry) {

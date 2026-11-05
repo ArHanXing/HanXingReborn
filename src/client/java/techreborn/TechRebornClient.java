@@ -80,6 +80,7 @@ import techreborn.component.TRDataComponentTypes;
 import techreborn.init.ModFluids;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
+import techreborn.client.compat.igi.IgiEnergyBind;
 import techreborn.items.BatteryItem;
 import techreborn.items.DynamicCellItem;
 import techreborn.items.FrequencyTransmitterItem;
@@ -319,6 +320,10 @@ public class TechRebornClient implements ClientModInitializer {
 		ClientGuiType.AESU.toString();
 
 		ClientJumpEvent.EVENT.register(new ClientJumpHandler());
+
+		// Optional InGame Info XML tags for the bound cable network; a no-op when
+		// that mod is absent.
+		IgiEnergyBind.init();
 	}
 
 	private static <T extends Item> void registerPredicateProvider(Class<T> itemClass, Identifier identifier, ItemModelPredicateProvider<T> modelPredicateProvider) {

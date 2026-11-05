@@ -50,6 +50,16 @@ public final class CableNetwork {
 	private long input;
 	private long output;
 	private long lastTick = Long.MIN_VALUE;
+
+	/**
+	 * Sliding window of the last five seconds of throughput, one slot per tick.
+	 * 100 ticks at 20 tps is the 5s average reported by the InGame Info XML tag.
+	 */
+	private static final int AVG_WINDOW_TICKS = 100;
+	private final long[] inputWindow = new long[AVG_WINDOW_TICKS];
+	private final long[] outputWindow = new long[AVG_WINDOW_TICKS];
+	private int windowIndex = 0;
+	private int windowFilled = 0;
 	/**
 	 * {@code true} while the cached membership is known to be stale, e.g. after
 	 * a neighbour changed or a member's chunk unloaded. The next
@@ -100,6 +110,65 @@ public final class CableNetwork {
 		return output;
 	}
 
+	/**
+	 * @return {@code long} mean energy pulled in per tick over the last five
+	 *         seconds
+	 */
+	public long getAverageInput() {
+		return average(inputWindow);
+	}
+
+	/**
+	 * @return {@code long} mean energy delivered per tick over the last five
+	 *         seconds
+	 */
+	public long getAverageOutput() {
+		return average(outputWindow);
+	}
+
+	/**
+	 * @return {@code long} mean net change per tick over the last five seconds
+	 */
+	public long getAverageNet() {
+		return getAverageInput() - getAverageOutput();
+	}
+
+	/**
+	 * Ticks until the buffer empties (net negative) or fills (net positive).
+	 *
+	 * @return {@code long} ticks until empty or full; {@code -1} when it is
+	 *         already at that edge; {@code Long.MAX_VALUE} when the net flow is
+	 *         zero and the level therefore never moves
+	 */
+	public long ticksUntilBufferEdge() {
+		long net = getAverageNet();
+		if (net == 0) {
+			return Long.MAX_VALUE;
+		}
+		if (net < 0) {
+			if (buffer <= 0) {
+				return -1;
+			}
+			return buffer / -net;
+		}
+		long free = capacity - buffer;
+		if (free <= 0) {
+			return -1;
+		}
+		return free / net;
+	}
+
+	private long average(long[] window) {
+		if (windowFilled == 0) {
+			return 0;
+		}
+		long sum = 0;
+		for (int i = 0; i < windowFilled; i++) {
+			sum += window[i];
+		}
+		return sum / windowFilled;
+	}
+
 	long lastTick() {
 		return lastTick;
 	}
@@ -126,6 +195,13 @@ public final class CableNetwork {
 		this.input = input;
 		this.output = output;
 		this.processed = true;
+
+		inputWindow[windowIndex] = input;
+		outputWindow[windowIndex] = output;
+		windowIndex = (windowIndex + 1) % AVG_WINDOW_TICKS;
+		if (windowFilled < AVG_WINDOW_TICKS) {
+			windowFilled++;
+		}
 	}
 
 	/**
