@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "I I",
+    "III",
+    "BBB"
+  ],
+  "key": {
+    "I": {
+      "item": "techreborn:industrial_machine_frame"
+    },
+    "B": {
+      "item": "techreborn:basic_machine_casing"
+    }
+  },
+  "result": {
+    "id": "techreborn:water_sink"
+  }
+}

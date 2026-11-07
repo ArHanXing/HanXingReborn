@@ -70,6 +70,7 @@ import techreborn.blockentity.storage.energy.idsu.InterdimensionalSUBlockEntity;
 import techreborn.blockentity.storage.energy.lesu.LSUStorageBlockEntity;
 import techreborn.blockentity.storage.energy.lesu.LapotronicSUBlockEntity;
 import techreborn.blockentity.storage.fluid.TankUnitBaseBlockEntity;
+import techreborn.blockentity.storage.fluid.WaterSinkBlockEntity;
 import techreborn.blockentity.storage.item.StorageUnitBaseBlockEntity;
 import techreborn.blockentity.transformers.EVTransformerBlockEntity;
 import techreborn.blockentity.transformers.HVTransformerBlockEntity;
@@ -86,6 +87,7 @@ public class TRBlockEntities {
 
 	public static final BlockEntityType<StorageUnitBaseBlockEntity> STORAGE_UNIT = register(StorageUnitBaseBlockEntity::new, "storage_unit", TRContent.StorageUnit.values());
 	public static final BlockEntityType<TankUnitBaseBlockEntity> TANK_UNIT = register(TankUnitBaseBlockEntity::new, "tank_unit", TRContent.TankUnit.values());
+	public static final BlockEntityType<WaterSinkBlockEntity> WATER_SINK = register(WaterSinkBlockEntity::new, "water_sink", TRContent.Machine.WATER_SINK);
 	public static final BlockEntityType<DrainBlockEntity> DRAIN = register(DrainBlockEntity::new, "drain", TRContent.Machine.DRAIN);
 	public static final BlockEntityType<ThermalGeneratorBlockEntity> THERMAL_GEN = register(ThermalGeneratorBlockEntity::new, "thermal_generator", TRContent.Machine.THERMAL_GENERATOR);
 	public static final BlockEntityType<IndustrialCentrifugeBlockEntity> INDUSTRIAL_CENTRIFUGE = register(IndustrialCentrifugeBlockEntity::new, "industrial_centrifuge", TRContent.Machine.INDUSTRIAL_CENTRIFUGE);

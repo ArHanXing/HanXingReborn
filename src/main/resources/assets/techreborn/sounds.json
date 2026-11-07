@@ -52,5 +52,12 @@
     "sounds": [
       "techreborn:alarm_3"
     ]
+  },
+  "water_sink_rotate": {
+    "category": "block",
+    "subtitle": "subtitles.techreborn.water_sink_rotate",
+    "sounds": [
+      "techreborn:water_sink_rotate"
+    ]
   }
 }

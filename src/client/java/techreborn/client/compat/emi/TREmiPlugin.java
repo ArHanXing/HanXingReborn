@@ -112,6 +112,7 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiStack NAQUADAH_DERESONATOR_STACK = EmiStack.of(TRContent.Machine.NAQUADAH_DERESONATOR);
 	public static final EmiStack VOID_DRILL_STACK = EmiStack.of(TRContent.Machine.VOID_DRILL);
 	public static final EmiStack GAS_COLLECTOR_STACK = EmiStack.of(TRContent.Machine.GAS_COLLECTOR);
+	public static final EmiStack ROCKETDYNE_F1A_ENGINE_STACK = EmiStack.of(TRContent.Machine.ROCKETDYNE_F1A_ENGINE);
 
 	public static final EmiRecipeCategory ALLOY_SMELTER_CATEGORY =
 		new EmiRecipeCategory(trId("alloy_smelter"), ALLOY_SMELTER_STACK, EmiTextures.ALLOY_SMELTING,
@@ -201,6 +202,9 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiRecipeCategory SEMI_FLUID_GENERATOR_CATEGORY =
 		new EmiRecipeCategory(trId("semi_fluid_generator"), SEMI_FLUID_GENERATOR_STACK, SEMI_FLUID_GENERATOR_STACK,
 			EmiRecipeSorting.compareInputThenOutput());
+	public static final EmiRecipeCategory ROCKETDYNE_ENGINE_CATEGORY =
+		new EmiRecipeCategory(trId("rocketdyne_engine"), ROCKETDYNE_F1A_ENGINE_STACK, ROCKETDYNE_F1A_ENGINE_STACK,
+			EmiRecipeSorting.compareInputThenOutput());
 	public static final EmiRecipeCategory PLASMA_GENERATOR_CATEGORY =
 		new EmiRecipeCategory(trId("plasma_generator"), PLASMA_GENERATOR_STACK, PLASMA_GENERATOR_STACK,
 			EmiRecipeSorting.compareInputThenOutput());
@@ -280,6 +284,7 @@ public class TREmiPlugin implements EmiPlugin {
 		Map.entry("large_refinery", TRContent.Machine.LARGE_REFINERY),
 		Map.entry("isotope_separator", TRContent.Machine.ISOTOPE_SEPARATOR),
 		Map.entry("naquadah_deresonator", TRContent.Machine.NAQUADAH_DERESONATOR),
+		Map.entry("rocketdyne_f1a_engine", TRContent.Machine.ROCKETDYNE_F1A_ENGINE),
 		Map.entry("void_drill", TRContent.Machine.VOID_DRILL),
 		Map.entry("gas_collector", TRContent.Machine.GAS_COLLECTOR),
 		Map.entry("fluid_replicator", TRContent.Machine.FLUID_REPLICATOR),
@@ -624,6 +629,15 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(GAS_COLLECTOR_CATEGORY, GAS_COLLECTOR_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.GAS_COLLECTOR)) {
 			registry.addRecipe(new GasCollectorEmiRecipe(recipe));
+		}
+
+		// Rocketdyne F-1A: a fuel-only category. The engine's compressed air is a
+		// hard requirement of the machine rather than part of the fuel definition,
+		// so the recipe page shows just the fuel and its calorific value.
+		registry.addCategory(ROCKETDYNE_ENGINE_CATEGORY);
+		registry.addWorkstation(ROCKETDYNE_ENGINE_CATEGORY, ROCKETDYNE_F1A_ENGINE_STACK);
+		for (var recipe : getRecipes(registry, ModRecipes.ROCKETDYNE_ENGINE)) {
+			registry.addRecipe(new FluidGeneratorEmiRecipe(recipe, ROCKETDYNE_ENGINE_CATEGORY, 10, 1000000));
 		}
 
 		registry.addCategory(PLASMA_GENERATOR_CATEGORY);

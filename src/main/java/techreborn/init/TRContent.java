@@ -120,6 +120,7 @@ import techreborn.blocks.machine.tier1.ResinBasinBlock;
 import techreborn.blocks.misc.*;
 import techreborn.blocks.storage.energy.*;
 import techreborn.blocks.storage.fluid.TankUnitBlock;
+import techreborn.blocks.storage.fluid.WaterSinkBlock;
 import techreborn.blocks.storage.item.StorageUnitBlock;
 import techreborn.blocks.transformers.BlockEVTransformer;
 import techreborn.blocks.transformers.BlockHVTransformer;
@@ -867,6 +868,7 @@ public class TRContent {
 		SOLID_FUEL_GENERATOR(new GenericGeneratorBlock(GuiType.GENERATOR, SolidFuelGeneratorBlockEntity::new)),
 		THERMAL_GENERATOR(new GenericGeneratorBlock(GuiType.THERMAL_GENERATOR, ThermalGeneratorBlockEntity::new)),
 		WATER_MILL(new GenericGeneratorBlock(null, WaterMillBlockEntity::new)),
+		WATER_SINK(new WaterSinkBlock()),
 		WIND_MILL(new GenericGeneratorBlock(null, WindMillBlockEntity::new)),
 
 		DRAIN(new GenericMachineBlock(null, DrainBlockEntity::new)),

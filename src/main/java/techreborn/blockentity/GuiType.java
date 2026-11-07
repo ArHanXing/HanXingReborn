@@ -135,6 +135,7 @@ import techreborn.blockentity.storage.energy.MediumVoltageSUBlockEntity;
 import techreborn.blockentity.storage.energy.idsu.InterdimensionalSUBlockEntity;
 import techreborn.blockentity.storage.energy.lesu.LapotronicSUBlockEntity;
 import techreborn.blockentity.storage.fluid.TankUnitBaseBlockEntity;
+import techreborn.blockentity.storage.fluid.WaterSinkBlockEntity;
 import techreborn.blockentity.storage.item.StorageUnitBaseBlockEntity;
 
 
@@ -171,6 +172,7 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<IronFurnaceBlockEntity> IRON_FURNACE = register("iron_furnace");
 	public static final GuiType<StorageUnitBaseBlockEntity> STORAGE_UNIT = register("storage_unit");
 	public static final GuiType<TankUnitBaseBlockEntity> TANK_UNIT = register("tank_unit");
+	public static final GuiType<WaterSinkBlockEntity> WATER_SINK = register("water_sink");
 	public static final GuiType<RecyclerBlockEntity> RECYCLER = register("recycler");
 	public static final GuiType<RollingMachineBlockEntity> ROLLING_MACHINE = register("rolling_machine");
 	public static final GuiType<IndustrialSawmillBlockEntity> SAWMILL = register("sawmill");

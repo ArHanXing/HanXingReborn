@@ -19,6 +19,9 @@
   "block.techreborn.creative_storage_unit": "Creative Storage Unit",
 
   "block.techreborn.crude_tank_unit": "Crude Tank Unit",
+  "block.techreborn.water_sink": "Water Sink",
+  "gui.techreborn.water_sink.infinite": "Refills itself every 20 ticks",
+  "subtitles.techreborn.water_sink_rotate": "Sink rotates",
   "block.techreborn.basic_tank_unit": "Basic Tank Unit",
   "block.techreborn.advanced_tank_unit": "Advanced Tank Unit",
   "block.techreborn.industrial_tank_unit": "Industrial Tank Unit",
@@ -1335,6 +1338,7 @@
   "emi.category.techreborn.gas_turbine": "Gas Turbine",
   "emi.category.techreborn.diesel_generator": "Diesel Generator",
   "emi.category.techreborn.semi_fluid_generator": "Semi Fluid Generator",
+  "emi.category.techreborn.rocketdyne_engine": "Rocket Engine Fuel",
   "emi.category.techreborn.plasma_generator": "Plasma Generator",
   "emi.category.techreborn.large_chemical_reactor": "Large Chemical Reactor",
   "emi.category.techreborn.fluid_from_container": "Fluid from Container",
