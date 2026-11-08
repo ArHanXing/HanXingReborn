@@ -29,6 +29,13 @@ repositories {
         name "TerraformersMC"
         url "https://maven.terraformersmc.com/releases"
     }
+    maven {
+        name "Shedaniel"
+        url "https://maven.shedaniel.me"
+        content {
+            includeGroup "me.shedaniel.cloth"
+        }
+    }
 	mavenCentral()
 }
 
@@ -208,6 +215,19 @@ dependencies {
     // metadata. We only need its API classes, so a plain classpath entry works.
     // Runtime is optional - the tag registration is guarded by isModLoaded.
     compileOnly files("libs/ingameinfoxml-2.9.2.101.jar")
+    // Dev-only runtime copy: the published jar is remap-annotated as intermediary
+    // and stamped with a newer Loom, so Loom 1.8 refuses it and the dev runtime
+    // could not load it anyway (dev runs on named mappings). This copy has the
+    // stamp rewritten so `runClient` can remap it back to named like any other mod.
+    modLocalRuntime files("libs/ingameinfoxml-2.9.2.101-dev.jar")
+    // InGame Info XML hard-depends on Cloth Config; without it the loader refuses
+    // to start the dev client.
+    // InGame Info XML hard-depends on Cloth Config. It must go through Loom's
+    // remapping configuration: its access widener is written in intermediary, and
+    // a plain localRuntime entry would be handed to the loader unremapped, which
+    // fails with "Namespace (intermediary) does not match current runtime
+    // namespace (named)".
+    modLocalRuntime "me.shedaniel.cloth:cloth-config-fabric:15.0.140"
 
     modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
     modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
