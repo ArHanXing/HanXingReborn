@@ -36,6 +36,8 @@ import techreborn.blockentity.cable.CableBlockEntity;
 import techreborn.blockentity.cable.CableNetwork;
 import techreborn.blockentity.cable.CableNetworkManager;
 
+import java.util.UUID;
+
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -87,8 +89,13 @@ public final class EnergyBindCommand {
 			return 0;
 		}
 
-		EnergyBindManager.bind(player, player.getServerWorld().getRegistryKey(), pos);
-		context.getSource().sendFeedback(() -> Text.translatable("techreborn.energybind.bound",
+		UUID scope = EnergyBindManager.bind(player, player.getServerWorld().getRegistryKey(), pos);
+		// Tell the player whether this binding is shared with a team, otherwise the
+		// team-wide behaviour is invisible.
+		boolean shared = !scope.equals(player.getUuid());
+		context.getSource().sendFeedback(() -> Text.translatable(shared
+				? "techreborn.energybind.bound_team"
+				: "techreborn.energybind.bound",
 			pos.getX(), pos.getY(), pos.getZ(), network.size()), false);
 		return 1;
 	}

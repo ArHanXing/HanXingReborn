@@ -37,16 +37,19 @@ import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
+import techreborn.team.TeamScopes;
+
 import java.util.UUID;
 
 /**
  * Server-wide persistence for the Dyson Swarm system.
  * <p>
  * The solar sails fed into a Dyson Swarm Host permanently increase the sail
- * count of the bound player (even after the host is broken), and every Dyson
- * Swarm Receiver bound to that player produces energy proportional to the
- * count. Data is stored per player UUID in the overworld's level storage
- * (one host and one receiver may be bound to a player at a time).
+ * count of the bound owner (even after the host is broken), and every Dyson
+ * Swarm Receiver bound to that owner produces energy proportional to the count.
+ * Data is stored in the overworld's level storage, keyed by <em>scope</em>: the
+ * player's UUID, or their FTB Teams party id when they are in one, so a team
+ * shares one sail count and one host/receiver pair.
  */
 public class DysonSwarmData extends PersistentState {
 
@@ -91,7 +94,7 @@ public class DysonSwarmData extends PersistentState {
 		if (player == null) {
 			return 0;
 		}
-		return sails.getOrDefault(player, 0L);
+		return sails.getOrDefault(TeamScopes.scopeOf(player), 0L);
 	}
 
 	/**
@@ -101,16 +104,16 @@ public class DysonSwarmData extends PersistentState {
 	 * @param amount {@code int} number of sails to add
 	 */
 	public void addSails(UUID player, int amount) {
-		sails.merge(player, (long) amount, Long::sum);
+		sails.merge(TeamScopes.scopeOf(player), (long) amount, Long::sum);
 		markDirty();
 	}
 
 	public Binding getHostBinding(UUID player) {
-		return player == null ? null : hosts.get(player);
+		return player == null ? null : hosts.get(TeamScopes.scopeOf(player));
 	}
 
 	public Binding getReceiverBinding(UUID player) {
-		return player == null ? null : receivers.get(player);
+		return player == null ? null : receivers.get(TeamScopes.scopeOf(player));
 	}
 
 	public boolean isHostBoundAt(UUID player, String dimension, BlockPos pos) {
@@ -130,7 +133,7 @@ public class DysonSwarmData extends PersistentState {
 	 * previous (possibly stale) host binding.
 	 */
 	public void bindHost(UUID player, String dimension, BlockPos pos) {
-		hosts.put(player, new Binding(dimension, pos.asLong()));
+		hosts.put(TeamScopes.scopeOf(player), new Binding(dimension, pos.asLong()));
 		markDirty();
 	}
 
@@ -139,7 +142,7 @@ public class DysonSwarmData extends PersistentState {
 	 * previous (possibly stale) receiver binding.
 	 */
 	public void bindReceiver(UUID player, String dimension, BlockPos pos) {
-		receivers.put(player, new Binding(dimension, pos.asLong()));
+		receivers.put(TeamScopes.scopeOf(player), new Binding(dimension, pos.asLong()));
 		markDirty();
 	}
 
@@ -149,8 +152,9 @@ public class DysonSwarmData extends PersistentState {
 	 * by a stale removal).
 	 */
 	public void unbindHost(UUID player, String dimension, BlockPos pos) {
-		if (bindingAt(hosts.get(player), dimension, pos)) {
-			hosts.remove(player);
+		UUID scope = TeamScopes.scopeOf(player);
+		if (bindingAt(hosts.get(scope), dimension, pos)) {
+			hosts.remove(scope);
 			markDirty();
 		}
 	}
@@ -160,8 +164,9 @@ public class DysonSwarmData extends PersistentState {
 	 * given location (no-op otherwise, see {@link #unbindHost}).
 	 */
 	public void unbindReceiver(UUID player, String dimension, BlockPos pos) {
-		if (bindingAt(receivers.get(player), dimension, pos)) {
-			receivers.remove(player);
+		UUID scope = TeamScopes.scopeOf(player);
+		if (bindingAt(receivers.get(scope), dimension, pos)) {
+			receivers.remove(scope);
 			markDirty();
 		}
 	}

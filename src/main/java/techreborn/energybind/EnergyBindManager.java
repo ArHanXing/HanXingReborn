@@ -37,36 +37,26 @@ import techreborn.blockentity.cable.CableBlockEntity;
 import techreborn.blockentity.cable.CableNetwork;
 import techreborn.blockentity.cable.CableNetworkManager;
 import techreborn.packets.clientbound.EnergyBindPayload;
+import techreborn.team.TeamScopes;
+import techreborn.world.EnergyBindData;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * Server-side owner of the {@code /techreborn igi_energybind} bindings.
+ * Server-side driver for the {@code /techreborn igi_energybind} bindings.
  * <p>
- * A player binds one cable position; from then on the network that cable
- * belongs to is pushed to that player's client on a fixed cadence, which is what
- * the InGame Info XML tag reads. The binding is per player and per world: the
- * command runs in the caller's dimension, and a cable in another dimension has
- * an unrelated network.
+ * The bindings themselves live in {@link EnergyBindData} - persisted, and keyed by
+ * scope rather than by player - so they survive a relog and are shared by a whole
+ * FTB Teams party. This class only resolves and pushes the numbers to whichever
+ * members of a scope are online.
  */
 public final class EnergyBindManager {
 
 	/** How often the bound network is pushed, in ticks. */
 	public static final int PUSH_INTERVAL_TICKS = 5;
 
-	private static final Map<UUID, Binding> BINDINGS = new HashMap<>();
-
 	private EnergyBindManager() {
-	}
-
-	/**
-	 * @param dimension {@link RegistryKey} the world the bound block is in
-	 * @param pos       {@link BlockPos} the bound cable position
-	 */
-	public record Binding(RegistryKey<World> dimension, BlockPos pos) {
 	}
 
 	public static void init() {
@@ -74,57 +64,69 @@ public final class EnergyBindManager {
 	}
 
 	/**
-	 * Binds a position for a player, replacing any previous binding.
+	 * Binds a position for the player's current scope, replacing any previous
+	 * binding.
 	 *
 	 * @param player    {@link ServerPlayerEntity} the player
 	 * @param dimension {@link RegistryKey} the world
 	 * @param pos       {@link BlockPos} the position
+	 * @return {@link UUID} the scope the binding was stored under
 	 */
-	public static void bind(ServerPlayerEntity player, RegistryKey<World> dimension, BlockPos pos) {
-		BINDINGS.put(player.getUuid(), new Binding(dimension, pos.toImmutable()));
+	public static UUID bind(ServerPlayerEntity player, RegistryKey<World> dimension, BlockPos pos) {
+		UUID scope = TeamScopes.scopeOf(player);
+		EnergyBindData data = EnergyBindData.get(player.getServerWorld());
+		if (data != null) {
+			data.put(scope, new EnergyBindData.Binding(dimension, pos.toImmutable()));
+		}
 		// Push once immediately so the tag is populated without waiting a tick.
-		push(player, BINDINGS.get(player.getUuid()));
+		push(player, data == null ? null : data.get(scope));
+		return scope;
 	}
 
 	/**
-	 * Clears a player's binding.
+	 * Clears the player's scope binding.
 	 *
 	 * @param player {@link ServerPlayerEntity} the player
+	 * @return {@code boolean} whether a binding was removed
 	 */
-	public static void unbind(ServerPlayerEntity player) {
-		BINDINGS.remove(player.getUuid());
+	public static boolean unbind(ServerPlayerEntity player) {
+		EnergyBindData data = EnergyBindData.get(player.getServerWorld());
+		return data != null && data.remove(TeamScopes.scopeOf(player));
 	}
 
 	/**
-	 * @param uuid {@link UUID} the player
-	 * @return {@link Binding} the current binding, or {@code null}
+	 * @param world {@link World} any server world
+	 * @param scope {@link UUID} the scope key
+	 * @return {@link EnergyBindData.Binding} the binding, or {@code null}
 	 */
 	@Nullable
-	public static Binding get(UUID uuid) {
-		return BINDINGS.get(uuid);
+	public static EnergyBindData.Binding get(World world, UUID scope) {
+		EnergyBindData data = EnergyBindData.get(world);
+		return data == null ? null : data.get(scope);
 	}
 
 	private static void pushAll(MinecraftServer server) {
-		if (BINDINGS.isEmpty() || server.getTicks() % PUSH_INTERVAL_TICKS != 0) {
+		if (server.getTicks() % PUSH_INTERVAL_TICKS != 0) {
 			return;
 		}
-		Iterator<Map.Entry<UUID, Binding>> iterator = BINDINGS.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry<UUID, Binding> entry = iterator.next();
-			ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
-			if (player == null) {
-				// Player left: drop the binding so a rejoin starts clean rather
-				// than showing stale numbers from a previous session.
-				iterator.remove();
-				continue;
+		EnergyBindData data = EnergyBindData.get(server.getOverworld());
+		if (data == null || data.entries().isEmpty()) {
+			return;
+		}
+		for (Map.Entry<UUID, EnergyBindData.Binding> entry : data.entries().entrySet()) {
+			EnergyBindPayload payload = resolve(server, entry.getValue());
+			// Every online member of the scope gets the same numbers, which is the
+			// whole point of binding by team instead of by player.
+			for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+				if (entry.getKey().equals(TeamScopes.scopeOf(player))) {
+					ServerPlayNetworking.send(player, payload);
+				}
 			}
-			push(player, entry.getValue());
 		}
 	}
 
-	private static void push(ServerPlayerEntity player, Binding binding) {
-		EnergyBindPayload payload = resolve(player.getServer(), binding);
-		ServerPlayNetworking.send(player, payload);
+	private static void push(ServerPlayerEntity player, @Nullable EnergyBindData.Binding binding) {
+		ServerPlayNetworking.send(player, resolve(player.getServer(), binding));
 	}
 
 	/**
@@ -134,11 +136,11 @@ public final class EnergyBindManager {
 	 * than as zeros.
 	 *
 	 * @param server  {@link MinecraftServer} the server
-	 * @param binding {@link Binding} the binding to resolve
+	 * @param binding {@link EnergyBindData.Binding} the binding to resolve
 	 * @return {@link EnergyBindPayload} the data to send
 	 */
-	private static EnergyBindPayload resolve(MinecraftServer server, Binding binding) {
-		if (server == null) {
+	private static EnergyBindPayload resolve(MinecraftServer server, @Nullable EnergyBindData.Binding binding) {
+		if (server == null || binding == null) {
 			return invalid();
 		}
 		ServerWorld world = server.getWorld(binding.dimension());

@@ -1333,6 +1333,7 @@
   "techreborn.energybind.not_a_cable": "(%s, %s, %s) 不是导线方块",
   "techreborn.energybind.no_network": "该导线不属于任何已激活的电网",
   "techreborn.energybind.bound": "已绑定电网：(%s, %s, %s)，共 %s 格导线",
+  "techreborn.energybind.bound_team": "已为队伍绑定电网：(%s, %s, %s)，共 %s 格导线",
   "techreborn.igi.unbound": "未绑定！",
   "techreborn.igi.invalid": "绑定失效！",
   "techreborn.igi.at_edge": "已达边界",

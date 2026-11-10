@@ -36,6 +36,8 @@ import team.reborn.energy.api.EnergyStorage;
 import team.reborn.energy.api.base.SimpleEnergyStorage;
 import techreborn.config.TechRebornConfig;
 
+import techreborn.team.TeamScopes;
+
 import java.util.HashMap;
 
 public class IDSUManager extends PersistentState {
@@ -45,9 +47,34 @@ public class IDSUManager extends PersistentState {
 	private IDSUManager() {
 	}
 
+	/**
+	 * Resolves the shared storage for a player, keyed by their team scope so a
+	 * whole FTB Teams party shares one IDSU instead of each member getting a
+	 * private battery. Falls back to the player's own UUID without FTB Teams.
+	 *
+	 * @param server {@link MinecraftServer} the server
+	 * @param uuid   {@link String} the owning player's UUID
+	 * @return {@link IDSUPlayer} the shared storage
+	 */
 	@NotNull
 	public static IDSUPlayer getPlayer(MinecraftServer server, String uuid) {
-		return get(server).getPlayer(uuid);
+		return get(server).getPlayer(scopeKey(uuid));
+	}
+
+	/**
+	 * @param uuid {@link String} a raw player UUID string, possibly empty
+	 * @return {@link String} the scope key to store this player's data under
+	 */
+	private static String scopeKey(String uuid) {
+		if (uuid == null || uuid.isEmpty()) {
+			return "";
+		}
+		try {
+			return TeamScopes.scopeOf(java.util.UUID.fromString(uuid)).toString();
+		} catch (IllegalArgumentException e) {
+			// Not a UUID (a hand-edited save, or a name): keep it verbatim.
+			return uuid;
+		}
 	}
 
 	private static IDSUManager get(MinecraftServer server) {
