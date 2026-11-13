@@ -59,7 +59,6 @@ public class GuiBase<T extends ScreenHandler> extends HandledScreen<T> {
 	public BlockEntity be;
 	@Nullable
 	public BuiltScreenHandler builtScreenHandler;
-	private final int xSize = 176;
 	private final int ySize = 176;
 
 	@Nullable
@@ -134,7 +133,7 @@ public class GuiBase<T extends ScreenHandler> extends HandledScreen<T> {
 		updateSlotDraw(drawPlayerSlots);
 		// GUIs that override backgroundHeight (see getPlayerInventoryOffset)
 		// need the panel to stretch along with the taller window.
-		builder.drawDefaultBackground(drawContext, x, y, xSize, ySize + getPlayerInventoryOffset());
+		builder.drawDefaultBackground(drawContext, x, y, backgroundWidth, ySize + getPlayerInventoryOffset());
 		if (drawPlayerSlots) {
 			builder.drawPlayerSlots(drawContext, this, x + backgroundWidth / 2, y + 93 + getPlayerInventoryOffset(), true);
 		}

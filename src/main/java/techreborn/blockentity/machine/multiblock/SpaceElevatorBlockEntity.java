@@ -40,6 +40,8 @@ import reborncore.common.blocks.BlockMachineBase;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
+import reborncore.common.util.RebornInventory;
+import techreborn.space.SpaceTerminalLayout;
 import techreborn.blocks.misc.BlockSpaceElevatorPowerModule;
 import techreborn.config.TechRebornConfig;
 import techreborn.init.TRBlockEntities;
@@ -83,6 +85,7 @@ public class SpaceElevatorBlockEntity extends JsonMultiblockMachineBlockEntity i
 		super(TRBlockEntities.SPACE_ELEVATOR, pos, state, "SpaceElevator",
 				TechRebornConfig.spaceElevatorMaxInput, TechRebornConfig.spaceElevatorMaxEnergy,
 				TRContent.Machine.SPACE_ELEVATOR.block, -1);
+		this.inventory = new RebornInventory<>(18, "SpaceElevator", 64, this);
 	}
 
 	@Override
@@ -202,9 +205,14 @@ public class SpaceElevatorBlockEntity extends JsonMultiblockMachineBlockEntity i
 	// IContainerProvider
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, final PlayerEntity player) {
-		return new ScreenHandlerBuilder("spaceelevator").player(player.getInventory()).inventory().hotbar().addInventory()
-				.blockEntity(this).syncEnergyValue()
-				.sync(PacketCodecs.STRING, this::getModuleSummary, this::setModuleSummary)
+		var slots = new ScreenHandlerBuilder("spaceelevator").player(player.getInventory())
+				.inventory(SpaceTerminalLayout.PLAYER_X, SpaceTerminalLayout.PLAYER_Y)
+				.hotbar(SpaceTerminalLayout.PLAYER_X, SpaceTerminalLayout.HOTBAR_Y).addInventory().blockEntity(this);
+		for (int i = 0; i < 9; i++) {
+			slots.slot(i, SpaceTerminalLayout.INPUT_X + i % 3 * 18, SpaceTerminalLayout.INPUT_Y + i / 3 * 18);
+			slots.outputSlot(9 + i, SpaceTerminalLayout.INPUT_X + i % 3 * 18, SpaceTerminalLayout.OUTPUT_Y + i / 3 * 18);
+		}
+		return slots.syncEnergyValue().sync(PacketCodecs.STRING, this::getModuleSummary, this::setModuleSummary)
 				.addInventory().create(this, syncID);
 	}
 

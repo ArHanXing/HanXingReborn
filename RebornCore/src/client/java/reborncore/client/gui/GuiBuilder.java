@@ -340,7 +340,7 @@ public class GuiBuilder {
 				.map(Text::translatable)
 				.collect(Collectors.toList());
 
-		TipsListWidget explanation = new TipsListWidget(gui, gui.getScreenWidth() - 14, 76, y, 9 + 2, tips);
+		TipsListWidget explanation = new TipsListWidget(gui, 162, 76, y, 9 + 2, tips);
 		explanation.setX(x - 81);
 		explanation.render(drawContext, mouseX, mouseY, 1.0f);
 	}
@@ -354,6 +354,15 @@ public class GuiBuilder {
 				this.addEntry(new TipsListEntry(tip));
 			}
 			theme = gui.theme;
+		}
+
+		@Override
+		protected void enableScissor(DrawContext drawContext) {
+			var matrix = drawContext.getMatrices().peek().getPositionMatrix();
+			var topLeft = matrix.transformPosition(getX(), getY(), 0, new org.joml.Vector3f());
+			var bottomRight = matrix.transformPosition(getX() + getWidth(), getY() + getHeight(), 0, new org.joml.Vector3f());
+			drawContext.enableScissor((int) Math.floor(topLeft.x()), (int) Math.floor(topLeft.y()),
+					(int) Math.ceil(bottomRight.x()), (int) Math.ceil(bottomRight.y()));
 		}
 
 		@Override

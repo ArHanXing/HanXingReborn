@@ -42,6 +42,7 @@ import techreborn.config.TechRebornConfig;
 import techreborn.init.ModRecipes;
 import techreborn.init.TRBlockEntities;
 import techreborn.init.TRContent;
+import techreborn.space.SpaceTerminalLayout;
 
 /**
  * Space Elevator Miner Unit: an independent-recipe multiblock with the same
@@ -160,14 +161,14 @@ public class SpaceElevatorMinerBlockEntity extends JsonMultiblockMachineBlockEnt
 
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, final PlayerEntity player) {
-		return new ScreenHandlerBuilder("spaceelevatorminer").player(player.getInventory()).inventory().hotbar().addInventory()
+		return new ScreenHandlerBuilder("spaceelevatorminer").player(player.getInventory())
+				.inventory(SpaceTerminalLayout.PLAYER_X, SpaceTerminalLayout.PLAYER_Y)
+				.hotbar(SpaceTerminalLayout.PLAYER_X, SpaceTerminalLayout.HOTBAR_Y).addInventory()
 				.blockEntity(this)
-				// 4 input slots: 2 columns x 2 rows
-				.slot(0, 35, 26).slot(1, 53, 26).slot(2, 35, 44).slot(3, 53, 44)
-				// 6 output slots: 3 columns x 2 rows
-				.outputSlot(4, 89, 26).outputSlot(5, 107, 26).outputSlot(6, 125, 26)
-				.outputSlot(7, 89, 44).outputSlot(8, 107, 44).outputSlot(9, 125, 44)
-				.energySlot(10, 8, 72).syncEnergyValue().syncCrafterValue()
+				.slot(0, 18, 102).slot(1, 36, 102).slot(2, 18, 120).slot(3, 36, 120)
+				.outputSlot(4, 18, 166).outputSlot(5, 36, 166).outputSlot(6, 54, 166)
+				.outputSlot(7, 18, 184).outputSlot(8, 36, 184).outputSlot(9, 54, 184)
+				.energySlot(10, 90, 102).syncEnergyValue().syncCrafterValue()
 				.sync(PacketCodecs.VAR_LONG, this::getSyncedHostPos, this::setSyncedHostPos)
 				.addInventory().create(this, syncID);
 	}

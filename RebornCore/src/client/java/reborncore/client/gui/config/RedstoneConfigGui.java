@@ -76,7 +76,8 @@ public class RedstoneConfigGui extends GuiTab {
 			drawContext.fill(x + 91, y + (i * spread) - 2, x + 93 + 65, y + (i * spread) + 10, color);
 
 			Text name = Text.translatable("reborncore.gui.fluidconfig." + configuration.getState(element).name().toLowerCase(Locale.ROOT));
-			guiBase.drawCentredText(drawContext, name, y + (i * spread), -1, x + 37, GuiBase.Layer.FOREGROUND);
+			guiBase.drawText(drawContext, name, x + 91 + (63 - guiBase.getTextRenderer().getWidth(name)) / 2,
+					y + (i * spread), -1, GuiBase.Layer.FOREGROUND);
 			i++;
 		}
 	}

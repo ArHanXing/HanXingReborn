@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "techreborn:item/spacecraft/space_drone_mk3",
+    "layer1": "techreborn:item/spacecraft/_powered"
+  }
+}

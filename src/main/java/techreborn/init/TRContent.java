@@ -130,6 +130,7 @@ import techreborn.config.TechRebornConfig;
 import techreborn.entities.EntityNukePrimed;
 import techreborn.events.ModRegistry;
 import techreborn.items.DynamicCellItem;
+import techreborn.items.SpacecraftItem;
 import techreborn.items.UpgradeItem;
 import techreborn.items.UpgraderItem;
 import techreborn.items.armor.NanoSuitItem;
@@ -303,6 +304,51 @@ public class TRContent {
 		public static final TagKey<Item> STORAGE_UNITS = TagKey.of(RegistryKeys.ITEM, Identifier.of(TechReborn.MOD_ID, "storage_units"));
 
 		private ItemTags() {
+		}
+	}
+
+	public enum Spacecraft implements ItemConvertible {
+		SPACE_DRONE_MK1(SpacecraftItem.Family.DRONE, 1, false),
+		SPACE_DRONE_MK1_POWERED(SpacecraftItem.Family.DRONE, 1, true),
+		SPACE_DRONE_MK2(SpacecraftItem.Family.DRONE, 2, false),
+		SPACE_DRONE_MK2_POWERED(SpacecraftItem.Family.DRONE, 2, true),
+		SPACE_DRONE_MK3(SpacecraftItem.Family.DRONE, 3, false),
+		SPACE_DRONE_MK3_POWERED(SpacecraftItem.Family.DRONE, 3, true),
+		SPACE_PROBE_MK1(SpacecraftItem.Family.PROBE, 1, false),
+		SPACE_PROBE_MK1_POWERED(SpacecraftItem.Family.PROBE, 1, true),
+		SPACE_PROBE_MK2(SpacecraftItem.Family.PROBE, 2, false),
+		SPACE_PROBE_MK2_POWERED(SpacecraftItem.Family.PROBE, 2, true),
+		SPACE_PROBE_MK3(SpacecraftItem.Family.PROBE, 3, false),
+		SPACE_PROBE_MK3_POWERED(SpacecraftItem.Family.PROBE, 3, true),
+		SPACE_LANDER_MK1(SpacecraftItem.Family.LANDER, 1, false),
+		SPACE_LANDER_MK1_POWERED(SpacecraftItem.Family.LANDER, 1, true),
+		SPACE_LANDER_MK2(SpacecraftItem.Family.LANDER, 2, false),
+		SPACE_LANDER_MK2_POWERED(SpacecraftItem.Family.LANDER, 2, true),
+		SPACE_LANDER_MK3(SpacecraftItem.Family.LANDER, 3, false),
+		SPACE_LANDER_MK3_POWERED(SpacecraftItem.Family.LANDER, 3, true),
+		CORE_MK1(SpacecraftItem.Family.CORE, 1, false),
+		CORE_MK2(SpacecraftItem.Family.CORE, 2, false),
+		CORE_MK3(SpacecraftItem.Family.CORE, 3, false);
+
+		private final SpacecraftItem item;
+
+		Spacecraft(SpacecraftItem.Family family, int tier, boolean powered) {
+			item = InitUtils.setup(new SpacecraftItem(family, tier, powered), name().toLowerCase(Locale.ROOT));
+		}
+
+		@Override
+		public SpacecraftItem asItem() {
+			return item;
+		}
+
+		public static SpacecraftItem get(SpacecraftItem.Family family, int tier, boolean powered) {
+			for (Spacecraft spacecraft : values()) {
+				SpacecraftItem item = spacecraft.asItem();
+				if (item.family() == family && item.tier() == tier && item.powered() == powered) {
+					return item;
+				}
+			}
+			throw new IllegalArgumentException("No spacecraft for " + family + ", tier " + tier + ", powered=" + powered);
 		}
 	}
 
