@@ -30,11 +30,9 @@ import net.minecraft.text.Text;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorBlockEntity;
 import techreborn.client.gui.space.GuiSpaceTerminal;
-import techreborn.items.SpacecraftItem;
-import techreborn.init.TRContent;
 import techreborn.space.SpaceTerminalLayout;
 
-/** Mission terminal: native cargo slots and module sync, with a preview star map. */
+/** Mission terminal with authoritative launch and task controls. */
 public class GuiSpaceElevator<T extends SpaceElevatorBlockEntity & BuiltScreenHandlerProvider> extends GuiSpaceTerminal {
 	private final T blockEntity;
 
@@ -68,26 +66,44 @@ public class GuiSpaceElevator<T extends SpaceElevatorBlockEntity & BuiltScreenHa
 				continue;
 			}
 			int lineY = 49 + i * 16;
-			label(context, tr(parts[0].equals("A") ? "assembler" : "miner"), 404, lineY, 82, ACCENT);
+			label(context, tr(parts[0].equals("A") ? "assembler" : parts[0].equals("U") ? "module_unloaded" : "miner"), 404, lineY, 82, ACCENT);
 			label(context, Text.literal(parts[1] + " " + parts[2] + " " + parts[3]), 404, lineY + 8, 82, MUTED);
 		}
 		String action = previewStage == 0 ? "survey" : previewStage == 1 ? "land" : "outpost";
-		boolean displayOnly = map.selected() == null || map.selected().type().equals("star");
-		boolean unavailable = displayOnly || previewStage >= 3
-				|| (map.selected().type().equals("black_hole") && previewStage > 0);
-		button(context, 10, 223, 116, tr(unavailable ? "no_stage" : "action." + action).getString(), false, mouseX, mouseY);
-		label(context, tr(unavailable ? "display_only" : "backend_pending"), 10, 243, 116, MUTED);
-		if (!unavailable) {
-			var family = previewStage == 0 ? SpacecraftItem.Family.PROBE : SpacecraftItem.Family.LANDER;
-			context.drawItem(TRContent.Spacecraft.get(family, deviceTier, true).getDefaultStack(), 398, 259);
-			label(context, Text.literal(switch (deviceTier) {
-				case 2 -> "2048 EU/t";
-				case 3 -> "8192 EU/t";
-				default -> "512 EU/t";
-			}), 419, 263, 73, INK);
+		String reason = launchReason();
+		boolean unavailable = map.selected() == null || selectedView() == null || selectedView().tiers().isEmpty();
+		button(context, 10, 223, 116, tr(unavailable ? "no_stage" : "action." + action).getString(), reason.isEmpty(), mouseX, mouseY);
+		label(context, tr(taskReason().isEmpty() ? reason.isEmpty() ? "ready" : reason : taskReason()), 10, 243, 116, MUTED);
+		if (taskActive()) {
+			context.fill(398, 181, 492, 187, 0xFF354651);
+			context.fill(398, 181, 398 + taskProgressScaled(94), 187, ACCENT);
+			label(context, tr("task_state." + taskState()), 398, 196, 94, ACCENT);
 		}
+
 		if (!isTabOpen() && inside(mouseX - x, mouseY - y, 10, 223, 116, 16)) {
-			queueTooltip(tr(unavailable ? "display_only" : "backend_pending"));
+			queueTooltip(tr(reason.isEmpty() ? "ready" : reason));
 		}
 	}
+	private String launchReason() {
+		if (!dataReady) return "sync_pending";
+		if (!editable) return "no_permission";
+		if (!serverStructure) return "structure_missing";
+		if (taskActive()) return taskState().equals("refunding") ? "refunding" : "task_busy";
+		if (selectedView() == null || selectedView().tiers().isEmpty()) return "display_only";
+		if (!selectedView().tiers().contains(deviceTier)) return "scheme_unavailable";
+		if (!selectionAcknowledged()) return "selection_pending";
+		return "";
+	}
+
+	@Override
+	protected boolean terminalClick(double mx, double my, int button) {
+		if (button == 0 && inside(mx - x, my - y, 10, 223, 116, 16)) {
+			if (launchReason().isEmpty()) {
+				taskAction(techreborn.space.SpaceTaskAction.Action.START);
+			}
+			return true;
+		}
+		return super.terminalClick(mx, my, button);
+	}
+
 }

@@ -60,6 +60,9 @@ public class WrenchUtils {
 						return false;
 					}
 
+					if (!worldIn.isClient && blockEntity instanceof reborncore.common.blockentity.MachineBaseBlockEntity machine) {
+						machine.beforeDismantle();
+					}
 					boolean dropContents = true;
 					Block block = blockEntity.getCachedState().getBlock();
 					if (block instanceof BaseBlockEntityProvider) {

@@ -1,0 +1,312 @@
+{
+  "type": "barren",
+  "tier": 1,
+  "system": "sol",
+  "from_system": "sol:sun",
+  "parent": "sol:sun",
+  "sort_order": 30,
+  "display": {
+    "name_key": "gui.techreborn.space.body.mars",
+    "description_key": "planet.sol.mars.desc"
+  },
+  "marker_block": "minecraft:red_sand",
+  "marker_scale": 1.0,
+  "time": 1200,
+  "physical": {
+    "radius_km": 3389.5,
+    "orbit_radius_au": 1.524,
+    "orbit_phase_deg": 120,
+    "temperature_k": 210,
+    "rotation_period_hours": 24.6,
+    "orbital_period_days": 687,
+    "orbit_features": []
+  },
+  "missions": {
+    "survey": {
+      "enabled": true,
+      "time": 6000,
+      "variants": [
+        {
+          "tier": 1,
+          "inputs": [
+            {
+              "item": "techreborn:space_probe_mk1_powered",
+              "count": 1
+            }
+          ],
+          "outputs": [
+            {
+              "item": "techreborn:space_probe_mk1",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "inputs": [
+            {
+              "item": "techreborn:space_probe_mk2_powered",
+              "count": 1
+            }
+          ],
+          "outputs": [
+            {
+              "item": "techreborn:space_probe_mk2",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "inputs": [
+            {
+              "item": "techreborn:space_probe_mk3_powered",
+              "count": 1
+            }
+          ],
+          "outputs": [
+            {
+              "item": "techreborn:space_probe_mk3",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "land": {
+      "enabled": true,
+      "time": 6000,
+      "variants": [
+        {
+          "tier": 1,
+          "inputs": [
+            {
+              "item": "techreborn:space_lander_mk1_powered",
+              "count": 1
+            },
+            {
+              "item": "minecraft:iron_block",
+              "count": 16
+            }
+          ],
+          "outputs": [
+            {
+              "item": "techreborn:space_lander_mk1",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "inputs": [
+            {
+              "item": "techreborn:space_lander_mk2_powered",
+              "count": 1
+            },
+            {
+              "item": "minecraft:iron_block",
+              "count": 16
+            }
+          ],
+          "outputs": [
+            {
+              "item": "techreborn:space_lander_mk2",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "inputs": [
+            {
+              "item": "techreborn:space_lander_mk3_powered",
+              "count": 1
+            },
+            {
+              "item": "minecraft:iron_block",
+              "count": 16
+            }
+          ],
+          "outputs": [
+            {
+              "item": "techreborn:space_lander_mk3",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "outpost": {
+      "enabled": true,
+      "time": 24000,
+      "variants": [
+        {
+          "tier": 1,
+          "inputs": [
+            {
+              "item": "techreborn:space_lander_mk1_powered",
+              "count": 1
+            },
+            {
+              "item": "techreborn:core_mk1",
+              "count": 1
+            },
+            {
+              "item": "minecraft:iron_block",
+              "count": 32
+            }
+          ],
+          "outputs": [
+            {
+              "item": "techreborn:space_lander_mk1",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "inputs": [
+            {
+              "item": "techreborn:space_lander_mk2_powered",
+              "count": 1
+            },
+            {
+              "item": "techreborn:core_mk2",
+              "count": 1
+            },
+            {
+              "item": "minecraft:iron_block",
+              "count": 32
+            }
+          ],
+          "outputs": [
+            {
+              "item": "techreborn:space_lander_mk2",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "inputs": [
+            {
+              "item": "techreborn:space_lander_mk3_powered",
+              "count": 1
+            },
+            {
+              "item": "techreborn:core_mk3",
+              "count": 1
+            },
+            {
+              "item": "minecraft:iron_block",
+              "count": 32
+            }
+          ],
+          "outputs": [
+            {
+              "item": "techreborn:space_lander_mk3",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "mining": {
+      "enabled": true,
+      "requires_landing": true,
+      "variants": [
+        {
+          "tier": 1,
+          "inputs": [
+            {
+              "item": "techreborn:space_drone_mk1_powered",
+              "count": 1
+            }
+          ],
+          "outputs": [
+            {
+              "item": "techreborn:space_drone_mk1",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "inputs": [
+            {
+              "item": "techreborn:space_drone_mk2_powered",
+              "count": 1
+            }
+          ],
+          "outputs": [
+            {
+              "item": "techreborn:space_drone_mk2",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "inputs": [
+            {
+              "item": "techreborn:space_drone_mk3_powered",
+              "count": 1
+            }
+          ],
+          "outputs": [
+            {
+              "item": "techreborn:space_drone_mk3",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "resources": [
+    {
+      "id": "iron",
+      "item": "minecraft:raw_iron",
+      "count": 20,
+      "order": 1,
+      "components": {
+        "minecraft:custom_data": {
+          "sample_source": "sol:mars"
+        }
+      }
+    },
+    {
+      "id": "copper",
+      "item": "minecraft:raw_copper",
+      "count": 15,
+      "order": 2
+    },
+    {
+      "id": "gold",
+      "item": "minecraft:raw_gold",
+      "count": 10,
+      "order": 3
+    },
+    {
+      "id": "redstone",
+      "item": "minecraft:redstone",
+      "count": 30,
+      "order": 4
+    },
+    {
+      "id": "lapis",
+      "item": "minecraft:lapis_lazuli",
+      "count": 10,
+      "order": 5
+    }
+  ],
+  "tags": [
+    "rocky",
+    "sample_economy"
+  ],
+  "visibility": {
+    "name": "always",
+    "physical": "after_survey",
+    "resources": "after_survey"
+  }
+}

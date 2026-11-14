@@ -26,9 +26,10 @@ package reborncore.common.network;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.Nullable;
 import reborncore.common.blockentity.FluidConfiguration;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.blockentity.SlotConfiguration;
@@ -36,12 +37,32 @@ import reborncore.common.chunkloading.ChunkLoaderManager;
 import reborncore.common.network.clientbound.FluidConfigSyncPayload;
 import reborncore.common.network.clientbound.SlotSyncPayload;
 import reborncore.common.network.serverbound.*;
+import reborncore.common.screen.BuiltScreenHandler;
 
 public class ServerBoundPackets {
 
+	/** Resolve mutations from the actual open machine, never just a client position. */
+	@Nullable
+	private static MachineBaseBlockEntity configurableMachine(BlockPosPayload payload, ServerPlayerEntity player) {
+		if (!(player.currentScreenHandler instanceof BuiltScreenHandler screen)
+				|| !screen.getPos().equals(payload.pos()) || !screen.canUse(player)) {
+			return null;
+		}
+		MachineBaseBlockEntity machine = screen.getBlockEntity();
+		if (machine.getWorld() != player.getWorld()
+				|| player.getWorld().getBlockEntity(payload.pos()) != machine
+				|| !machine.canPlayerConfigure(player)) {
+			return null;
+		}
+		return machine;
+	}
+
 	public static void init() {
 		ServerPlayNetworking.registerGlobalReceiver(FluidConfigSavePayload.ID, (payload, context) -> {
-			var machine = payload.getBlockEntity(MachineBaseBlockEntity.class, context.player());
+			var machine = configurableMachine(payload, context.player());
+			if (machine == null || machine.fluidConfiguration == null) {
+				return;
+			}
 			FluidConfiguration.TankConfigHolder holder = machine.fluidConfiguration.getTankDetails(payload.tankID());
 			if (holder == null) {
 				return;
@@ -51,62 +72,73 @@ public class ServerBoundPackets {
 
 			NetworkManager.sendToTracking(new FluidConfigSyncPayload(payload.pos(), machine.fluidConfiguration), machine);
 
-			// We update the block to allow pipes that are connecting to detect the update and change their
-			// connection status if needed
+			// Let pipes detect changed connections.
 			World world = machine.getWorld();
 			BlockState blockState = world.getBlockState(machine.getPos());
 			world.updateNeighborsAlways(machine.getPos(), blockState.getBlock());
 		});
 
 		ServerPlayNetworking.registerGlobalReceiver(SlotConfigSavePayload.ID, (payload, context) -> {
-			var machine = payload.getBlockEntity(MachineBaseBlockEntity.class, context.player());
-			for (SlotConfiguration.SlotConfigHolder slotDetail : payload.slotConfig().getSlotDetails()) {
-				machine.getSlotConfiguration().updateSlotDetails(slotDetail);
+			var machine = configurableMachine(payload, context.player());
+			if (machine == null || machine.getSlotConfiguration() == null) {
+				return;
+			}
+			// Validate the complete batch before applying any part of it.
+			for (SlotConfiguration.SlotConfigHolder detail : payload.slotConfig().getSlotDetails()) {
+				if (machine.getSlotConfiguration().getSlotDetails(detail.getSlotID()) == null) {
+					return;
+				}
+			}
+			for (SlotConfiguration.SlotConfigHolder detail : payload.slotConfig().getSlotDetails()) {
+				machine.getSlotConfiguration().updateSlotDetails(detail);
 			}
 			machine.markDirty();
-
 			NetworkManager.sendToWorld(new SlotSyncPayload(payload.pos(), machine.getSlotConfiguration()), (ServerWorld) machine.getWorld());
 		});
 
 		ServerPlayNetworking.registerGlobalReceiver(FluidIoSavePayload.ID, (payload, context) -> {
-			var machine = payload.getBlockEntity(MachineBaseBlockEntity.class, context.player());
-			FluidConfiguration config = machine.fluidConfiguration;
-			if (config == null) {
+			var machine = configurableMachine(payload, context.player());
+			if (machine == null || machine.fluidConfiguration == null) {
 				return;
 			}
-			FluidConfiguration.TankConfigHolder holder = config.getTankDetails(payload.tankID());
+			FluidConfiguration.TankConfigHolder holder = machine.fluidConfiguration.getTankDetails(payload.tankID());
 			if (holder == null) {
 				return;
 			}
 			holder.setInput(payload.input());
 			holder.setOutput(payload.output());
-
-			// Syncs back to the client
+			machine.markDirty();
 			NetworkManager.sendToTracking(new FluidConfigSyncPayload(payload.pos(), machine.fluidConfiguration), machine);
 		});
 
 		ServerPlayNetworking.registerGlobalReceiver(IoSavePayload.ID, (payload, context) -> {
-			var machine = payload.getBlockEntity(MachineBaseBlockEntity.class, context.player());
-			Validate.notNull(machine, "machine cannot be null");
+			var machine = configurableMachine(payload, context.player());
+			if (machine == null || machine.getSlotConfiguration() == null) {
+				return;
+			}
 			SlotConfiguration.SlotConfigHolder holder = machine.getSlotConfiguration().getSlotDetails(payload.slotID());
 			if (holder == null) {
 				return;
 			}
-
 			holder.setInput(payload.input());
 			holder.setOutput(payload.output());
 			holder.setFilter(payload.filter());
 			holder.setPriority(payload.priority());
-
-			//Syncs back to the client
+			machine.markDirty();
 			NetworkManager.sendToAll(new SlotSyncPayload(payload.pos(), machine.getSlotConfiguration()), context.player().getServer());
 		});
 
 		ServerPlayNetworking.registerGlobalReceiver(SlotSavePayload.ID, (payload, context) -> {
-			var machine = payload.getBlockEntity(MachineBaseBlockEntity.class, context.player());
-			machine.getSlotConfiguration().getSlotDetails(payload.slotConfig().getSlotID()).updateSlotConfig(payload.slotConfig());
+			var machine = configurableMachine(payload, context.player());
+			if (machine == null || machine.getSlotConfiguration() == null) {
+				return;
+			}
+			SlotConfiguration.SlotConfigHolder holder = machine.getSlotConfiguration().getSlotDetails(payload.slotConfig().getSlotID());
+			if (holder == null) {
+				return;
+			}
+			holder.updateSlotConfig(payload.slotConfig());
 			machine.markDirty();
-
 			NetworkManager.sendToWorld(new SlotSyncPayload(payload.pos(), machine.getSlotConfiguration()), (ServerWorld) machine.getWorld());
 		});
 
@@ -117,8 +149,12 @@ public class ServerBoundPackets {
 		});
 
 		ServerPlayNetworking.registerGlobalReceiver(SetRedstoneStatePayload.ID, (payload, context) -> {
-			var machine = payload.getBlockEntity(MachineBaseBlockEntity.class, context.player());
+			var machine = configurableMachine(payload, context.player());
+			if (machine == null || !machine.getRedstoneElements().contains(payload.element())) {
+				return;
+			}
 			machine.setRedstoneConfiguration(machine.getRedstoneConfiguration().withState(payload.element(), payload.state()));
+			machine.markDirty();
 		});
 	}
 }

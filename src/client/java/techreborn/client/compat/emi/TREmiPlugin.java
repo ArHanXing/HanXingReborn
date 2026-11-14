@@ -212,6 +212,9 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiRecipeCategory SPACE_ELEVATOR_ASSEMBLER_CATEGORY =
 		new EmiRecipeCategory(trId("space_elevator_assembler"), SPACE_ELEVATOR_ASSEMBLER_STACK, SPACE_ELEVATOR_ASSEMBLER_STACK,
 			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiRecipeCategory SPACE_EXPLORATION_CATEGORY =
+		new EmiRecipeCategory(trId("space_exploration"), SPACE_ELEVATOR_STACK, SPACE_ELEVATOR_STACK,
+			EmiRecipeSorting.compareOutputThenInput());
 	public static final EmiRecipeCategory SPACE_ELEVATOR_MINER_CATEGORY =
 		new EmiRecipeCategory(trId("space_elevator_miner"), SPACE_ELEVATOR_MINER_STACK, SPACE_ELEVATOR_MINER_STACK,
 			EmiRecipeSorting.compareOutputThenInput());
@@ -558,11 +561,13 @@ public class TREmiPlugin implements EmiPlugin {
 			registry.addRecipe(new SpaceElevatorAssemblerEmiRecipe(recipe));
 		}
 
+		registry.addCategory(SPACE_EXPLORATION_CATEGORY);
+		registry.addWorkstation(SPACE_EXPLORATION_CATEGORY, SPACE_ELEVATOR_STACK);
 		registry.addCategory(SPACE_ELEVATOR_MINER_CATEGORY);
 		registry.addWorkstation(SPACE_ELEVATOR_MINER_CATEGORY, SPACE_ELEVATOR_MINER_STACK);
-		for (var recipe : getRecipes(registry, ModRecipes.SPACE_ELEVATOR_MINER)) {
-			registry.addRecipe(new SpaceElevatorMinerEmiRecipe(recipe));
-		}
+		// Legacy SpaceElevatorMiner recipes are no longer executable. Only the
+		// server's current-viewer filtered task catalogue may advertise mining.
+		SpaceEmiData.Bridge.register(registry);
 
 		// Misc multiblock machines
 		registry.addCategory(HUNTER_PROCESS_REACTOR_CATEGORY);

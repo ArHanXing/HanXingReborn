@@ -39,6 +39,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.Range;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
@@ -175,7 +176,20 @@ public class BuiltScreenHandler extends ScreenHandler {
 	}
 
 	@Override
+	public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
+		// Keep canUse true for viewers, but block every action path before the
+		// vanilla dispatcher can move items (including hotbar swaps and dragging).
+		if (!blockEntity.canPlayerConfigure(player)) {
+			return;
+		}
+		super.onSlotClick(slotIndex, button, actionType, player);
+	}
+
+	@Override
 	public ItemStack quickMove(final PlayerEntity player, final int index) {
+		if (!blockEntity.canPlayerConfigure(player) || index < 0 || index >= slots.size()) {
+			return ItemStack.EMPTY;
+		}
 
 		ItemStack originalStack = ItemStack.EMPTY;
 

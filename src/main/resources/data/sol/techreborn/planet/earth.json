@@ -1,0 +1,45 @@
+{
+  "type": "continental",
+  "tier": 1,
+  "system": "sol",
+  "from_system": "sol:sun",
+  "parent": "sol:sun",
+  "sort_order": 20,
+  "display": {
+    "name_key": "gui.techreborn.space.body.earth",
+    "description_key": "planet.sol.earth.desc"
+  },
+  "marker_block": "minecraft:moss_block",
+  "marker_scale": 1.0,
+  "time": 1200,
+  "physical": {
+    "radius_km": 6371,
+    "orbit_radius_au": 1,
+    "orbit_phase_deg": 155,
+    "temperature_k": 288,
+    "rotation_period_hours": 24,
+    "orbital_period_days": 365.25,
+    "orbit_features": []
+  },
+  "missions": {
+    "survey": {
+      "enabled": false
+    },
+    "land": {
+      "enabled": false
+    },
+    "outpost": {
+      "enabled": false
+    },
+    "mining": {
+      "enabled": false,
+      "requires_landing": false
+    }
+  },
+  "resources": [],
+  "visibility": {
+    "name": "always",
+    "physical": "always",
+    "resources": "always"
+  }
+}

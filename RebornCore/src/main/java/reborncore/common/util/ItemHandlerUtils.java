@@ -41,6 +41,9 @@ public class ItemHandlerUtils {
 		if (blockEntity == null) {
 			return;
 		}
+		if (blockEntity instanceof reborncore.common.blockentity.MachineBaseBlockEntity machine) {
+			machine.beforeContentsDropped();
+		}
 		if (blockEntity instanceof Inventory inventory) {
 			dropItemHandler(world, pos, inventory);
 		}

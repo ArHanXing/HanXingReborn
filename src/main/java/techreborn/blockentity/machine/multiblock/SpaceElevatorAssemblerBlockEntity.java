@@ -79,6 +79,14 @@ public class SpaceElevatorAssemblerBlockEntity extends JsonMultiblockMachineBloc
 	}
 
 	@Override
+	public void tick(World world, BlockPos pos, BlockState state, reborncore.common.blockentity.MachineBaseBlockEntity machine) {
+		super.tick(world, pos, state, machine);
+		if (!world.isClient && (world.getTime() + pos.asLong()) % 40 == 0) {
+			techreborn.space.SpaceModuleBinding.heartbeat(this, getHostPos());
+		}
+	}
+
+	@Override
 	public String getMultiblockId() {
 		return "space_elevator_assembler";
 	}
@@ -184,7 +192,7 @@ public class SpaceElevatorAssemblerBlockEntity extends JsonMultiblockMachineBloc
 	@Override
 	public void readNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tagCompound, registryLookup);
-		hostPos = tagCompound.getLong("hostPos");
+		hostPos = tagCompound.contains("hostPos") ? tagCompound.getLong("hostPos") : Long.MIN_VALUE;
 	}
 
 	@Override

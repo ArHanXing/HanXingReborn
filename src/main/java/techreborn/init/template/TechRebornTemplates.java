@@ -50,6 +50,7 @@ public class TechRebornTemplates {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
 				literal("techreborn")
 						.then(EnergyBindCommand.build())
+						.then(techreborn.space.SpaceProgressCommand.build())
 						.then(literal("template")
 								.requires(source -> source.hasPermissionLevel(3))
 								.requires(source -> FabricLoader.getInstance().isDevelopmentEnvironment())

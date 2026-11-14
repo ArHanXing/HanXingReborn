@@ -137,7 +137,8 @@ public class TechReborn implements ModInitializer {
 				return ActionResult.PASS;
 			}
 			if (!world.isClient) {
-				NbtCompound nbt = new NbtCompound();
+				NbtComponent existing = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
+				NbtCompound nbt = existing == null ? new NbtCompound() : existing.copyNbt();
 				nbt.putLong("hostPos", hitResult.getBlockPos().asLong());
 				// BLOCK_ENTITY_DATA requires an "id" field to be encoded (the
 				// component codec validates it); it is ignored when the block
@@ -178,6 +179,9 @@ public class TechReborn implements ModInitializer {
 		// Pushes bound cable-network stats to the players who asked for them; the
 		// InGame Info XML tags read the client-side copy.
 		EnergyBindManager.init();
+		techreborn.space.SpaceTerminalService.init();
+		techreborn.space.task.SpaceTaskEngine.init();
+		techreborn.space.SpaceRecipeSync.init();
 
 		LOGGER.info("TechReborn setup done!");
 	}

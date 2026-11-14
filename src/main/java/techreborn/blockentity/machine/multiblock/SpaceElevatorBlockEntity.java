@@ -26,7 +26,12 @@ package techreborn.blockentity.machine.multiblock;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -41,6 +46,7 @@ import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.util.RebornInventory;
+import techreborn.space.SpaceMachineState;
 import techreborn.space.SpaceTerminalLayout;
 import techreborn.blocks.misc.BlockSpaceElevatorPowerModule;
 import techreborn.config.TechRebornConfig;
@@ -55,8 +61,8 @@ import java.util.List;
 /**
  * Space Elevator host: the power hub of the elevator multiblock family.
  * <p>
- * It has no recipe system. While it is powered (2048 EU/t, EV tier), the
- * structure is valid and the machine is in the Overworld it "runs": every
+ * It executes exploration tasks at their configured equipment-tier power.
+ * Structural availability in the Overworld lights every
  * {@link BlockSpaceElevatorPowerModule} inside the JSON structure switches to
  * its active (lit) state.
  * <p>
@@ -65,6 +71,38 @@ import java.util.List;
  * and shows a read-only module summary in its GUI.
  */
 public class SpaceElevatorBlockEntity extends JsonMultiblockMachineBlockEntity implements BuiltScreenHandlerProvider {
+
+	private final SpaceMachineState spaceState = new SpaceMachineState(this::markDirty);
+	private final techreborn.space.task.SpaceTaskContainer taskContainer = new techreborn.space.task.SpaceTaskContainer(this::markDirty);
+
+	public techreborn.space.task.SpaceTaskContainer getTaskContainer() { return taskContainer; }
+
+	@Override
+	public void onLoad() {
+		super.onLoad();
+		techreborn.space.task.SpaceTaskEngine.register(this);
+	}
+
+	@Override
+	public void markRemoved() {
+		techreborn.space.task.SpaceTaskEngine.unregister(this);
+		super.markRemoved();
+	}
+
+	@Override
+	public void beforeContentsDropped() {
+		techreborn.space.task.SpaceTaskEngine.removedWithDrops(this);
+	}
+
+	@Override
+	public void beforeDismantle() {
+		techreborn.space.task.SpaceTaskEngine.dismantle(this);
+	}
+
+	@Override
+	protected boolean isRunningRecipe() {
+		return "running".equals(taskContainer.status());
+	}
 
 	/** How often the bound module list is refreshed (ticks). */
 	private static final int MODULE_CHECK_INTERVAL = 40;
@@ -86,6 +124,39 @@ public class SpaceElevatorBlockEntity extends JsonMultiblockMachineBlockEntity i
 				TechRebornConfig.spaceElevatorMaxInput, TechRebornConfig.spaceElevatorMaxEnergy,
 				TRContent.Machine.SPACE_ELEVATOR.block, -1);
 		this.inventory = new RebornInventory<>(18, "SpaceElevator", 64, this);
+	}
+
+	public SpaceMachineState getSpaceState() {
+		return spaceState;
+	}
+
+	/** Trusted placement/open-screen hook, never a network claim endpoint. */
+	public boolean claimSpaceOwner(ServerPlayerEntity player) {
+		return player != null && getWorld() instanceof ServerWorld serverWorld
+				&& player.getServerWorld() == serverWorld && spaceState.claimIfUnowned(player);
+	}
+
+	public boolean canConfigure(ServerPlayerEntity player) {
+		return player != null && getWorld() instanceof ServerWorld serverWorld
+				&& player.getServerWorld() == serverWorld && spaceState.canConfigure(player);
+	}
+
+	@Override
+	public boolean canPlayerConfigure(PlayerEntity player) {
+		return getWorld() != null && (getWorld().isClient
+				|| player instanceof ServerPlayerEntity serverPlayer && canConfigure(serverPlayer));
+	}
+
+	public boolean setSpaceSelection(ServerPlayerEntity player, Identifier body, int tier, List<String> resources) {
+		return canConfigure(player) && spaceState.applySelection(player, body, tier, resources);
+	}
+
+	@Override
+	public void onPlace(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+		super.onPlace(world, pos, state, placer, stack);
+		if (placer instanceof ServerPlayerEntity player) {
+			claimSpaceOwner(player);
+		}
 	}
 
 	@Override
@@ -110,13 +181,21 @@ public class SpaceElevatorBlockEntity extends JsonMultiblockMachineBlockEntity i
 	 *         bound units and this one is not registered yet
 	 */
 	public boolean registerModule(BlockPos modulePos) {
+		if (world == null || world.isClient || !techreborn.space.SpaceModuleBinding.inRange(pos, modulePos)
+				|| !world.isChunkLoaded(modulePos)) { return false; }
+		BlockEntity module = world.getBlockEntity(modulePos);
+		if (!(module instanceof SpaceElevatorMinerBlockEntity miner && miner.isBoundTo(this))
+				&& !(module instanceof SpaceElevatorAssemblerBlockEntity assembler && assembler.isBoundTo(this))) { return false; }
 		if (modules.contains(modulePos)) {
 			return true;
 		}
 		if (modules.size() >= MAX_MODULES) {
-			return false;
+			refreshModules();
+			if (modules.size() >= MAX_MODULES) { return false; }
 		}
-		modules.add(modulePos);
+		modules.add(modulePos.toImmutable());
+		refreshModules();
+		markDirty();
 		return true;
 	}
 
@@ -139,17 +218,10 @@ public class SpaceElevatorBlockEntity extends JsonMultiblockMachineBlockEntity i
 			return;
 		}
 
-		// Overworld only; burns 2048 EU/t (1A EV) while the structure is valid.
-		boolean canRun = world.getRegistryKey() == World.OVERWORLD && isMultiblockValid();
-		boolean hasPower = false;
-		if (canRun) {
-			long cost = TechRebornConfig.spaceElevatorEnergyPerTick;
-			if (getEnergy() >= cost) {
-				useEnergy(cost);
-				hasPower = true;
-			}
-		}
-		running = canRun && hasPower;
+		// Structural/redstone availability is separate from task energy. Each
+		// task pays its own scheme power, without the old 2048 EU/t surcharge.
+		running = world.getRegistryKey() == World.OVERWORLD && isMultiblockValid()
+				&& isActive(reborncore.common.blockentity.RedstoneConfiguration.Element.RECIPE_PROCESSING);
 
 		// Self blockstate (front texture off/on) and power module bloom only
 		// change when the run state flips.
@@ -189,22 +261,31 @@ public class SpaceElevatorBlockEntity extends JsonMultiblockMachineBlockEntity i
 		Iterator<BlockPos> it = modules.iterator();
 		while (it.hasNext()) {
 			BlockPos modulePos = it.next();
+			if (!techreborn.space.SpaceModuleBinding.inRange(pos, modulePos)) { it.remove(); markDirty(); continue; }
+			// An unloaded module is still bound; never load chunks just to show a list.
+			if (!world.isChunkLoaded(modulePos)) {
+				sb.append('U').append(' ').append(modulePos.getX()).append(' ').append(modulePos.getY()).append(' ').append(modulePos.getZ()).append('\n');
+				continue;
+			}
 			BlockEntity be = world.getBlockEntity(modulePos);
 			if (be instanceof SpaceElevatorAssemblerBlockEntity assembler && assembler.isBoundTo(this)) {
 				sb.append('A').append(' ').append(modulePos.getX()).append(' ').append(modulePos.getY()).append(' ').append(modulePos.getZ()).append('\n');
 			} else if (be instanceof SpaceElevatorMinerBlockEntity miner && miner.isBoundTo(this)) {
 				sb.append('M').append(' ').append(modulePos.getX()).append(' ').append(modulePos.getY()).append(' ').append(modulePos.getZ()).append('\n');
 			} else {
-				it.remove();
+				it.remove(); markDirty();
 			}
 		}
-		moduleSummary = sb.toString();
-		syncWithAll();
+		String updated = sb.toString();
+		if (!updated.equals(moduleSummary)) { moduleSummary = updated; markDirty(); syncWithAll(); }
 	}
 
 	// IContainerProvider
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, final PlayerEntity player) {
+		if (player instanceof ServerPlayerEntity serverPlayer) {
+			claimSpaceOwner(serverPlayer);
+		}
 		var slots = new ScreenHandlerBuilder("spaceelevator").player(player.getInventory())
 				.inventory(SpaceTerminalLayout.PLAYER_X, SpaceTerminalLayout.PLAYER_Y)
 				.hotbar(SpaceTerminalLayout.PLAYER_X, SpaceTerminalLayout.HOTBAR_Y).addInventory().blockEntity(this);
@@ -217,8 +298,21 @@ public class SpaceElevatorBlockEntity extends JsonMultiblockMachineBlockEntity i
 	}
 
 	@Override
+	public NbtCompound getClientSyncNbt(RegistryWrapper.WrapperLookup registryLookup) {
+		NbtCompound tag = super.getClientSyncNbt(registryLookup);
+		tag.remove(SpaceMachineState.NBT_KEY);
+		tag.remove(techreborn.space.task.SpaceTaskContainer.NBT_KEY);
+		return tag;
+	}
+
+	@Override
 	public void readNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tagCompound, registryLookup);
+		if (world == null || !world.isClient) {
+			spaceState.readNbt(tagCompound);
+			taskContainer.read(tagCompound, registryLookup);
+		}
+		moduleSummary = tagCompound.getString("moduleSummary");
 		modules.clear();
 		NbtList list = tagCompound.getList("modules", NbtElement.LONG_TYPE);
 		for (NbtElement element : list) {
@@ -229,10 +323,13 @@ public class SpaceElevatorBlockEntity extends JsonMultiblockMachineBlockEntity i
 	@Override
 	public void writeNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(tagCompound, registryLookup);
+		spaceState.writeNbt(tagCompound);
+		taskContainer.write(tagCompound, registryLookup);
 		NbtList list = new NbtList();
 		for (BlockPos modulePos : modules) {
 			list.add(NbtLong.of(modulePos.asLong()));
 		}
 		tagCompound.put("modules", list);
+		tagCompound.putString("moduleSummary", moduleSummary);
 	}
 }

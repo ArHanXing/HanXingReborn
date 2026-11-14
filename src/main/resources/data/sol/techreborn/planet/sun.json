@@ -1,0 +1,45 @@
+{
+  "type": "star",
+  "tier": 1,
+  "system": "sol",
+  "from_system": "sol:sun",
+  "parent": null,
+  "sort_order": 0,
+  "display": {
+    "name_key": "gui.techreborn.space.body.sun",
+    "description_key": "planet.sol.sun.desc"
+  },
+  "marker_block": "minecraft:glowstone",
+  "marker_scale": 1.0,
+  "time": 1200,
+  "physical": {
+    "radius_km": 696340,
+    "orbit_radius_au": 0,
+    "orbit_phase_deg": 0,
+    "temperature_k": 5772,
+    "rotation_period_hours": 609.12,
+    "orbital_period_days": 0,
+    "orbit_features": []
+  },
+  "missions": {
+    "survey": {
+      "enabled": false
+    },
+    "land": {
+      "enabled": false
+    },
+    "outpost": {
+      "enabled": false
+    },
+    "mining": {
+      "enabled": false,
+      "requires_landing": false
+    }
+  },
+  "resources": [],
+  "visibility": {
+    "name": "always",
+    "physical": "always",
+    "resources": "always"
+  }
+}

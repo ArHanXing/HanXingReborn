@@ -23,3 +23,6 @@
 需要注册主机和其结构方块「超维度机械方块」。
 主机侧面材质和维度注入机械方块材质：machines/structure/dimensionally_transcendent_casing
 主机正面材质：machines/tier3_machine/dtpf_multiblock_off 和 machines/tier3_machine/dtpf_multiblock_on
+
+---
+太空计划（必须认真搞）

@@ -1,10 +1,10 @@
-# 使用 Vibe Coding，编码模型为 DeepSeek v4 Flash-0731
+# 使用 Vibe Coding
 
 ![](https://i.imgur.com/m0y21EK.png "Tech Reborn")
 # 涵星喵 Reborn
-使用 DeepSeek v4 pro的对 Tech Reborn 的二次修改。用于 CmRhPack 整合包。
+使用 AI 的对 Tech Reborn 的二次修改。用于 CmRhPack 整合包。
 
-我们正在实现自己的 GT++。
+萌新初作喵
 
 已经实现：
 - 工业高炉可替换线圈，新的热量系统；对于EBF，热量每高于配方1000J，耗时x0.8
@@ -27,10 +27,11 @@
 - 太空电梯：相较 GTL 的机制更加自由，模块只需要放置在主机的一定范围内
 - 数字型采矿机：前期就能做，支持正则匹配等，挖矿小帮手
 - 同位素离心机、原始蒸馏塔、硅岩去共振机：自动化挑战
+- 崭新太空采矿系统
 
 TODO：
 - 更多新机制：精密组装兼容装配机、重构聚变堆逻辑、裂变反应堆
-- 为了整合包本身定制的独立机器：超维度等离子锻炉（DTPF）
+- 为了整合包本身定制的独立机器：超维度等离子锻炉（DTPF），etc.
 - 本模组目前还不能直接添加至现有整合包，多数新物品没有配方
 # Tech Reborn
 
@@ -74,4 +75,7 @@ EMI 兼容使用的代码来自 [ExMI](https://github.com/Kneelawk/extra-mod-int
 
 部分材质来源于 Dyson Cube Project mod.
 
-AE2 GUI 重绘由DS完成，其材质来源为 XingLuo 1.21 AE GUI Expansion 材质包。
+AE2 GUI 重绘由AI完成，其材质来源为 XingLuo 1.21 AE GUI Expansion 材质包。
+
+部分材质来源于 GT Leisure.
+

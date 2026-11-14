@@ -132,7 +132,7 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 		if (this.markSync && this.tickTime % syncCoolDown == 0) {
 			this.markSync = false;
 			if (world == null || world.isClient) { return; }
-			NetworkManager.sendToTracking(new CustomDescriptionPayload(this.pos, this.createNbt(world.getRegistryManager())), this);
+			NetworkManager.sendToTracking(new CustomDescriptionPayload(this.pos, this.getClientSyncNbt(world.getRegistryManager())), this);
 		}
 	}
 
@@ -161,12 +161,14 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 		return BlockEntityUpdateS2CPacket.create(this);
 	}
 
+	/** Public tracking sync may omit server-private state; persistence still uses writeNbt. */
+	public NbtCompound getClientSyncNbt(RegistryWrapper.WrapperLookup registryLookup) {
+		return createNbt(registryLookup);
+	}
+
 	@Override
 	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		NbtCompound compound = new NbtCompound();
-		super.writeNbt(compound, registryLookup);
-		writeNbt(compound, registryLookup);
-		return compound;
+		return getClientSyncNbt(registryLookup);
 	}
 
 	@Override
@@ -607,6 +609,17 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 		SlotConfiguration.SlotConfig slotConfig = slotConfigHolder.getSideDetail(direction);
 		return slotConfig.getSlotIO().ioConfig.isExtract();
 	}
+
+	/** Player GUI/configuration permission; automation and physical access are separate. */
+	public boolean canPlayerConfigure(PlayerEntity player) {
+		return true;
+	}
+
+	/** Called before ordinary inventory drops, including non-player destruction. */
+	public void beforeContentsDropped() { }
+
+	/** Called before a wrench serializes the machine into its dropped item. */
+	public void beforeDismantle() { }
 
 	public void onBreak(World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState){
 

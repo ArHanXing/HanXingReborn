@@ -54,6 +54,14 @@ import techreborn.blockentity.machine.multiblock.PrimitiveDistillationTowerBlock
 import techreborn.blockentity.machine.multiblock.VoidDrillBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorAssemblerBlockEntity;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorMinerBlockEntity;
+import techreborn.blockentity.machine.multiblock.SpaceElevatorBlockEntity;
+import techreborn.blockentity.machine.multiblock.JsonMultiblockMachineBlockEntity;
+import techreborn.space.SpaceTerminalService;
+import techreborn.space.SpaceProgressState;
+import techreborn.space.data.PlanetCatalog;
+import techreborn.space.task.SpaceTaskEngine;
+import techreborn.team.TeamScopes;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +95,37 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 
 	@Override
 	public void appendServerData(NbtCompound data, BlockAccessor accessor) {
+		// Space tasks have no RecipeCrafter. A viewer-specific fresh response is
+		// mandatory: neither public BE NBT nor another viewer's snapshot is a source.
+		if (accessor.getBlockEntity() instanceof SpaceElevatorBlockEntity
+				|| accessor.getBlockEntity() instanceof SpaceElevatorMinerBlockEntity) {
+			data.remove(SpaceTaskJade.DATA_KEY);
+			data.remove("elevator_host");
+			for (String field : List.of("inputs", "outputs", "power", "parallel", "maxParallel", "tickTime", "neededTicks")) {
+				data.remove(field);
+			}
+			if (accessor.getPlayer() instanceof ServerPlayerEntity viewer
+					&& accessor.getBlockEntity() instanceof JsonMultiblockMachineBlockEntity machine
+					&& machine.getWorld() == viewer.getServerWorld()
+					&& machine.getWorld() == accessor.getLevel()
+					&& !machine.isRemoved() && machine.getWorld().getBlockEntity(machine.getPos()) == machine) {
+				var ownership = SpaceTerminalService.state(machine);
+				NbtCompound task = SpaceTaskJade.snapshot(ownership, SpaceTaskEngine.container(machine), TeamScopes.scopeOf(viewer),
+						accessor.getLevel().getRegistryManager(), bodyId -> {
+							var body = PlanetCatalog.get(bodyId);
+							int stage = SpaceProgressState.get(viewer.getServerWorld()).stage(ownership.ownerScope(), bodyId);
+							return body != null && SpaceTerminalService.visible(body.visibility().name(), stage)
+									? body.display().nameKey() : "gui.techreborn.space.unknown_body";
+						}, SpaceTaskEngine.container(machine).consumed(viewer.getServer().getTicks()));
+				if (!task.isEmpty()) {
+					data.put(SpaceTaskJade.DATA_KEY, task);
+					if (machine instanceof SpaceElevatorMinerBlockEntity miner) {
+						data.putLong("elevator_host", miner.getSyncedHostPos());
+					}
+				}
+			}
+			return;
+		}
 		// Generator output (EU/t)
 		if (accessor.getBlockEntity() instanceof IEnergyProducerProvider producer) {
 			data.putLong("output", producer.getCurrentOutputPerTick());
@@ -237,6 +276,16 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 			}
 		}
 
+		// Space tasks render only this request's server view. Never fall back to
+		// client BE fields or generic recipe data after a scope change.
+		if (accessor.getBlockEntity() instanceof SpaceElevatorBlockEntity
+				|| accessor.getBlockEntity() instanceof SpaceElevatorMinerBlockEntity) {
+			if (data.contains(SpaceTaskJade.DATA_KEY, NbtElement.COMPOUND_TYPE)) {
+				appendSpaceTask(tooltip, helper, data.getCompound(SpaceTaskJade.DATA_KEY), lookup);
+			}
+			return;
+		}
+
 		// Isotope Separator: speed, cost multipliers and rotor life. Shown
 		// before the recipe lines so it is present even while idle.
 		if (data.contains("iso_rpm")) {
@@ -347,6 +396,55 @@ public enum MachineRecipeProvider implements IBlockComponentProvider, IServerDat
 		tooltip.add(Text.translatable("jade.techreborn.progress",
 				Text.literal(String.valueOf(tickTime)).formatted(Formatting.YELLOW),
 				Text.literal(String.valueOf(neededTicks)).formatted(Formatting.YELLOW)));
+	}
+
+	private static void appendSpaceTask(ITooltip tooltip, IElementHelper helper, NbtCompound data,
+			RegistryWrapper.WrapperLookup lookup) {
+		if (data.contains("targetName", NbtElement.STRING_TYPE)) {
+			tooltip.add(Text.translatable("jade.techreborn.space_target", Text.translatable(data.getString("targetName")).formatted(Formatting.YELLOW)));
+		}
+		var state = Text.translatable("gui.techreborn.space.task_state." + data.getString("state"));
+		if (!data.contains("kind", NbtElement.STRING_TYPE)) {
+			tooltip.add(state.formatted(Formatting.GRAY));
+			if (data.getBoolean("auto")) { tooltip.add(Text.translatable("gui.techreborn.space.auto_enabled").formatted(Formatting.GREEN)); }
+			return;
+		}
+		tooltip.add(Text.translatable("jade.techreborn.space_task",
+				Text.translatable("gui.techreborn.space.action." + data.getString("kind")).formatted(Formatting.YELLOW))
+				.append(" — ").append(state));
+		tooltip.add(Text.translatable("jade.techreborn.space_scheme", Text.literal(Integer.toString(data.getInt("tier"))).formatted(Formatting.YELLOW)));
+		long required = Math.max(0, data.getLong("requiredPower"));
+		tooltip.add(Text.translatable("jade.techreborn.space_required_energy", yellow(required), formatVoltage(required)));
+		tooltip.add(Text.translatable("jade.techreborn.space_actual_energy", yellow(Math.max(0, data.getLong("actualPower")))));
+		long duration = Math.max(1, data.getLong("duration"));
+		long elapsed = Math.clamp(data.getLong("elapsed"), 0, duration);
+		tooltip.add(helper.progress((float) Math.min(1D, (double) elapsed / duration)));
+		tooltip.add(Text.translatable("jade.techreborn.progress", yellow(elapsed), yellow(duration)));
+		tooltip.add(Text.translatable("jade.techreborn.space_seconds",
+				Text.literal(SpaceTaskJade.seconds(elapsed)).formatted(Formatting.YELLOW),
+				Text.literal(SpaceTaskJade.seconds(duration)).formatted(Formatting.YELLOW)));
+		appendSpaceStacks(tooltip, helper, "jade.techreborn.space_escrow", data.getList("escrow", NbtElement.COMPOUND_TYPE), lookup);
+		appendSpaceStacks(tooltip, helper, "jade.techreborn.space_outputs", data.getList("outputs", NbtElement.COMPOUND_TYPE), lookup);
+		if (data.contains("pending", NbtElement.LIST_TYPE)) {
+			appendSpaceStacks(tooltip, helper, data.getString("pendingKind").equals("refund")
+					? "jade.techreborn.space_pending_refund" : "jade.techreborn.space_pending_output",
+					data.getList("pending", NbtElement.COMPOUND_TYPE), lookup);
+		}
+	}
+
+	private static Text yellow(long value) {
+		return Text.literal(Long.toString(value)).formatted(Formatting.YELLOW);
+	}
+
+	private static void appendSpaceStacks(ITooltip tooltip, IElementHelper helper, String heading,
+			NbtList entries, RegistryWrapper.WrapperLookup lookup) {
+		tooltip.add(Text.translatable(heading).formatted(Formatting.GRAY));
+		// One descriptor per row stays bounded and legible even for 64 entries.
+		// Unit icons avoid a second, misleading aggregate count on the icon.
+		for (ItemStack stack : SpaceTaskJade.decodeStacks(entries, lookup)) {
+			tooltip.add(List.of(helper.item(stack.copyWithCount(1)),
+					helper.text(Text.empty().append(" ").append(stack.getName()).append(" x" + stack.getCount()))));
+		}
 	}
 
 	/**

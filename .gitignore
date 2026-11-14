@@ -37,3 +37,5 @@ changelog.txt
 /.guiwork
 __pycache__
 /.ae2guiext
+
+Memory.md

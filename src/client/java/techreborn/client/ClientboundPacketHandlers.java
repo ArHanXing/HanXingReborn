@@ -34,6 +34,8 @@ import techreborn.packets.clientbound.OpenManualPayload;
 @SuppressWarnings("UnstableApiUsage")
 public class ClientboundPacketHandlers {
 	public static void init() {
+		techreborn.client.gui.space.SpaceClientView.init();
+		techreborn.client.compat.emi.SpaceEmiData.init();
 		ClientConfigurationNetworking.registerGlobalReceiver(OreDepthSyncHandler.OreDepthPayload.ID, (payload, context) -> {
 			OreDepthSyncHandler.updateDepths(payload.oreDepths());
 		});

@@ -31,8 +31,6 @@ import net.minecraft.text.Text;
 import techreborn.blockentity.machine.multiblock.SpaceElevatorMinerBlockEntity;
 import techreborn.client.gui.space.GuiSpaceTerminal;
 import techreborn.client.gui.space.SpaceBody;
-import techreborn.init.TRContent;
-import techreborn.items.SpacecraftItem;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -40,10 +38,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** Star-map and resource selection preview; legacy production is unchanged. */
+/** Star-map selection and authoritative automatic mining controls. */
 public class GuiSpaceElevatorMiner extends GuiSpaceTerminal {
 	private final SpaceElevatorMinerBlockEntity blockEntity;
-	private final Map<String, Set<Integer>> selections = new HashMap<>();
+	private final Map<String, Set<String>> selections = new HashMap<>();
 	private String target;
 	private String resourceBody;
 	private int resourceRow;
@@ -74,13 +72,13 @@ public class GuiSpaceElevatorMiner extends GuiSpaceTerminal {
 		return previewStage >= 3 && map.selected() != null && !map.selected().type().equals("black_hole");
 	}
 
-	private Set<Integer> selectedResources(SpaceBody body) {
+	private Set<String> selectedResources(SpaceBody body) {
 		return selections.computeIfAbsent(body.id(), ignored -> new LinkedHashSet<>());
 	}
 
 	private List<ItemStack> resources() {
 		SpaceBody body = map.selected();
-		if (body == null || previewStage == 0) {
+		if (body == null || selectedView() == null || !selectedView().data().getBoolean("resourcesVisible")) {
 			return List.of();
 		}
 		if (!body.id().equals(resourceBody)) {
@@ -103,14 +101,14 @@ public class GuiSpaceElevatorMiner extends GuiSpaceTerminal {
 		List<ItemStack> resources = resources();
 		context.fill(132, 190, 392, 217, 0xFF182D3A);
 		if (resources.isEmpty()) {
-			label(context, tr(previewStage == 0 ? "resources_hidden" : "no_resources"), 140, 199, 244, 0xFFB5C9D0);
+			label(context, tr(selectedView() == null || !selectedView().data().getBoolean("resourcesVisible") ? "resources_hidden" : "no_resources"), 140, 199, 244, 0xFFB5C9D0);
 		}
 		ItemStack hovered = ItemStack.EMPTY;
 		for (int i = 0; i < 8 && i + resourceRow * 8 < resources.size(); i++) {
 			int index = i + resourceRow * 8;
 			int rx = 138 + i % 8 * 31;
 			int ry = 194 + i / 8 * 26;
-			boolean selected = body != null && selectedResources(body).contains(index);
+			boolean selected = body != null && selectedResources(body).contains(selectedView().resourceIds().get(index));
 			context.fill(rx - 1, ry - 1, rx + 25, ry + 23, selected ? 0xFF248B95 : 0xFF3E5360);
 			ItemStack stack = resources.get(index);
 			context.drawItem(stack, rx, ry);
@@ -121,35 +119,66 @@ public class GuiSpaceElevatorMiner extends GuiSpaceTerminal {
 			}
 		}
 		label(context, tr("mission_status"), 404, 34, 82, INK);
-		String reason = body == null || body.type().equals("star") ? "display_only"
-				: previewStage == 0 ? "survey_required"
-				: deviceTier < body.tier() ? "tier_insufficient"
-				: previewStage < 2 && !body.type().equals("black_hole") ? "landing_required"
-				: selectedResources(body).isEmpty() ? "select_resources" : "backend_pending";
-		label(context, tr(reason), 404, 49, 82, 0xFFAA5736);
+		String reason = miningReason();
+		label(context, tr(taskActive() ? "task_state." + taskState() : taskReason().isEmpty() ? reason.isEmpty() ? "ready" : reason : taskReason()), 404, 49, 82, 0xFFAA5736);
 		label(context, tr(hasPreviewOutpost() ? "outpost_mode" : "long_range_mode"), 404, 66, 82, ACCENT);
 		label(context, tr("output_factor", hasPreviewOutpost() ? "1.0" : "0.2"), 404, 80, 82, INK);
 		if (body != null && !body.type().equals("star")) {
 			double factor = Math.pow(0.25, Math.max(0, deviceTier - body.tier())) * (hasPreviewOutpost() ? 1 : 5);
 			label(context, tr("time_factor", String.format(java.util.Locale.ROOT, "%.4g", factor)), 404, 94, 82, INK);
 		}
-		if (target != null) {
+		if (target != null && !target.isEmpty()) {
 			label(context, tr("preview_target"), 404, 119, 82, INK);
 			label(context, Text.literal(target), 404, 132, 82, ACCENT);
 		}
-		button(context, 398, 161, 94, tr("focus_target").getString(), body != null && !body.resources().isEmpty(), mouseX, mouseY);
-		button(context, 10, 223, 116, tr("action.mining").getString(), false, mouseX, mouseY);
-		label(context, tr("legacy_processing"), 10, 243, 116, MUTED);
-		int progress = blockEntity.getProgressScaled(100);
+		button(context, 398, 161, 94, tr("focus_target").getString(), editable && serverStructure && selectedView() != null && selectedView().tiers().contains(deviceTier) && body != null && !body.resources().isEmpty(), mouseX, mouseY);
+		button(context, 10, 223, 116, tr(autoEnabled() ? "disable_auto" : "action.mining").getString(),
+				editable && !taskActionPending() && (autoEnabled() || reason.isEmpty()), mouseX, mouseY);
+		label(context, tr(taskReason().isEmpty() ? reason.isEmpty() ? autoEnabled() ? "auto_enabled" : "ready" : reason : taskReason()), 10, 243, 116, MUTED);
+		int progress = taskProgressScaled(94);
 		context.fill(398, 190, 492, 195, 0xFF354651);
-		context.fill(398, 190, 398 + Math.max(0, Math.min(94, progress * 94 / 100)), 195, ACCENT);
-		context.drawItem(TRContent.Spacecraft.get(SpacecraftItem.Family.DRONE, deviceTier, true).getDefaultStack(), 398, 262);
+		context.fill(398, 190, 398 + progress, 195, ACCENT);
 		if (!isTabOpen()) {
 			if (!hovered.isEmpty()) {
 				queueTooltip(hovered);
 			} else if (inside(mouseX - x, mouseY - y, 10, 223, 116, 16)) {
-				queueTooltip(tr(reason));
+				queueTooltip(tr(autoEnabled() ? "disable_auto" : reason.isEmpty() ? "ready" : reason));
 			}
+		}
+	}
+
+	private String miningReason() {
+		if (!dataReady) return "sync_pending";
+		if (!editable) return "no_permission";
+		if (!serverStructure) return "structure_missing";
+		if (selectedView() == null || !selectedView().data().getBoolean("miningEnabled")) return "display_only";
+		if (selectedView().stage() == 0) return "survey_required";
+		if (!selectedView().tiers().contains(deviceTier)) return "scheme_unavailable";
+		if (selectedView().stage() < 2 && selectedView().data().getBoolean("requiresLanding")) return "landing_required";
+		if (selectedResourceIds().isEmpty()) return "select_resources";
+		if (!selectionAcknowledged()) return "selection_pending";
+		return "";
+	}
+
+	@Override
+	protected List<String> selectedResourceIds() {
+		return map.selected() == null ? List.of() : List.copyOf(selectedResources(map.selected()));
+	}
+
+	@Override
+	protected void onSelectionSnapshot(net.minecraft.nbt.NbtCompound snapshot) {
+		target = snapshot.getString("selectedBody");
+		selections.clear();
+		// Only authoritative selection is retained after a response.
+		if (!target.isEmpty() && bodyViews.containsKey(target)) {
+			Set<String> confirmed = new LinkedHashSet<>();
+			var ids = snapshot.getList("selectedResources", 8);
+			for (int i = 0; i < ids.size(); i++) {
+				if (bodyViews.get(target).resourceIds().contains(ids.getString(i))) {
+					confirmed.add(ids.getString(i));
+				}
+			}
+			selections.put(target, confirmed);
 		}
 	}
 
@@ -158,19 +187,26 @@ public class GuiSpaceElevatorMiner extends GuiSpaceTerminal {
 		double lx = mx - x;
 		double ly = my - y;
 		SpaceBody body = map.selected();
-		if (button == 0 && body != null && inside(lx, ly, 398, 161, 94, 16) && !body.resources().isEmpty()) {
-			target = body.id();
+		if (button == 0 && inside(lx, ly, 10, 223, 116, 16)) {
+			if (editable && !taskActionPending() && (autoEnabled() || miningReason().isEmpty())) {
+				taskAction(techreborn.space.SpaceTaskAction.Action.TOGGLE_AUTO);
+			}
 			return true;
 		}
-		if (button == 0 && inside(lx, ly, 132, 190, 260, 27)) {
+		if (button == 0 && editable && serverStructure && body != null && inside(lx, ly, 398, 161, 94, 16) && !body.resources().isEmpty()) {
+			selectionChanged();
+			return true;
+		}
+		if (button == 0 && editable && serverStructure && inside(lx, ly, 132, 190, 260, 27)) {
 			List<ItemStack> resources = resources();
 			for (int i = 0; i < 8 && i + resourceRow * 8 < resources.size(); i++) {
 				if (body != null && inside(lx, ly, 137 + i % 8 * 31, 193 + i / 8 * 26, 26, 24)) {
-					Set<Integer> chosen = selectedResources(body);
-					int index = i + resourceRow * 8;
+					Set<String> chosen = selectedResources(body);
+					String index = selectedView().resourceIds().get(i + resourceRow * 8);
 					if (!chosen.remove(index) && chosen.size() < 3) {
 						chosen.add(index);
 					}
+					selectionChanged();
 					return true;
 				}
 			}

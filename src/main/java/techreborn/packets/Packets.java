@@ -56,9 +56,13 @@ public class Packets {
 	private static void clientbound(PayloadTypeRegistry<RegistryByteBuf> registry) {
 		registry.register(OpenManualPayload.ID, OpenManualPayload.CODEC);
 		registry.register(EnergyBindPayload.ID, EnergyBindPayload.CODEC);
+		registry.register(techreborn.space.SpaceTerminalSnapshot.ID, techreborn.space.SpaceTerminalSnapshot.CODEC);
+		registry.register(techreborn.space.SpaceRecipeSnapshot.ID, techreborn.space.SpaceRecipeSnapshot.CODEC);
 	}
 
 	private static void serverbound(PayloadTypeRegistry<RegistryByteBuf> registry) {
+		registry.register(techreborn.space.SpaceTerminalRequest.ID, techreborn.space.SpaceTerminalRequest.CODEC);
+		registry.register(techreborn.space.SpaceTaskAction.ID, techreborn.space.SpaceTaskAction.CODEC);
 		registry.register(AESUConfigPayload.ID, AESUConfigPayload.CODEC);
 		registry.register(AutoCraftingLockPayload.ID, AutoCraftingLockPayload.CODEC);
 		registry.register(ChunkloaderPayload.ID, ChunkloaderPayload.CODEC);

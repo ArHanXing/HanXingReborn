@@ -73,6 +73,20 @@ public final class SpaceMapWidget {
 	private boolean dragging;
 	private boolean surveyed;
 	private double clipScale = 1;
+	private String taskBody = "";
+	private String taskKind = "";
+	private String taskState = "idle";
+	private double taskProgress;
+	private String taskEvent = "";
+	private String eventBody = "";
+	private double eventAge = 100;
+
+	/** Authoritative presentation only; never predicts a completion or grants progress. */
+	public void setTaskVisuals(String body, String kind, String state, double progress, String event, String eventBody, double eventAge) {
+		this.taskBody = body; this.taskKind = kind; this.taskState = state;
+		this.taskProgress = Math.max(0, Math.min(1, progress));
+		this.taskEvent = event; this.eventBody = eventBody; this.eventAge = eventAge;
+	}
 
 	/** DrawContext scissor rectangles in 1.21.1 are not matrix transformed. */
 	public void setClipScale(double clipScale) {
@@ -224,6 +238,7 @@ public final class SpaceMapWidget {
 				}
 			}
 
+			drawTask(context, positions, scale, seconds);
 			drawSurvey(context, positions, scale, seconds, now);
 			MinecraftClient client = MinecraftClient.getInstance();
 			context.drawTextWithShadow(client.textRenderer, Text.translatable("gui.techreborn.space.map.preview"), x + 7, y + height - 13, 0xFF6F98AF);
@@ -274,7 +289,7 @@ public final class SpaceMapWidget {
 		double offsetY = mouseY - (y + height / 2.0);
 		double anchoredX = cameraX + offsetX / oldScale;
 		double anchoredY = cameraY + offsetY / oldScale;
-		zoom = Math.max(.35, Math.min(8, zoom * Math.pow(1.18, verticalAmount)));
+		zoom = Math.max(.15, Math.min(8, zoom * Math.pow(1.18, verticalAmount)));
 		cameraX = anchoredX - offsetX / scale();
 		cameraY = anchoredY - offsetY / scale();
 		following = false;
@@ -372,16 +387,105 @@ public final class SpaceMapWidget {
 				context.fill(x, y + row, x + width, y + Math.min(row + 8, height), (alpha << 24) | 0x0A1832);
 			}
 		}
-		if (selected == null) {
-			return;
+		// Scanning and completion pulses are driven by authoritative task data
+		// in drawTask, not by simply clicking a body in this viewer.
+	}
+
+	private void drawTask(DrawContext context, Map<String, Point> positions, double scale, double seconds) {
+		SpaceBody body = byId.get(taskBody);
+		if (body != null && body.system().equals(system) && !taskState.equals("idle")) {
+			Point target = screen(positions.get(body.id()), scale);
+			int color = taskState.equals("running") ? 0xFF68E4F2 : 0xFFE4B85E;
+			drawBrackets(context, target, markerSize(body) + 12, color);
+			SpaceBody earth = byId.get("sol:earth");
+			if (earth == null) {
+				earth = bodies.stream().filter(candidate -> candidate.id().endsWith(":earth")).findFirst().orElse(null);
+			}
+			if (earth != null && earth.system().equals(body.system())) {
+				// Compute the transfer in orbital-map coordinates, before camera and
+				// zoom. Both endpoint tangents follow their parent's prograde orbit.
+				Point departure = positions.get(earth.id());
+				if (departure != null) {
+					Point earthParent = positions.getOrDefault(earth.parent(), departure);
+					Point arrival = positions.get(body.id());
+					Point targetParent = positions.getOrDefault(body.parent(), arrival);
+					SpaceTransferOrbit transfer = SpaceTransferOrbit.between(orbitVec(departure), orbitVec(earthParent),
+							orbitVec(arrival), orbitVec(targetParent));
+					drawTransfer(context, transfer, scale, color);
+					Point origin = screen(departure, scale);
+					drawRing(context, origin.x(), origin.y(), markerSize(earth) * .7 + 3, .75, 0x9078C9F4, seconds * .3);
+				}
+			} else {
+				// Other system pages have independent origins. Do not pretend their
+				// star or a viewport corner is Earth; show the off-page origin explicitly.
+				context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer,
+						Text.translatable(earth == null ? "gui.techreborn.space.transfer.no_earth" : "gui.techreborn.space.transfer.from_earth"),
+						x + 7, y + height - 25, color);
+			}
+			if (taskState.equals("running")) {
+				drawRing(context, target.x(), target.y(), markerSize(body) + 5 + Math.sin(seconds * 3) * 2, .5, 0x8078D8F4, seconds);
+				if (taskKind.equals("survey")) { drawRing(context, target.x(), target.y(), 12 + seconds % 2 * 20, 1, 0x6078E9D1, seconds * .4); }
+			}
 		}
-		Point point = screen(positions.get(selected.id()), scale);
-		double age = (now - scanStartedAt) / 1_000_000_000.0;
-		double cycle = surveyed ? age : age % 5;
-		if (cycle < 2.5) {
-			double radius = 12 + cycle * Math.max(width, height) * .35;
-			int alpha = (int) (100 * (1 - cycle / 2.5));
-			drawRing(context, point.x(), point.y(), radius, 1, (alpha << 24) | 0x7DDBE7, seconds * .03);
+		SpaceBody eventTarget = byId.get(eventBody);
+		if (eventTarget != null && eventTarget.system().equals(system) && eventAge >= 0 && eventAge < 4 && !taskEvent.isEmpty()) {
+			Point target = screen(positions.get(eventBody), scale);
+			int alpha = (int) (210 * (1 - eventAge / 4));
+			int color = (alpha << 24) | (taskEvent.equals("complete") ? 0x71F0A5 : taskEvent.equals("refund") ? 0xE9BA68 : 0x75DFFF);
+			drawRing(context, target.x(), target.y(), 8 + eventAge * 22, 1, color, seconds * .2);
+			context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer,
+					Text.translatable("gui.techreborn.space.event." + taskEvent), x + 7, y + 5, color);
+		}
+	}
+
+	private static SpaceTransferOrbit.Vec orbitVec(Point point) {
+		return new SpaceTransferOrbit.Vec(point.x(), point.y());
+	}
+
+	private void drawTransfer(DrawContext context, SpaceTransferOrbit orbit, double scale, int color) {
+		// Fixed budget and per-segment clipping remain stable even when Earth is
+		// offscreen. Nothing is anchored to viewport edges or the current focus.
+		Point previous = screen(new Point(orbit.departure().x(), orbit.departure().y()), scale);
+		for (int i = 1; i <= 128; i++) {
+			double t = i / 128D;
+			var sample = orbit.point(t);
+			Point next = screen(new Point(sample.x(), sample.y()), scale);
+			drawTransferSegment(context, previous, next, t <= taskProgress ? color : 0x605D8B9A);
+			previous = next;
+		}
+		var sample = orbit.point(taskProgress);
+		Point ship = screen(new Point(sample.x(), sample.y()), scale);
+		if (onScreen(ship, 0)) {
+			var tangent = orbit.direction(taskProgress);
+			double length = tangent.length();
+			double dx = length > 1E-9 ? tangent.x() / length : 1;
+			double dy = length > 1E-9 ? tangent.y() / length : 0;
+			drawTransferSegment(context, new Point(ship.x() - dx * 4, ship.y() - dy * 4),
+					new Point(ship.x() + dx * 4, ship.y() + dy * 4), color);
+			context.fill((int) ship.x() - 1, (int) ship.y() - 1, (int) ship.x() + 2, (int) ship.y() + 2, color);
+		}
+	}
+
+	private void drawTransferSegment(DrawContext context, Point from, Point to, int color) {
+		// Liang-Barsky clips before rasterization: extreme zoom cannot create
+		// loops proportional to an offscreen transfer's full pixel length.
+		double dx = to.x() - from.x(), dy = to.y() - from.y();
+		double low = 0, high = 1;
+		double[] p = {-dx, dx, -dy, dy};
+		double[] q = {from.x() - x, x + width - 1 - from.x(), from.y() - y, y + height - 1 - from.y()};
+		for (int i = 0; i < 4; i++) {
+			if (Math.abs(p[i]) < 1E-9) { if (q[i] < 0) { return; } }
+			else if (p[i] < 0) { low = Math.max(low, q[i] / p[i]); }
+			else { high = Math.min(high, q[i] / p[i]); }
+			if (low > high) { return; }
+		}
+		double sx = from.x() + dx * low, sy = from.y() + dy * low;
+		double ex = from.x() + dx * high, ey = from.y() + dy * high;
+		int steps = Math.max(1, (int) Math.ceil(Math.max(Math.abs(ex - sx), Math.abs(ey - sy))));
+		for (int i = 0; i <= steps; i++) {
+			int px = (int) Math.round(sx + (ex - sx) * i / steps);
+			int py = (int) Math.round(sy + (ey - sy) * i / steps);
+			context.fill(px, py, px + 1, py + 1, color);
 		}
 	}
 
@@ -516,7 +620,10 @@ public final class SpaceMapWidget {
 				extent = Math.max(extent, chain + 24);
 			}
 		}
-		return Math.max(.05, Math.min(width, height) * .43 / extent) * zoom;
+		// A whole-system fit packed the outer orbits into less than half the map
+		// height and made adjacent markers overlap. Start four times closer;
+		// pan/follow reaches the outer bodies and scrolling still gives an overview.
+		return Math.max(.05, Math.min(width, height) * .43 / extent) * zoom * 4;
 	}
 
 	private int markerSize(SpaceBody body) {
