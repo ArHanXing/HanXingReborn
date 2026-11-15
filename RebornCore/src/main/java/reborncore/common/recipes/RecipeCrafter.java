@@ -374,36 +374,103 @@ public class RecipeCrafter implements IUpgradeHandler {
 	}
 
 	/**
-	 * Simulates how many whole runs of {@code recipe} the input slots could pay
-	 * for, consuming in slot order exactly like {@link #useInputs} does.
+	 * How many whole runs of {@code recipe} the input slots could pay for, at
+	 * most {@code limit}.
 	 * <p>
 	 * A plain per-ingredient sum is wrong whenever two ingredient entries can
 	 * match the same items (the same ingredient listed twice, or two entries
 	 * whose ingredients overlap): each stack is then counted once per matching
-	 * entry, so the total looks larger than the slots actually hold. Simulating
-	 * cannot over-count, because every unit is removed from the pool as soon as
-	 * a requirement claims it.
+	 * entry, so the total looks larger than the slots actually hold.
 	 * <p>
-	 * Stops counting once {@code limit} runs are reached, so the cost is bounded
-	 * by the caller's parallel cap rather than by the stack sizes.
+	 * That only happens with overlap, so the cheap per-entry sum is used
+	 * whenever no input slot can satisfy more than one entry - which is the
+	 * normal case and keeps the per-tick cost as low as before. Otherwise the
+	 * consumption is simulated, because every unit has to be removed from the
+	 * pool as soon as a requirement claims it.
 	 *
 	 * @param recipe {@link RebornRecipe} the recipe
 	 * @param limit  {@code int} stop counting after this many runs
 	 * @return {@code int} how many runs the inputs can pay for, at most {@code limit}
 	 */
 	private int consumableRuns(RebornRecipe recipe, int limit) {
+		if (limit <= 0) {
+			return 0;
+		}
+		List<SizedIngredient> ingredients = recipe.ingredients();
+		if (!hasOverlappingIngredients(ingredients)) {
+			return summedRuns(ingredients, limit);
+		}
+
 		int[] pool = new int[inputSlots.length];
+		int total = 0;
 		for (int i = 0; i < inputSlots.length; i++) {
 			pool[i] = inventory.getStack(inputSlots[i]).getCount();
+			total += pool[i];
 		}
+		// Every run consumes at least one item, so this bounds the loop even when
+		// the caller passes Integer.MAX_VALUE as the limit.
+		int cap = Math.min(limit, total);
 		int runs = 0;
-		while (runs < limit) {
+		while (runs < cap) {
 			if (!simulateOneRun(recipe, pool)) {
 				break;
 			}
 			runs++;
 		}
 		return runs;
+	}
+
+	/**
+	 * The per-entry sum, valid only when no two entries compete for the same
+	 * slot. Each matching stack is then counted exactly once.
+	 *
+	 * @param ingredients {@link List} the recipe's ingredients
+	 * @param limit       {@code int} upper bound
+	 * @return {@code int} affordable runs, at most {@code limit}
+	 */
+	private int summedRuns(List<SizedIngredient> ingredients, int limit) {
+		int parallel = limit;
+		for (SizedIngredient ingredient : ingredients) {
+			int perRun = Math.max(1, ingredient.count());
+			int available = 0;
+			for (int slot : inputSlots) {
+				ItemStack stack = inventory.getStack(slot);
+				if (slotMatches(ingredient, stack)) {
+					available += stack.getCount();
+				}
+			}
+			int maxByIngredient = available / perRun;
+			if (maxByIngredient == 0) {
+				return 0;
+			}
+			parallel = Math.min(parallel, maxByIngredient);
+		}
+		return parallel;
+	}
+
+	/**
+	 * @param ingredients {@link List} the recipe's ingredients
+	 * @return {@code boolean} whether some input slot is accepted by more than
+	 *         one ingredient entry, which is what makes the per-entry sum
+	 *         over-count
+	 */
+	private boolean hasOverlappingIngredients(List<SizedIngredient> ingredients) {
+		if (ingredients.size() < 2) {
+			return false;
+		}
+		for (int slot : inputSlots) {
+			ItemStack stack = inventory.getStack(slot);
+			if (stack.isEmpty()) {
+				continue;
+			}
+			int matches = 0;
+			for (SizedIngredient ingredient : ingredients) {
+				if (slotMatches(ingredient, stack) && ++matches > 1) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
