@@ -281,20 +281,7 @@ public class RecipeCrafter implements IUpgradeHandler {
 		if (recipeType == null) {
 			return false;
 		}
-		int needed = Math.max(parallel, 1);
-		for (SizedIngredient ingredient : recipeType.ingredients()) {
-			int available = 0;
-			for (int slot : inputSlots) {
-				ItemStack stack = inventory.getStack(slot);
-				if (ingredient.test(stack)) {
-					available += stack.getCount();
-				}
-			}
-			if (available < ingredient.count() * needed) {
-				return false;
-			}
-		}
-		return true;
+		return canConsume(recipeType, Math.max(parallel, 1));
 	}
 
 	public void useAllInputs() {
@@ -370,6 +357,99 @@ public class RecipeCrafter implements IUpgradeHandler {
 	}
 
 	/**
+	 * Whether {@code stack} can contribute to {@code ingredient}.
+	 * <p>
+	 * Deliberately weaker than {@link SizedIngredient#test}: that one also
+	 * requires the stack to hold the ingredient's full count, which makes a
+	 * single slot holding a partial share invisible. Consumption here takes
+	 * "as much as this slot has, as long as it is the right item", matching how
+	 * {@link #useInputs} drains across slots.
+	 *
+	 * @param ingredient {@link SizedIngredient} the ingredient
+	 * @param stack      {@link ItemStack} the slot contents
+	 * @return {@code boolean} whether the slot contributes to this ingredient
+	 */
+	private static boolean slotMatches(SizedIngredient ingredient, ItemStack stack) {
+		return !stack.isEmpty() && ingredient.ingredient().test(stack);
+	}
+
+	/**
+	 * Simulates how many whole runs of {@code recipe} the input slots could pay
+	 * for, consuming in slot order exactly like {@link #useInputs} does.
+	 * <p>
+	 * A plain per-ingredient sum is wrong whenever two ingredient entries can
+	 * match the same items (the same ingredient listed twice, or two entries
+	 * whose ingredients overlap): each stack is then counted once per matching
+	 * entry, so the total looks larger than the slots actually hold. Simulating
+	 * cannot over-count, because every unit is removed from the pool as soon as
+	 * a requirement claims it.
+	 * <p>
+	 * Stops counting once {@code limit} runs are reached, so the cost is bounded
+	 * by the caller's parallel cap rather than by the stack sizes.
+	 *
+	 * @param recipe {@link RebornRecipe} the recipe
+	 * @param limit  {@code int} stop counting after this many runs
+	 * @return {@code int} how many runs the inputs can pay for, at most {@code limit}
+	 */
+	private int consumableRuns(RebornRecipe recipe, int limit) {
+		int[] pool = new int[inputSlots.length];
+		for (int i = 0; i < inputSlots.length; i++) {
+			pool[i] = inventory.getStack(inputSlots[i]).getCount();
+		}
+		int runs = 0;
+		while (runs < limit) {
+			if (!simulateOneRun(recipe, pool)) {
+				break;
+			}
+			runs++;
+		}
+		return runs;
+	}
+
+	/**
+	 * Tries to consume one run from {@code pool}, mutating it on success.
+	 * <p>
+	 * On failure the pool may be left partially drained; callers stop at the
+	 * first failure, so the leftovers are never read.
+	 *
+	 * @param recipe {@link RebornRecipe} the recipe
+	 * @param pool   {@code int[]} remaining count per input slot
+	 * @return {@code boolean} whether one full run could be paid for
+	 */
+	private boolean simulateOneRun(RebornRecipe recipe, int[] pool) {
+		for (SizedIngredient ingredient : recipe.ingredients()) {
+			int remaining = ingredient.count();
+			for (int i = 0; i < inputSlots.length && remaining > 0; i++) {
+				if (pool[i] <= 0) {
+					continue;
+				}
+				if (!slotMatches(ingredient, inventory.getStack(inputSlots[i]))) {
+					continue;
+				}
+				int take = Math.min(pool[i], remaining);
+				remaining -= take;
+				pool[i] -= take;
+			}
+			if (remaining > 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Whether the inputs can pay for {@code parallel} runs, using the same
+	 * simulation as {@link #consumableRuns}.
+	 *
+	 * @param recipe   {@link RebornRecipe} the recipe
+	 * @param parallel {@code int} runs to test
+	 * @return {@code boolean} whether the inputs suffice
+	 */
+	private boolean canConsume(RebornRecipe recipe, int parallel) {
+		return consumableRuns(recipe, parallel) >= parallel;
+	}
+
+	/**
 	 * Consumes {@code parallel} runs worth of every ingredient from the input
 	 * slots, taking from as many slots as needed.
 	 */
@@ -382,7 +462,7 @@ public class RecipeCrafter implements IUpgradeHandler {
 					break;
 				}
 				ItemStack stack = inventory.getStack(inputSlot);
-				if (ingredient.test(stack)) {
+				if (slotMatches(ingredient, stack)) {
 					int take = Math.min(stack.getCount(), remaining);
 					if (take > 0) {
 						inventory.shrinkSlot(inputSlot, take);
@@ -457,8 +537,9 @@ public class RecipeCrafter implements IUpgradeHandler {
 	 * Computes how many times the given recipe can run in parallel right now,
 	 * limited by the machine's {@link #maxParallel}, the input inventory and
 	 * the output slot space (GTCEu style). Returns 0 if the recipe cannot be
-	 * run at all. O(ingredients * inputSlots + outputs), i.e. constant for
-	 * realistic machines.
+	 * run at all. The input side is a bounded consumption simulation:
+	 * O(min(maxParallel, affordableRuns) * ingredients * inputSlots), which for
+	 * realistic parallel caps stays a small constant.
 	 */
 	protected int getParallelCount(RebornRecipe recipe) {
 		if (recipe == null) {
@@ -468,24 +549,16 @@ public class RecipeCrafter implements IUpgradeHandler {
 		// recipe be run at least once (inputs available and output fits).
 		int parallel = Math.max(1, maxParallel);
 
-		// Limit by available inputs: every ingredient must be present in
-		// enough total quantity across the input slots.
-		for (SizedIngredient ingredient : recipe.ingredients()) {
-			int available = 0;
-			for (int slot : inputSlots) {
-				ItemStack stack = inventory.getStack(slot);
-				if (ingredient.test(stack)) {
-					available += stack.getCount();
-				}
-			}
-			int maxByIngredient = available / ingredient.count();
-			if (maxByIngredient == 0) {
-				return 0;
-			}
-			parallel = Math.min(parallel, maxByIngredient);
-			if (parallel <= 0) {
-				return 0;
-			}
+		// Limit by available inputs. This has to *simulate* the consumption
+		// instead of summing matching stacks per ingredient: a recipe may list
+		// the same ingredient twice (or two ingredients that accept the same
+		// items), and summing per ingredient counts those stacks twice - once
+		// for each entry that matches them. That overestimated the parallel
+		// count, and because the consumption pass is greedy, the surplus runs
+		// were paid for only partially: free output.
+		parallel = Math.min(parallel, consumableRuns(recipe, Math.max(1, maxParallel)));
+		if (parallel <= 0) {
+			return 0;
 		}
 
 		// Limit by output space: every output must fit `parallel` times into
