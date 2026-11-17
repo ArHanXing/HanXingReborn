@@ -1,1 +1,3 @@
 If you want to help out with translations please vist: https://translate.techreborn.ovh/
+
+本 Fork 只支持 zh_cn，en_us 看情况
