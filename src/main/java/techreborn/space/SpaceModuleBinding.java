@@ -39,6 +39,21 @@ public final class SpaceModuleBinding {
 		return Math.abs(dx) <= 128 && Math.abs(dz) <= 128 && dx * dx + dz * dz <= 128L * 128;
 	}
 
+	/** Shared, testable physical binding policy; module owner scope is intentionally absent. */
+	public static String taskHostFailure(boolean overworld, boolean bound, boolean loaded, boolean exists,
+			boolean inRange, boolean structure, boolean redstone, boolean ownerValid, boolean moduleAvailable) {
+		if (!overworld) { return "host_world"; }
+		if (!bound) { return "host_not_bound"; }
+		if (!loaded) { return "host_chunk_unloaded"; }
+		if (!exists) { return "host_missing"; }
+		if (!inRange) { return "host_out_of_range"; }
+		if (!structure) { return "host_structure"; }
+		if (!redstone) { return "host_redstone"; }
+		if (!ownerValid) { return "host_owner_invalid"; }
+		if (!moduleAvailable) { return "host_module_limit"; }
+		return "";
+	}
+
 	public static void heartbeat(BlockEntity module, BlockPos hostPos) {
 		World world = module.getWorld();
 		if (world == null || world.isClient || world.getRegistryKey() != World.OVERWORLD || hostPos == null

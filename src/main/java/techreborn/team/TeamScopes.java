@@ -28,81 +28,95 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
+import techreborn.TechReborn;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Resolves the key that player-owned persistent data should be stored under.
- * <p>
- * On a multiplayer server the unit of ownership is usually the team, not the
- * individual: a shared IDSU, a shared Dyson Swarm and a shared cable binding are
- * all things a team builds together, and keying them by player UUID means a
- * teammate sees nothing until they re-do the binding themselves.
- * <p>
- * When FTB Teams is installed, a player who is in a party is keyed by that
- * party's id; everyone else is keyed by their own UUID. Without FTB Teams the
- * resolver always returns the player's own UUID, so single-player and
- * FTB-less servers behave exactly as before.
- * <p>
- * The FTB classes are only touched reflectively after an {@code isModLoaded}
- * check, so this module keeps compiling and running without FTB Teams present.
- */
+/** Resolves player-owned persistent data to an FTB party UUID when available. */
 public final class TeamScopes {
 
 	private static final String FTB_TEAMS = "ftbteams";
+	private static final String API_CLASS = "dev.ftb.mods.ftbteams.api.FTBTeamsAPI";
+	private static final String API_CONTRACT = API_CLASS + "$API";
+	private static final String MANAGER_CONTRACT = "dev.ftb.mods.ftbteams.api.TeamManager";
+	private static final String TEAM_CONTRACT = "dev.ftb.mods.ftbteams.api.Team";
 
 	private static final boolean FTB_LOADED = FabricLoader.getInstance().isModLoaded(FTB_TEAMS);
-
-	/**
-	 * Cached per-session flag: the first reflective failure (API shape changed,
-	 * manager not ready) disables team resolution instead of retrying every tick.
-	 */
-	private static boolean ftbUsable = FTB_LOADED;
+	/** Structural API failures disable team resolution; manager-not-ready does not. */
+	private static volatile boolean ftbUsable = FTB_LOADED;
+	private static volatile boolean ftbWarningLogged;
 
 	private TeamScopes() {
 	}
 
 	/**
-	 * @return {@code boolean} whether team scoping is actually in effect
+	 * @return whether FTB team resolution is available or may still become available
 	 */
 	public static boolean isTeamScopingActive() {
 		return ftbUsable;
 	}
 
 	/**
-	 * @param player {@link UUID} the player
-	 * @return {@link UUID} the team id when the player is in a party, the player's
-	 *         own id otherwise
+	 * @param player player UUID
+	 * @return party UUID if the player belongs to a party, otherwise their UUID
 	 */
 	public static UUID scopeOf(UUID player) {
 		if (player == null || !ftbUsable) {
 			return player;
 		}
-		UUID team = ftbPartyId(player);
-		return team != null ? team : player;
+		try {
+			PartyResolution resolution = resolvePartyId(player, TeamScopes.class.getClassLoader());
+			return resolution.partyId() == null ? player : resolution.partyId();
+		} catch (ManagerNotReadyException ignored) {
+			// FTB Teams explicitly permits its manager to be absent before startup.
+			// Use personal scope for this call and retry on the next scope lookup.
+			return player;
+		} catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException
+				| IllegalArgumentException | ClassCastException | LinkageError exception) {
+			disableFtb("Incompatible FTB Teams public API", exception);
+			return player;
+		} catch (InvocationTargetException exception) {
+			Throwable cause = exception.getCause();
+			if (cause instanceof NullPointerException) {
+				// FTBTeamsAPI.api()/getManager() use NPE for not-yet-initialized state.
+				return player;
+			}
+			if (cause instanceof LinkageError linkage) {
+				disableFtb("FTB Teams API linkage failure", linkage);
+				return player;
+			}
+			warnFtbOnce("FTB Teams lookup failed; using personal scope for this lookup", cause == null ? exception : cause);
+			return player;
+		} catch (ReflectiveOperationException exception) {
+			disableFtb("Incompatible FTB Teams public API", exception);
+			return player;
+		} catch (RuntimeException exception) {
+			warnFtbOnce("FTB Teams lookup failed; using personal scope for this lookup", exception);
+			return player;
+		}
 	}
 
 	/**
-	 * @param player {@link ServerPlayerEntity} the player
-	 * @return {@link UUID} the scope key for that player
+	 * @param player server player
+	 * @return scope key for that player
 	 */
 	public static UUID scopeOf(ServerPlayerEntity player) {
 		return player == null ? null : scopeOf(player.getUuid());
 	}
 
 	/**
-	 * @param server {@link MinecraftServer} the server, may be {@code null}
-	 * @param scope  {@link UUID} the scope key to resolve back to a player
-	 * @return {@link ServerPlayerEntity} an online member of that scope, or
-	 *         {@code null} when nobody is online
+	 * @param server server
+	 * @param scope scope key
+	 * @return any online member of that scope, or {@code null}
 	 */
 	@Nullable
 	public static ServerPlayerEntity anyOnlineMember(MinecraftServer server, UUID scope) {
 		if (server == null || scope == null) {
 			return null;
 		}
-		// Fast path: the scope is a plain player key.
 		ServerPlayerEntity direct = server.getPlayerManager().getPlayer(scope);
 		if (direct != null) {
 			return direct;
@@ -118,42 +132,72 @@ public final class TeamScopes {
 		return null;
 	}
 
-	/**
-	 * Asks FTB Teams for the player's party id.
-	 *
-	 * @param player {@link UUID} the player
-	 * @return {@link UUID} the party id, or {@code null} when the player has no
-	 *         party or FTB Teams could not be queried
-	 */
-	@Nullable
-	private static UUID ftbPartyId(UUID player) {
-		try {
-			Class<?> apiClass = Class.forName("dev.ftb.mods.ftbteams.api.FTBTeamsAPI");
-			Object api = apiClass.getMethod("api").invoke(null);
-			if (api == null) {
-				return null;
+	/** Package-private seam for focused resolver tests using a fake API class loader. */
+	static PartyResolution resolvePartyId(UUID player, ClassLoader loader)
+			throws ReflectiveOperationException, ManagerNotReadyException {
+		Class<?> apiClass = Class.forName(API_CLASS, true, loader);
+		Class<?> apiContract = Class.forName(API_CONTRACT, true, loader);
+		Class<?> managerContract = Class.forName(MANAGER_CONTRACT, true, loader);
+		Class<?> teamContract = Class.forName(TEAM_CONTRACT, true, loader);
+
+		Object api = apiClass.getMethod("api").invoke(null);
+		if (api == null) {
+			throw new ManagerNotReadyException();
+		}
+		Method isManagerLoaded = apiContract.getMethod("isManagerLoaded");
+		if (!Boolean.TRUE.equals(isManagerLoaded.invoke(api))) {
+			throw new ManagerNotReadyException();
+		}
+		Object manager = apiContract.getMethod("getManager").invoke(api);
+		if (manager == null) {
+			throw new ManagerNotReadyException();
+		}
+		Object result = managerContract.getMethod("getTeamForPlayerID", UUID.class).invoke(manager, player);
+		if (!(result instanceof Optional<?> teamOptional)) {
+			throw new ClassCastException("FTB Teams getTeamForPlayerID did not return Optional");
+		}
+		if (teamOptional.isEmpty()) {
+			return new PartyResolution(true, null);
+		}
+		Object team = teamOptional.get();
+		if (team == null) {
+			throw new ClassCastException("FTB Teams returned a null team inside Optional");
+		}
+		// Invoke methods declared by public API contracts. Calling getMethod() on
+		// a package-private implementation class can still fail access checks.
+		Object isParty = teamContract.getMethod("isPartyTeam").invoke(team);
+		if (!Boolean.TRUE.equals(isParty)) {
+			return new PartyResolution(true, null);
+		}
+		Object id = teamContract.getMethod("getId").invoke(team);
+		if (!(id instanceof UUID partyId)) {
+			throw new ClassCastException("FTB Teams Team.getId() did not return UUID");
+		}
+		return new PartyResolution(true, partyId);
+	}
+
+	private static void disableFtb(String message, Throwable cause) {
+		ftbUsable = false;
+		warnFtbOnce(message + "; team scoping disabled", cause);
+	}
+
+	private static void warnFtbOnce(String message, Throwable cause) {
+		if (!ftbWarningLogged) {
+			synchronized (TeamScopes.class) {
+				if (!ftbWarningLogged) {
+					TechReborn.LOGGER.warn(message, cause);
+					ftbWarningLogged = true;
+				}
 			}
-			Object manager = api.getClass().getMethod("getManager").invoke(api);
-			if (manager == null) {
-				// Team manager is not up yet (early load); leave it for next call.
-				return null;
-			}
-			Optional<?> teamOptional = (Optional<?>) manager.getClass()
-				.getMethod("getTeamForPlayerID", UUID.class).invoke(manager, player);
-			if (teamOptional == null || teamOptional.isEmpty()) {
-				return null;
-			}
-			Object team = teamOptional.get();
-			// Only a party is a shared scope; a player team is just the player.
-			Object isParty = team.getClass().getMethod("isPartyTeam").invoke(team);
-			if (!Boolean.TRUE.equals(isParty)) {
-				return null;
-			}
-			return (UUID) team.getClass().getMethod("getId").invoke(team);
-		} catch (ReflectiveOperationException | LinkageError e) {
-			// API moved or missing: fall back to per-player keys permanently.
-			ftbUsable = false;
-			return null;
+		}
+	}
+
+	static record PartyResolution(boolean managerReady, @Nullable UUID partyId) {
+	}
+
+	static final class ManagerNotReadyException extends Exception {
+		ManagerNotReadyException() {
+			super("FTB Teams manager is not ready");
 		}
 	}
 }

@@ -205,7 +205,10 @@ public final class SpaceTaskEngine {
 		if (machine.getWorld().getRegistryKey() != World.OVERWORLD) { return "host_unavailable"; }
 		if (!machine.isMultiblockValid()) { return "structure_missing"; }
 		if (!machine.isActive(RedstoneConfiguration.Element.RECIPE_PROCESSING)) { return "paused_redstone"; }
-		if (machine instanceof SpaceElevatorMinerBlockEntity miner && miner.getAvailableTaskHost() == null) { return "host_unavailable"; }
+		if (machine instanceof SpaceElevatorMinerBlockEntity miner) {
+			String hostFailure = miner.getTaskHostFailure();
+			if (!hostFailure.isEmpty()) { return hostFailure; }
+		}
 		SpaceMachineState selection = SpaceTerminalService.state(machine);
 		if (selection.ownerScope() == null || selection.ownerLocked()) { return "no_permission"; }
 		PlanetDefinition body = selection.selectedBody() == null ? null : PlanetCatalog.get(selection.selectedBody());
@@ -311,12 +314,16 @@ public final class SpaceTaskEngine {
 			else { state.status(task.phase() == SpaceTask.Phase.REFUNDING ? "refunding" : "waiting_output", task.phase() == SpaceTask.Phase.REFUNDING ? "refunding" : "output_full"); }
 			reconcile(machine); setActive(machine, false); return;
 		}
+		String hostFailure = machine instanceof SpaceElevatorMinerBlockEntity miner ? miner.getTaskHostFailure() : "";
 		String pause = task.userPaused() ? "paused_user"
 				: !machine.isMultiblockValid() ? "paused_structure"
 				: !machine.isActive(RedstoneConfiguration.Element.RECIPE_PROCESSING) ? "paused_redstone"
-				: machine instanceof SpaceElevatorMinerBlockEntity miner && miner.getAvailableTaskHost() == null ? "paused_host"
+				: !hostFailure.isEmpty() ? "paused_host"
 				: machine.getEnergy() < task.power() ? "paused_power" : "";
-		if (!pause.isEmpty()) { state.status(pause, pause); setActive(machine, false); reconcile(machine); return; }
+		if (!pause.isEmpty()) {
+			state.status(pause, pause.equals("paused_host") ? hostFailure : pause);
+			setActive(machine, false); reconcile(machine); return;
+		}
 		machine.useEnergy(task.power());
 		state.consumed(task.power(), tick);
 		boolean finished = task.tickProgress(); state.changed();
@@ -423,6 +430,9 @@ public final class SpaceTaskEngine {
 		SpaceTask task = state.task();
 		view.putString("taskState", state.status()); view.putString("reason", state.reason());
 		view.putBoolean("autoEnabled", state.autoEnabled());
+		if (machine instanceof SpaceElevatorMinerBlockEntity miner) {
+			view.putString("hostReason", miner.getTaskHostFailure());
+		}
 		state.writeVisual(view);
 		if (task != null) {
 			view.putString("taskKind", task.kind().name().toLowerCase(java.util.Locale.ROOT));

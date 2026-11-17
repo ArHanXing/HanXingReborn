@@ -105,6 +105,14 @@ public final class SpaceEmiData {
 		return visible.stream().noneMatch(recipe -> recipe.kind().equals("mining"));
 	}
 
+	public static List<List<RecipeView>> miningGroups(List<RecipeView> visible) {
+		java.util.Map<Identifier, List<RecipeView>> groups = new java.util.LinkedHashMap<>();
+		for (RecipeView recipe : visible) {
+			if (recipe.kind().equals("mining")) { groups.computeIfAbsent(recipe.bodyId(), ignored -> new ArrayList<>()).add(recipe); }
+		}
+		return groups.values().stream().map(List::copyOf).toList();
+	}
+
 	public static List<List<RecipeView>> explorationGroups(List<RecipeView> visible) {
 		java.util.Map<Identifier, List<RecipeView>> groups = new java.util.LinkedHashMap<>();
 		for (RecipeView recipe : visible) {
@@ -131,7 +139,7 @@ public final class SpaceEmiData {
 				if (stage < 1 || stage > 3) { throw new IllegalArgumentException("Invalid exploration stage"); }
 				String kind = switch (stage) { case 1 -> "survey"; case 2 -> "land"; default -> "outpost"; };
 				for (Variant variant : variants(mission.getList("variants", NbtElement.COMPOUND_TYPE), lookup, 9, 9)) {
-					result.add(new RecipeView(id(bodyId, kind, variant.tier, ""), Identifier.of(bodyId), name, marker, kind, mission.getBoolean("completed"), false, false,
+					result.add(new RecipeView(id(bodyId, kind, variant.tier, ""), Identifier.of(bodyId), "", name, marker, kind, mission.getBoolean("completed"), false, false,
 							variant.tier, variant.power, variant.time, variant.inputs, variant.outputs, ItemStack.EMPTY, 0));
 				}
 			}
@@ -143,7 +151,7 @@ public final class SpaceEmiData {
 				int count = resource.getInt("count"); if (count < 0) { throw new IllegalArgumentException("Negative resource yield"); }
 				ItemStack stack = unitStack(resource, lookup);
 				for (Variant variant : mining) {
-					result.add(new RecipeView(id(bodyId, "mining", variant.tier, resourceId), Identifier.of(bodyId), name, marker, "mining", false, body.getBoolean("outpost"), body.getBoolean("landingNeeded"),
+					result.add(new RecipeView(id(bodyId, "mining", variant.tier, resourceId), Identifier.of(bodyId), resourceId, name, marker, "mining", false, body.getBoolean("outpost"), body.getBoolean("landingNeeded"),
 							variant.tier, variant.power, variant.time, variant.inputs, variant.outputs, stack, count));
 				}
 			}
@@ -187,7 +195,7 @@ public final class SpaceEmiData {
 		return Identifier.of("techreborn", "/space/" + kind + "/" + tier + "/" + encoded);
 	}
 	private static List<ItemStack> copies(List<ItemStack> stacks) { return stacks.stream().map(ItemStack::copy).toList(); }
-	public record RecipeView(Identifier id, Identifier bodyId, String nameKey, Identifier marker, String kind, boolean completed, boolean outpost, boolean landingNeeded, int tier,
+	public record RecipeView(Identifier id, Identifier bodyId, String resourceId, String nameKey, Identifier marker, String kind, boolean completed, boolean outpost, boolean landingNeeded, int tier,
 			long power, long time, List<ItemStack> inputs, List<ItemStack> returns, ItemStack resource, int yield) {
 		public RecipeView { inputs = copies(inputs); returns = copies(returns); resource = resource.copy(); }
 		@Override public List<ItemStack> inputs() { return copies(inputs); }
@@ -211,9 +219,7 @@ public final class SpaceEmiData {
 		private Bridge() { }
 		public static void register(dev.emi.emi.api.EmiRegistry registry) {
 			long registering = revision; List<RecipeView> current = recipes;
-			for (RecipeView recipe : current) {
-				if (recipe.kind().equals("mining")) { registry.addRecipe(new SpaceMissionEmiRecipe(recipe)); }
-			}
+			for (var group : miningGroups(current)) { registry.addRecipe(new SpaceMiningEmiRecipe(group)); }
 			for (var group : explorationGroups(current)) { registry.addRecipe(new SpaceExplorationEmiRecipe(group)); }
 			if (needsMiningInfo(current)) { registry.addRecipe(SpaceMissionEmiRecipe.miningInfo()); }
 			registeredRevision = registering;

@@ -25,6 +25,7 @@
 package techreborn.blockentity.machine.multiblock;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -183,17 +184,26 @@ public class SpaceElevatorMinerBlockEntity extends JsonMultiblockMachineBlockEnt
 	}
 
 	/** Exact owner/structure binding check for task launch and every paid tick. */
-	public SpaceElevatorBlockEntity getAvailableTaskHost() {
-		if (world == null || world.isClient || world.getRegistryKey() != World.OVERWORLD || getHostPos() == null
-				|| !world.isChunkLoaded(getHostPos())) { return null; }
-		if (!(world.getBlockEntity(getHostPos()) instanceof SpaceElevatorBlockEntity host)) { return null; }
-		long dx = (long) pos.getX() - getHostPos().getX();
-		long dz = (long) pos.getZ() - getHostPos().getZ();
-		if (dx * dx + dz * dz > (long) MAX_HOST_DISTANCE * MAX_HOST_DISTANCE || !host.isMultiblockValid()
-				|| !host.isActive(reborncore.common.blockentity.RedstoneConfiguration.Element.RECIPE_PROCESSING)
-				|| spaceState.ownerScope() == null || !spaceState.ownerScope().equals(host.getSpaceState().ownerScope())
-				|| host.getSpaceState().ownerLocked() || !host.registerModule(pos)) { return null; }
-		return host;
+	public @Nullable SpaceElevatorBlockEntity getAvailableTaskHost() {
+		if (!getTaskHostFailure().isEmpty()) { return null; }
+		return (SpaceElevatorBlockEntity) world.getBlockEntity(getHostPos());
+	}
+
+	/** Diagnostic predicate shared by launch, tick pause and user-facing reason text. */
+	public String getTaskHostFailure() {
+		boolean overworld = world != null && !world.isClient && world.getRegistryKey() == World.OVERWORLD;
+		BlockPos boundPos = getHostPos();
+		boolean bound = boundPos != null;
+		boolean loaded = bound && world != null && world.isChunkLoaded(boundPos);
+		BlockEntity candidate = loaded ? world.getBlockEntity(boundPos) : null;
+		SpaceElevatorBlockEntity host = candidate instanceof SpaceElevatorBlockEntity elevator ? elevator : null;
+		boolean inRange = host != null && techreborn.space.SpaceModuleBinding.inRange(pos, boundPos);
+		boolean structure = host != null && host.isMultiblockValid();
+		boolean redstone = host != null && host.isActive(reborncore.common.blockentity.RedstoneConfiguration.Element.RECIPE_PROCESSING);
+		boolean ownerValid = host != null && !host.getSpaceState().ownerLocked();
+		boolean moduleAvailable = host != null && host.canRegisterModule(pos);
+		return techreborn.space.SpaceModuleBinding.taskHostFailure(overworld, bound, loaded, host != null,
+				inRange, structure, redstone, ownerValid, moduleAvailable);
 	}
 
 	@Override

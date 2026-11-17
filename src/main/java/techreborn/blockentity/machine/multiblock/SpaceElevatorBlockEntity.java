@@ -180,19 +180,21 @@ public class SpaceElevatorBlockEntity extends JsonMultiblockMachineBlockEntity i
 	 * @return {@code false} if the host already has the maximum number of
 	 *         bound units and this one is not registered yet
 	 */
-	public boolean registerModule(BlockPos modulePos) {
+	public boolean canRegisterModule(BlockPos modulePos) {
 		if (world == null || world.isClient || !techreborn.space.SpaceModuleBinding.inRange(pos, modulePos)
 				|| !world.isChunkLoaded(modulePos)) { return false; }
 		BlockEntity module = world.getBlockEntity(modulePos);
 		if (!(module instanceof SpaceElevatorMinerBlockEntity miner && miner.isBoundTo(this))
 				&& !(module instanceof SpaceElevatorAssemblerBlockEntity assembler && assembler.isBoundTo(this))) { return false; }
-		if (modules.contains(modulePos)) {
-			return true;
-		}
-		if (modules.size() >= MAX_MODULES) {
+		return modules.contains(modulePos) || modules.size() < MAX_MODULES;
+	}
+
+	public boolean registerModule(BlockPos modulePos) {
+		if (!canRegisterModule(modulePos)) {
 			refreshModules();
-			if (modules.size() >= MAX_MODULES) { return false; }
+			if (!canRegisterModule(modulePos)) { return false; }
 		}
+		if (modules.contains(modulePos)) { return true; }
 		modules.add(modulePos.toImmutable());
 		refreshModules();
 		markDirty();

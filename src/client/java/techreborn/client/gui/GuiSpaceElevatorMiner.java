@@ -120,7 +120,7 @@ public class GuiSpaceElevatorMiner extends GuiSpaceTerminal {
 		}
 		label(context, tr("mission_status"), 404, 34, 82, INK);
 		String reason = miningReason();
-		label(context, tr(taskActive() ? "task_state." + taskState() : taskReason().isEmpty() ? reason.isEmpty() ? "ready" : reason : taskReason()), 404, 49, 82, 0xFFAA5736);
+		label(context, statusText(reason), 404, 49, 82, 0xFFAA5736);
 		label(context, tr(hasPreviewOutpost() ? "outpost_mode" : "long_range_mode"), 404, 66, 82, ACCENT);
 		label(context, tr("output_factor", hasPreviewOutpost() ? "1.0" : "0.2"), 404, 80, 82, INK);
 		if (body != null && !body.type().equals("star")) {
@@ -145,6 +145,15 @@ public class GuiSpaceElevatorMiner extends GuiSpaceTerminal {
 				queueTooltip(tr(autoEnabled() ? "disable_auto" : reason.isEmpty() ? "ready" : reason));
 			}
 		}
+	}
+
+	private net.minecraft.text.Text statusText(String reason) {
+		if (taskActive() && taskState().equals("paused_host")) {
+			String detail = taskReason();
+			return tr(detail.isEmpty() ? "task_state.paused_host" : detail);
+		}
+		return tr(taskActive() ? "task_state." + taskState()
+				: taskReason().isEmpty() ? reason.isEmpty() ? "ready" : reason : taskReason());
 	}
 
 	private String miningReason() {
