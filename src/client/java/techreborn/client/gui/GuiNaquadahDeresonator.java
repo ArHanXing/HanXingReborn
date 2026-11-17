@@ -64,13 +64,18 @@ public class GuiNaquadahDeresonator extends GuiMultiblockMachine {
 		super.drawForeground(drawContext, mouseX, mouseY);
 		final Layer layer = Layer.FOREGROUND;
 
-		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 82, 37, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
-		builder.drawTank(drawContext, this, 57, 12, mouseX, mouseY, blockEntity.tank.getFluidInstance(), blockEntity.tank.getFluidValueCapacity(), blockEntity.tank.isEmpty(), layer);
+		// Input on the left, product on the right; the product tank is what pipes
+		// drain, so the two must be visually distinct. Labels are omitted because
+		// the tanks' own tooltips name the fluid and the amount.
+		builder.drawTank(drawContext, this, 52, 12, mouseX, mouseY, blockEntity.tank.getFluidInstance(), blockEntity.tank.getFluidValueCapacity(), blockEntity.tank.isEmpty(), layer);
+		builder.drawTank(drawContext, this, 76, 12, mouseX, mouseY, blockEntity.outputTank.getFluidInstance(), blockEntity.outputTank.getFluidValueCapacity(), blockEntity.outputTank.isEmpty(), layer);
+
+		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 52, 80, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
 
 		// The chance the run in progress will actually produce its outputs.
 		drawCentredText(drawContext, Text.translatable("gui.techreborn.naquadah_deresonator.chance",
 						Text.literal(String.format("%.2f%%", blockEntity.getCurrentSuccessRate() * 100.0)).formatted(Formatting.YELLOW)),
-				70, theme.titleColor().rgba(), layer);
+				70, theme.subtitleColor().rgba(), layer);
 
 		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 		builder.drawMultiEnergyBar(drawContext, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);

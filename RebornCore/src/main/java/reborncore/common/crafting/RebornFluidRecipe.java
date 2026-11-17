@@ -60,7 +60,7 @@ public interface RebornFluidRecipe extends RebornRecipe {
 		}
 		if (tankFluid.fluid().equals(fluid().fluid())) {
 			if (tankFluid.getAmount().equalOrMoreThan(fluid().getAmount())) {
-				getTank(be).modifyFluid(fluid -> fluid.subtractAmount(fluid().getAmount()));
+				getTank(be).modifyFluid(value -> value.subtractAmount(fluid().getAmount()));
 				return true;
 			}
 		}

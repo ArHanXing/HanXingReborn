@@ -43,6 +43,7 @@ import reborncore.common.crafting.SizedIngredient;
 import techreborn.blockentity.machine.multiblock.NaquadahDeresonatorBlockEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -61,17 +62,22 @@ import java.util.function.Function;
  * @param time        {@code int} base process time in ticks, before the
  *                    dimension penalty and speed upgrades
  * @param fluid       {@link Fluid} the fluid that feeds the success chance
+ * @param fluidOutput {@link Optional} the fluid the run produces, keyed by id
+ *                    only: the amount always mirrors what the run drew from the
+ *                    input tank, so a recipe never spells out a quantity
  */
 public record NaquadahDeresonatorRecipe(RecipeType<NaquadahDeresonatorRecipe> type, List<SizedIngredient> ingredients,
-		List<ItemStack> outputs, int power, int time, Fluid fluid) implements RebornRecipe {
+		List<ItemStack> outputs, int power, int time, Fluid fluid,
+		Optional<RegistryEntry<Fluid>> fluidOutput) implements RebornRecipe {
 
 	public static final Function<RecipeType<NaquadahDeresonatorRecipe>, MapCodec<NaquadahDeresonatorRecipe>> CODEC = type -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.list(SizedIngredient.CODEC.codec()).fieldOf("ingredients").forGetter(RebornRecipe::ingredients),
 		Codec.list(ItemStack.CODEC).fieldOf("outputs").forGetter(RebornRecipe::outputs),
 		Codecs.POSITIVE_INT.fieldOf("power").forGetter(RebornRecipe::power),
 		Codecs.POSITIVE_INT.fieldOf("time").forGetter(RebornRecipe::time),
-		Registries.FLUID.getEntryCodec().fieldOf("fluid").forGetter(NaquadahDeresonatorRecipe::fluidRegistryEntry)
-	).apply(instance, (ingredients, outputs, power, time, fluid) -> new NaquadahDeresonatorRecipe(type, ingredients, outputs, power, time, fluid)));
+		Registries.FLUID.getEntryCodec().fieldOf("fluid").forGetter(NaquadahDeresonatorRecipe::fluidRegistryEntry),
+		Registries.FLUID.getEntryCodec().optionalFieldOf("fluid_output").forGetter(NaquadahDeresonatorRecipe::fluidOutput)
+	).apply(instance, (ingredients, outputs, power, time, fluid, fluidOutput) -> new NaquadahDeresonatorRecipe(type, ingredients, outputs, power, time, fluid.value(), fluidOutput)));
 
 	public static final Function<RecipeType<NaquadahDeresonatorRecipe>, PacketCodec<RegistryByteBuf, NaquadahDeresonatorRecipe>> PACKET_CODEC = type -> PacketCodec.tuple(
 		SizedIngredient.PACKET_CODEC.collect(PacketCodecs.toList()), RebornRecipe::ingredients,
@@ -79,18 +85,47 @@ public record NaquadahDeresonatorRecipe(RecipeType<NaquadahDeresonatorRecipe> ty
 		PacketCodecs.INTEGER, RebornRecipe::power,
 		PacketCodecs.INTEGER, RebornRecipe::time,
 		PacketCodecs.registryEntry(RegistryKeys.FLUID), NaquadahDeresonatorRecipe::fluidRegistryEntry,
-		(ingredients, outputs, power, time, fluid) -> new NaquadahDeresonatorRecipe(type, ingredients, outputs, power, time, fluid)
+		PacketCodecs.optional(PacketCodecs.registryEntry(RegistryKeys.FLUID)), NaquadahDeresonatorRecipe::fluidOutput,
+		(ingredients, outputs, power, time, fluid, fluidOutput) -> new NaquadahDeresonatorRecipe(type, ingredients, outputs, power, time, fluid.value(), fluidOutput)
 	);
 
 	public NaquadahDeresonatorRecipe(RecipeType<NaquadahDeresonatorRecipe> type, List<SizedIngredient> ingredients,
 			List<ItemStack> outputs, int power, int time, RegistryEntry<Fluid> fluid) {
-		this(type, ingredients, outputs, power, time, fluid.value());
+		this(type, ingredients, outputs, power, time, fluid.value(), Optional.empty());
+	}
+
+	public NaquadahDeresonatorRecipe(RecipeType<NaquadahDeresonatorRecipe> type, List<SizedIngredient> ingredients,
+			List<ItemStack> outputs, int power, int time, Fluid fluid) {
+		this(type, ingredients, outputs, power, time, fluid, Optional.empty());
 	}
 
 	@Override
 	public boolean canCraft(final BlockEntity blockEntity) {
 		// The structure has to be assembled before the machine runs at all.
-		return blockEntity instanceof NaquadahDeresonatorBlockEntity machine && machine.isMultiblockValid();
+		return blockEntity instanceof NaquadahDeresonatorBlockEntity machine && machine.isMultiblockValid()
+				&& machine.hasRoomForFluidOutput(outputFluid().isPresent());
+	}
+
+	/**
+	 * Deposits the run's fluid product.
+	 * <p>
+	 * The recipe names a fluid id but no amount: the product mirrors what the run
+	 * actually drew from the input tank, which the machine tallies as
+	 * {@link NaquadahDeresonatorBlockEntity#getRunFluidRaw()}. Nothing is produced
+	 * when the roll fails - the fluid bought the success chance, it is not
+	 * recycled.
+	 *
+	 * @param blockEntity {@link BlockEntity} the machine
+	 * @param parallel    {@code int} unused, the deresonator always runs one at a
+	 *                    time
+	 * @return {@code boolean} whether the product could be stored
+	 */
+	@Override
+	public boolean onCraft(BlockEntity blockEntity, int parallel) {
+		if (blockEntity instanceof NaquadahDeresonatorBlockEntity machine) {
+			return machine.depositRunFluidProduct(outputFluid().orElse(null));
+		}
+		return true;
 	}
 
 	public Fluid getFluid() {
@@ -99,5 +134,13 @@ public record NaquadahDeresonatorRecipe(RecipeType<NaquadahDeresonatorRecipe> ty
 
 	public RegistryEntry<Fluid> fluidRegistryEntry() {
 		return fluid.getRegistryEntry();
+	}
+
+	/**
+	 * @return {@link Optional} the fluid the run produces, empty when this recipe
+	 *         yields no fluid
+	 */
+	public Optional<Fluid> outputFluid() {
+		return fluidOutput.map(RegistryEntry::value);
 	}
 }

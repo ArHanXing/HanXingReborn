@@ -5,10 +5,12 @@
   "version": "1.0.0",
   "environment": "*",
   "entrypoints": {
-	"fabric-gametest" : [
-		"techreborn.test.machine.GrinderTest",
-		"techreborn.test.machine.IronFurnaceTest",
-		"techreborn.test.machine.IronAlloyFurnaceTest"
-	]
+    "fabric-gametest": [
+      "techreborn.test.machine.GrinderTest",
+      "techreborn.test.machine.IndustrialGrinderFluidTest",
+      "techreborn.test.machine.IronFurnaceTest",
+      "techreborn.test.machine.IronAlloyFurnaceTest",
+      "techreborn.test.machine.NaquadahDeresonatorFluidTest"
+    ]
   }
 }

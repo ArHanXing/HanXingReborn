@@ -38,15 +38,12 @@ import java.util.List;
  * A {@link Storage} view over every tank of a machine with more than one.
  * <p>
  * The global fluid lookup used to hand out {@code getTank()} only, which meant
- * a multi-tank machine was reachable through its first tank alone and the other
- * tanks could never be filled. This adapter exposes them all: iteration yields
- * one view per tank so pipes and item-based fillers can see them, and insertion
- * fans out over the tanks, which is enough for the "just fill this machine"
- * case.
+ * a multi-tank machine was reachable through its first tank alone. This adapter
+ * exposes role-permitted tanks to insert/extract operations. Iteration still
+ * yields read/extract views for every tank, but those views check the machine's
+ * extraction role so callers cannot bypass it by extracting a view directly.
  * <p>
- * Selection of which tank an external machine may touch is the job of the
- * per-tank fluid IO config, not of this view; the config still drives the
- * face-by-face transfers.
+ * Per-face IO remains governed by the per-tank fluid IO config.
  */
 public class MultiTankStorage implements Storage<FluidVariant> {
 
@@ -56,11 +53,11 @@ public class MultiTankStorage implements Storage<FluidVariant> {
 		this.machine = machine;
 	}
 
-	private List<Tank> tanks() {
+	private List<Tank> tanks(boolean insertion) {
 		List<Tank> tanks = new ArrayList<>();
 		for (int i = 0; i < machine.getTankCount(); i++) {
 			Tank tank = machine.getTank(i);
-			if (tank != null) {
+			if (tank != null && (insertion ? machine.canInsertFluid(i) : machine.canExtractFluid(i))) {
 				tanks.add(tank);
 			}
 		}
@@ -69,7 +66,7 @@ public class MultiTankStorage implements Storage<FluidVariant> {
 
 	@Override
 	public boolean supportsInsertion() {
-		return true;
+		return !tanks(true).isEmpty();
 	}
 
 	/**
@@ -85,13 +82,14 @@ public class MultiTankStorage implements Storage<FluidVariant> {
 	 */
 	@Override
 	public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
-		List<Tank> tanks = tanks();
+		List<Tank> tanks = tanks(true);
+		if (tanks.isEmpty()) return 0;
 
 		// 0. The tank the machine says this fluid belongs in. This is what keeps a
 		// machine with role-specific tanks (fuel vs. oxidiser) from routing a
 		// bucket into whichever tank happens to be empty first.
 		int preferred = machine.preferredTankFor(resource);
-		if (preferred >= 0) {
+		if (preferred >= 0 && machine.canInsertFluid(preferred)) {
 			Tank target = machine.getTank(preferred);
 			if (target != null) {
 				long inserted = target.insert(resource, maxAmount, transaction);
@@ -136,13 +134,13 @@ public class MultiTankStorage implements Storage<FluidVariant> {
 
 	@Override
 	public boolean supportsExtraction() {
-		return true;
+		return !tanks(false).isEmpty();
 	}
 
 	@Override
 	public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
 		long extracted = 0;
-		for (Tank tank : tanks()) {
+		for (Tank tank : tanks(false)) {
 			long remaining = maxAmount - extracted;
 			if (remaining <= 0) {
 				break;
@@ -155,8 +153,25 @@ public class MultiTankStorage implements Storage<FluidVariant> {
 	@Override
 	public Iterator<StorageView<FluidVariant>> iterator() {
 		List<StorageView<FluidVariant>> views = new ArrayList<>();
-		for (Tank tank : tanks()) {
-			views.add(tank);
+		for (int i = 0; i < machine.getTankCount(); i++) {
+			Tank tank = machine.getTank(i);
+			if (tank == null) continue;
+			final int index = i;
+			views.add(new StorageView<>() {
+				@Override
+				public long extract(FluidVariant resource, long amount, TransactionContext transaction) {
+					return machine.canExtractFluid(index) ? tank.extract(resource, amount, transaction) : 0;
+				}
+
+				@Override
+				public boolean isResourceBlank() { return tank.isResourceBlank(); }
+				@Override
+				public FluidVariant getResource() { return tank.getResource(); }
+				@Override
+				public long getAmount() { return tank.getAmount(); }
+				@Override
+				public long getCapacity() { return tank.getCapacity(); }
+			});
 		}
 		return views.iterator();
 	}

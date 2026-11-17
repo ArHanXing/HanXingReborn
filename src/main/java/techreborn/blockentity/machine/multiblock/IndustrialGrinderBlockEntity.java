@@ -52,6 +52,7 @@ public class IndustrialGrinderBlockEntity extends JsonMultiblockMachineBlockEnti
 
 	public static final FluidValue TANK_CAPACITY = FluidValue.BUCKET.multiply(256);
 	public final Tank tank;
+	public final Tank outputTank;
 	int ticksSinceLastChange;
 
 	public IndustrialGrinderBlockEntity(BlockPos pos, BlockState state) {
@@ -68,6 +69,7 @@ public class IndustrialGrinderBlockEntity extends JsonMultiblockMachineBlockEnti
 				this, 1, 4, this.inventory, inputs, outputs);
 		this.crafter.setMaxParallel(16);
 		this.tank = new Tank("IndustrialGrinderBlockEntity", IndustrialGrinderBlockEntity.TANK_CAPACITY);
+		this.outputTank = new Tank("IndustrialGrinderOutput", IndustrialGrinderBlockEntity.TANK_CAPACITY);
 		this.ticksSinceLastChange = 0;
 	}
 
@@ -105,12 +107,14 @@ public class IndustrialGrinderBlockEntity extends JsonMultiblockMachineBlockEnti
 	public void readNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tagCompound, registryLookup);
 		tank.read(tagCompound, registryLookup);
+		outputTank.read(tagCompound, registryLookup);
 	}
 
 	@Override
 	public void writeNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(tagCompound, registryLookup);
 		tank.write(tagCompound, registryLookup);
+		outputTank.write(tagCompound, registryLookup);
 	}
 
 	// TileMachineBase
@@ -120,6 +124,25 @@ public class IndustrialGrinderBlockEntity extends JsonMultiblockMachineBlockEnti
 		return tank;
 	}
 
+	@Override
+	public Tank getTank(int index) {
+		return switch (index) {
+			case 0 -> tank;
+			case 1 -> outputTank;
+			default -> null;
+		};
+	}
+
+	@Override
+	public int getTankCount() {
+		return 2;
+	}
+
+	@Override
+	public boolean canInsertFluid(int tankIndex) {
+		return tankIndex == 0;
+	}
+
 	// IContainerProvider
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, final PlayerEntity player) {
@@ -127,7 +150,7 @@ public class IndustrialGrinderBlockEntity extends JsonMultiblockMachineBlockEnti
 		return new ScreenHandlerBuilder("industrialgrinder").player(player.getInventory()).inventory().hotbar().addInventory()
 				.blockEntity(this).fluidSlot(1, 34, 35).slot(0, 84, 43).outputSlot(2, 126, 18).outputSlot(3, 126, 36)
 				.outputSlot(4, 126, 54).outputSlot(5, 126, 72).outputSlot(6, 34, 55).energySlot(7, 8, 72)
-				.sync(tank).syncEnergyValue().syncCrafterValue().addInventory().create(this, syncID);
+				.sync(tank).sync(outputTank).syncEnergyValue().syncCrafterValue().addInventory().create(this, syncID);
 	}
 
 }

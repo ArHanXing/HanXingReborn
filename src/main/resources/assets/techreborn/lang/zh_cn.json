@@ -1414,6 +1414,8 @@
   "gui.techreborn.unit.wrenchtip": "将空容器放在输入栏以取回物品",
   "gui.techreborn.unit.in": "输入",
   "gui.techreborn.unit.out": "输出",
+  "gui.techreborn.industrial_grinder.fluid_in": "输入液体",
+  "gui.techreborn.industrial_grinder.fluid_out": "输出液体",
   "gui.techreborn.unit.used": "已使用：",
   "gui.techreborn.tank.type": "流体类型：",
   "gui.techreborn.tank.amount": "流体量：",

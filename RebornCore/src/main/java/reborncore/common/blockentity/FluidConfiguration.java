@@ -150,10 +150,10 @@ public class FluidConfiguration implements NBTSerializable {
 				}
 
 				@Nullable Storage<FluidVariant> neighbour = getTank(machineBase, facing);
-				if (holder.autoInput() && fluidConfig.getIoConfig().isInsert()) {
+				if (holder.autoInput() && fluidConfig.getIoConfig().isInsert() && machineBase.canInsertFluid(holder.getTankID())) {
 					StorageUtil.move(neighbour, tank, FluidConfiguration::isTransferable, machineBase.fluidTransferAmount().getRawValue(), null);
 				}
-				if (holder.autoOutput() && fluidConfig.getIoConfig().isExtract()) {
+				if (holder.autoOutput() && fluidConfig.getIoConfig().isExtract() && machineBase.canExtractFluid(holder.getTankID())) {
 					StorageUtil.move(tank, neighbour, FluidConfiguration::isTransferable, machineBase.fluidTransferAmount().getRawValue(), null);
 				}
 			}

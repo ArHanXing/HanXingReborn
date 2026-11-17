@@ -1464,6 +1464,8 @@
   "gui.techreborn.unit.wrenchtip": "Wrench unit to retain contents",
   "gui.techreborn.unit.in": "IN",
   "gui.techreborn.unit.out": "OUT",
+  "gui.techreborn.industrial_grinder.fluid_in": "IN",
+  "gui.techreborn.industrial_grinder.fluid_out": "OUT",
   "gui.techreborn.unit.used": "Used: ",
   "gui.techreborn.tank.type": "Fluid Type:",
   "gui.techreborn.tank.amount": "Fluid Amount:",

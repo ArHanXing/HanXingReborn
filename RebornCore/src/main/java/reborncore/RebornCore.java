@@ -132,7 +132,8 @@ public class RebornCore implements ModInitializer {
 			// Machines with a single tank expose it directly. Machines with several
 			// expose a view over all of them, so pipes and other mods can reach the
 			// extra tanks instead of only ever seeing tank 0.
-			return machineBase.getTankCount() <= 1 ? machineBase.getTank() : new MultiTankStorage(machineBase);
+			return machineBase.getTankCount() <= 1 && machineBase.canInsertFluid(0) && machineBase.canExtractFluid(0)
+				? machineBase.getTank() : new MultiTankStorage(machineBase);
 		});
 		EnergyStorage.SIDED.registerFallback((world, pos, state, be, direction) -> {
 			if (be instanceof PowerAcceptorBlockEntity powerAcceptor) {

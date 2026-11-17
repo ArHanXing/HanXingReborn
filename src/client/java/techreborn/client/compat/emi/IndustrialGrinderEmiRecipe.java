@@ -40,11 +40,15 @@ import techreborn.client.compat.emi.core.LongHolder;
 
 public class IndustrialGrinderEmiRecipe extends TREmiRecipe<IndustrialGrinderRecipe> {
 	private final List<EmiIngredient> inputsWithFluids;
+	private final List<EmiStack> outputsWithFluid;
 	private final LongHolder capacityHolder;
 
 	public IndustrialGrinderEmiRecipe(RecipeEntry<IndustrialGrinderRecipe> recipe, LongHolder capacityHolder) {
 		super(recipe);
 		this.capacityHolder = capacityHolder;
+		FluidInstance outputFluid = recipe.value().fluidOutput();
+		outputsWithFluid = outputFluid.isEmpty() ? outputs : Stream.concat(outputs.stream(), Stream.of(EmiStack.of(
+			outputFluid.fluid(), outputFluid.fluidVariant().getComponents(), outputFluid.getAmount().getRawValue()))).toList();
 		FluidInstance instance = recipe.value().fluid();
 		long amount = instance.getAmount().getRawValue();
 		inputsWithFluids = Stream.concat(inputs.stream(),
@@ -66,8 +70,13 @@ public class IndustrialGrinderEmiRecipe extends TREmiRecipe<IndustrialGrinderRec
 	}
 
 	@Override
+	public List<EmiStack> getOutputs() {
+		return outputsWithFluid;
+	}
+
+	@Override
 	public int getDisplayWidth() {
-		return 16 + 22 + 2 + 18 + 24 + 18;
+		return 16 + 22 + 2 + 18 + 24 + 18 + (recipe.fluidOutput().isEmpty() ? 0 : 2 + 22);
 	}
 
 	@Override
@@ -82,6 +91,11 @@ public class IndustrialGrinderEmiRecipe extends TREmiRecipe<IndustrialGrinderRec
 
 		for (int i = 0; i < 4; i++) {
 			widgets.addSlot(getOutput(i), 16 + 22 + 2 + 18 + 24, i * 18).recipeContext(this);
+		}
+		if (!recipe.fluidOutput().isEmpty()) {
+			int outputX = 16 + 22 + 2 + 18 + 24 + 18 + 2;
+			widgets.add(new TRFluidSlotWidget(recipe.fluidOutput(), outputX, (18 * 4 - 56) / 2,
+				Math.max(capacityHolder.getValue(), recipe.fluidOutput().getAmount().getRawValue())));
 		}
 
 		TRUIUtils.energyBar(widgets, recipe, 10, 0, (18 * 4 - 50) / 2);

@@ -50,6 +50,8 @@ class IndustrialGrinderRecipeJsonFactory extends MachineRecipeWithFluidJsonFacto
 
 	@Override
 	protected IndustrialGrinderRecipe createRecipe() {
-		return new IndustrialGrinderRecipe(ModRecipes.INDUSTRIAL_GRINDER, ingredients, outputs, power, time, new FluidInstance(fluid, FluidValue.fromMillibuckets(fluidAmount)))
+		return new IndustrialGrinderRecipe(ModRecipes.INDUSTRIAL_GRINDER, ingredients, outputs, power, time,
+			new FluidInstance(fluid, FluidValue.fromMillibuckets(fluidAmount)),
+			new FluidInstance(outputFluid, FluidValue.fromMillibuckets(outputFluidAmount)))
 	}
 }

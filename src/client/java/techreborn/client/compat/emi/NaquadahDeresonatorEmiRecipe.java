@@ -56,7 +56,8 @@ public class NaquadahDeresonatorEmiRecipe extends TREmiRecipe<NaquadahDeresonato
 
 	@Override
 	public int getDisplayWidth() {
-		return OUTPUT_X + 18;
+		// Room for the product tank when the recipe names one.
+		return OUTPUT_X + 18 + (recipe.outputFluid().isPresent() ? 24 : 0);
 	}
 
 	@Override
@@ -75,6 +76,12 @@ public class NaquadahDeresonatorEmiRecipe extends TREmiRecipe<NaquadahDeresonato
 		for (int i = 0; i < 4; i++) {
 			widgets.addSlot(getOutput(i), OUTPUT_X, i * 18).recipeContext(this);
 		}
+
+		// The product mirrors whatever the run drew from the input tank, so it is
+		// drawn as one success step - the same unit the input side uses.
+		recipe.outputFluid().ifPresent(fluid -> widgets.add(new TRFluidSlotWidget(FluidVariant.of(fluid),
+				DISPLAY_FLUID_AMOUNT, OUTPUT_X + 18 + 6, (18 * 4 - 56) / 2,
+				NaquadahDeresonatorBlockEntity.OUTPUT_TANK_CAPACITY.getRawValue())));
 
 		TRUIUtils.energyBar(widgets, recipe, 10, 0, (18 * 4 - 50) / 2);
 		TRUIUtils.arrowRight(widgets, recipe, FLUID_X + 22 + 4, (18 * 4 - 10) / 2);

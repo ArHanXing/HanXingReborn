@@ -100,7 +100,7 @@ class TRTestContext extends TestContext {
 			}
 
 			addFinalTaskWithDuration(ticks) {
-				if (!blockEntity.inventory.getStack(slot).isItemEqual(stack)) {
+				if (!ItemStack.areItemsEqual(blockEntity.inventory.getStack(slot), stack)) {
 					throwGameTestException("Failed to find $stack in slot $slot")
 				}
 			}

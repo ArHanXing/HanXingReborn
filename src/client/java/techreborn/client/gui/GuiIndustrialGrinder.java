@@ -26,6 +26,7 @@ package techreborn.client.gui;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 import reborncore.client.gui.GuiBuilder;
 import techreborn.blockentity.machine.multiblock.IndustrialGrinderBlockEntity;
 
@@ -67,6 +68,9 @@ public class GuiIndustrialGrinder extends GuiMultiblockMachine {
 
 		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 105, 47, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
 		builder.drawTank(drawContext, this, 53, 25, mouseX, mouseY, blockEntity.tank.getFluidInstance(), blockEntity.tank.getFluidValueCapacity(), blockEntity.tank.isEmpty(), layer);
+		builder.drawTank(drawContext, this, 78, 25, mouseX, mouseY, blockEntity.outputTank.getFluidInstance(), blockEntity.outputTank.getFluidValueCapacity(), blockEntity.outputTank.isEmpty(), layer);
+		drawText(drawContext, Text.translatable("gui.techreborn.industrial_grinder.fluid_in"), 53, 14, theme.titleColor().rgba(), layer);
+		drawText(drawContext, Text.translatable("gui.techreborn.industrial_grinder.fluid_out"), 78, 14, theme.titleColor().rgba(), layer);
 		drawMissingStructureOverlay(drawContext, mouseX, mouseY, layer);
 		builder.drawMultiEnergyBar(drawContext, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 	}

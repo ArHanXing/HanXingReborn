@@ -26,6 +26,7 @@ package techreborn.blockentity.machine.multiblock;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryWrapper;
@@ -84,6 +85,9 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 	/** Tank size, 100 buckets. */
 	public static final FluidValue TANK_CAPACITY = FluidValue.BUCKET.multiply(100);
 
+	/** Output tank size, same as the input tank. */
+	public static final FluidValue OUTPUT_TANK_CAPACITY = TANK_CAPACITY;
+
 	/** Fluid worth one success step, 10 buckets. */
 	public static final long FLUID_PER_UNIT_MB = 10_000L;
 
@@ -113,12 +117,18 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 	public static final double OFF_DIMENSION_ENERGY_MULTIPLIER = 0.8;
 
 	public final Tank tank;
+	/**
+	 * The tank the run's fluid product lands in. Kept separate from {@link #tank}
+	 * so the success chance keeps reading only what was fed in.
+	 */
+	public final Tank outputTank;
 
 	/**
-	 * Fluid consumed by the run in progress, in millibuckets. Reset whenever a
-	 * run starts, and read by {@link #rollCraftSuccess()} when it ends.
+	 * Fluid consumed by the run in progress, in raw Fabric units. Kept raw rather
+	 * than in millibuckets so the fluid product can mirror the input exactly
+	 * (a millibucket round trip would truncate fractional amounts).
 	 */
-	private long runFluidMb = 0;
+	private long runFluidRaw = 0;
 
 	/** Next {@code crafter.currentTickTime} value at which to drain the tank. */
 	private int nextDrainTick = DRAIN_INTERVAL_TICKS;
@@ -132,6 +142,7 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 		this.crafter = new NaquadahDeresonatorCrafter(this, this.inventory,
 				new int[]{INPUT_SLOT_A, INPUT_SLOT_B}, OUTPUT_SLOTS);
 		this.tank = new Tank("NaquadahDeresonatorBlockEntity", TANK_CAPACITY);
+		this.outputTank = new Tank("NaquadahDeresonatorOutput", OUTPUT_TANK_CAPACITY);
 	}
 
 	@Override
@@ -141,7 +152,18 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 
 	@Override
 	public boolean canCraft(RebornRecipe rebornRecipe) {
-		return isMultiblockValid();
+		if (!isMultiblockValid()) {
+			return false;
+		}
+		// A recipe with a fluid product has to put it somewhere. With the product
+		// tank full the run could only fall back to its no-fluid chance, so idle
+		// instead of burning the inputs.
+		if (rebornRecipe instanceof NaquadahDeresonatorRecipe deresonatorRecipe
+				&& deresonatorRecipe.outputFluid().isPresent()
+				&& outputTank.getFreeSpace().isEmpty()) {
+			return false;
+		}
+		return true;
 	}
 
 	// =======================================================================
@@ -222,7 +244,7 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 	 * @return {@code double} the success chance of the run in progress
 	 */
 	public double getCurrentSuccessRate() {
-		return successRate(runFluidMb);
+		return successRate(getRunFluidMb());
 	}
 
 	/**
@@ -230,16 +252,24 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 	 *         millibuckets
 	 */
 	public long getRunFluidMb() {
-		return runFluidMb;
+		return runFluidRaw / RAW_PER_MB;
+	}
+
+	/**
+	 * @return {@code long} fluid consumed by the run in progress, in raw Fabric
+	 *         units
+	 */
+	public long getRunFluidRaw() {
+		return runFluidRaw;
 	}
 
 	/**
 	 * Client-side setter for the synced run fluid. The client only displays it.
 	 *
-	 * @param runFluidMb {@code long} fluid consumed by the run in progress
+	 * @param runFluidRaw {@code long} fluid consumed by the run in progress
 	 */
-	public void setRunFluidMb(long runFluidMb) {
-		this.runFluidMb = runFluidMb;
+	public void setRunFluidRaw(long runFluidRaw) {
+		this.runFluidRaw = runFluidRaw;
 	}
 
 	/**
@@ -302,7 +332,7 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 	}
 
 	private void resetRun() {
-		runFluidMb = 0;
+		runFluidRaw = 0;
 		nextDrainTick = DRAIN_INTERVAL_TICKS;
 	}
 
@@ -320,8 +350,69 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 		if (!instance.fluid().matchesType(deresonatorRecipe.getFluid())) {
 			return;
 		}
-		runFluidMb += instance.getAmount().getRawValue() / RAW_PER_MB;
-		tank.setFluidInstance(FluidInstance.EMPTY);
+
+		long available = instance.getAmount().getRawValue();
+		long drained = available;
+		if (deresonatorRecipe.outputFluid().isPresent()) {
+			// Whatever is billed has to leave again as product, so never bill more
+			// than the output tank can still take. The excess stays in the input
+			// tank instead of being voided.
+			long free = outputTank.getFreeSpace().getRawValue();
+			drained = Math.min(available, free);
+		}
+		if (drained <= 0) {
+			return;
+		}
+
+		runFluidRaw += drained;
+		if (drained >= available) {
+			tank.setFluidInstance(FluidInstance.EMPTY);
+		} else {
+			tank.setFluidInstance(instance.withAmount(FluidValue.fromRaw(available - drained)));
+		}
+	}
+
+	// =======================================================================
+	// fluid product
+	// =======================================================================
+
+	/**
+	 * @param wantsProduct {@code boolean} whether the recipe has a fluid product
+	 * @return {@code boolean} whether the product tank can accept a run's output
+	 */
+	public boolean hasRoomForFluidOutput(boolean wantsProduct) {
+		return !wantsProduct || !outputTank.getFreeSpace().isEmpty();
+	}
+
+	/**
+	 * Moves the run's fluid product into the output tank.
+	 * <p>
+	 * The amount is exactly what the run drew from the input tank, so the recipe
+	 * only has to name the fluid id. Both tanks are checked before either is
+	 * touched: a full or mismatched product tank leaves the run uncompleted rather
+	 * than voiding fluid.
+	 *
+	 * @param product {@link Fluid} the recipe's fluid product, {@code null} for
+	 *                recipes without one
+	 * @return {@code boolean} whether the product was stored
+	 */
+	public boolean depositRunFluidProduct(@Nullable Fluid product) {
+		if (product == null || runFluidRaw <= 0) {
+			return true;
+		}
+		if (!outputTank.isEmpty() && !outputTank.getFluid().matchesType(product)) {
+			return false;
+		}
+		FluidValue amount = FluidValue.fromRaw(runFluidRaw);
+		if (outputTank.getFreeSpace().lessThan(amount)) {
+			return false;
+		}
+		if (outputTank.isEmpty()) {
+			outputTank.setFluidInstance(new FluidInstance(product, amount));
+		} else {
+			outputTank.modifyFluid(current -> current.addAmount(amount));
+		}
+		return true;
 	}
 
 	// =======================================================================
@@ -332,20 +423,52 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 	public void readNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tagCompound, registryLookup);
 		tank.read(tagCompound, registryLookup);
-		runFluidMb = tagCompound.getLong("runFluidMb");
+		outputTank.read(tagCompound, registryLookup);
+		if (tagCompound.contains("runFluidRaw")) {
+			runFluidRaw = tagCompound.getLong("runFluidRaw");
+		} else if (tagCompound.contains("runFluidMb")) {
+			// Saves written before the raw-unit change stored millibuckets.
+			runFluidRaw = tagCompound.getLong("runFluidMb") * RAW_PER_MB;
+		} else {
+			runFluidRaw = 0;
+		}
 	}
 
 	@Override
 	public void writeNbt(NbtCompound tagCompound, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(tagCompound, registryLookup);
 		tank.write(tagCompound, registryLookup);
-		tagCompound.putLong("runFluidMb", runFluidMb);
+		outputTank.write(tagCompound, registryLookup);
+		tagCompound.putLong("runFluidRaw", runFluidRaw);
 	}
 
 	@Nullable
 	@Override
 	public Tank getTank() {
 		return tank;
+	}
+
+	@Override
+	public Tank getTank(int index) {
+		return switch (index) {
+			case 0 -> tank;
+			case 1 -> outputTank;
+			default -> null;
+		};
+	}
+
+	@Override
+	public int getTankCount() {
+		return 2;
+	}
+
+	/**
+	 * The product tank is an output: pipes may drain it but must never fill it,
+	 * otherwise a stray pipe could poison a batch with the wrong fluid.
+	 */
+	@Override
+	public boolean canInsertFluid(int tankIndex) {
+		return tankIndex == 0;
 	}
 
 	// =======================================================================
@@ -360,8 +483,8 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 				.outputSlot(2, 107, 27).outputSlot(3, 125, 27).outputSlot(4, 107, 47).outputSlot(5, 125, 47)
 				.energySlot(ENERGY_SLOT, 8, 72)
 				.syncEnergyValue().syncCrafterValue()
-				.sync(PacketCodecs.VAR_LONG, this::getRunFluidMb, this::setRunFluidMb)
-				.sync(tank)
+				.sync(PacketCodecs.VAR_LONG, this::getRunFluidRaw, this::setRunFluidRaw)
+				.sync(tank).sync(outputTank)
 				.addInventory().create(this, syncID);
 	}
 }

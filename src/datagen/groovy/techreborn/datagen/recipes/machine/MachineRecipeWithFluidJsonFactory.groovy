@@ -34,6 +34,8 @@ import techreborn.init.ModFluids
 abstract class MachineRecipeWithFluidJsonFactory<R extends RebornFluidRecipe> extends MachineRecipeJsonFactory<R> {
 	protected Fluid fluid = Fluids.WATER // default
 	protected long fluidAmount = 1000L // default in millibuckets
+	protected Fluid outputFluid = Fluids.EMPTY
+	protected long outputFluidAmount = 0L // default in millibuckets
 
 	def fluid(Fluid fluid) {
 		this.fluid = fluid
@@ -50,6 +52,17 @@ abstract class MachineRecipeWithFluidJsonFactory<R extends RebornFluidRecipe> ex
 		return this
 	}
 
+	/** Optional recipe fluid output. Defaults to no output. */
+	def fluidOutput(Fluid fluid, long amount) {
+		this.outputFluid = fluid
+		this.outputFluidAmount = amount
+		return this
+	}
+
+	def fluidOutput(ModFluids fluid, long amount) {
+		return fluidOutput(fluid.getFluid(), amount)
+	}
+
 	protected MachineRecipeWithFluidJsonFactory(RecipeType<R> type, TechRebornRecipesProvider provider) {
 		super(type, provider)
 	}
@@ -63,5 +76,8 @@ abstract class MachineRecipeWithFluidJsonFactory<R extends RebornFluidRecipe> ex
 		}
 		if (fluid == null)
 			throw new IllegalStateException("recipe has no valid fluid type specified")
+		if (outputFluidAmount < 0 || (outputFluidAmount > 0 && outputFluid == Fluids.EMPTY)
+				|| (outputFluid != Fluids.EMPTY && outputFluidAmount <= 0))
+			throw new IllegalStateException("recipe has no valid fluid output specified")
 	}
 }

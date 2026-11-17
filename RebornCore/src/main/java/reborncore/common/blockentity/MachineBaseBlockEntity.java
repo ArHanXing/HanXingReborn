@@ -422,6 +422,19 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 		return getTank() == null ? 0 : 1;
 	}
 
+	/**
+	 * Whether external fluid transfers may fill this tank. Recipe writes bypass
+	 * this role. Returning false also hides the tank from single-tank fallbacks.
+	 */
+	public boolean canInsertFluid(int tankIndex) {
+		return true;
+	}
+
+	/** Whether external fluid transfers may drain this tank. */
+	public boolean canExtractFluid(int tankIndex) {
+		return true;
+	}
+
 	public boolean showTankConfig() {
 		return getTankCount() > 0;
 	}
