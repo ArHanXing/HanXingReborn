@@ -219,8 +219,11 @@ public final class SpaceMiningEmiRecipe implements EmiRecipe {
 	private static void drawCount(DrawContext context, int count, int x, int y) {
 		var renderer = MinecraftClient.getInstance().textRenderer;
 		String text = Integer.toString(count);
+		context.getMatrices().push();
+		context.getMatrices().translate(0, 0, 300);
 		context.fill(x + 7, y + 10, x + 18, y + 18, 0xC0000000);
 		context.drawText(renderer, renderer.trimToWidth(text, 11), x + 7, y + 10, 0xFFFFFFFF, false);
+		context.getMatrices().pop();
 	}
 
 	private record TierView(int tier, long power, long time, List<ItemStack> inputs, List<ItemStack> returns) {
