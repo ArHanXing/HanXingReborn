@@ -118,14 +118,28 @@ public class FluidConfiguration implements NBTSerializable {
 	 * Makes sure a holder exists for every tank the machine exposes, so a machine
 	 * that gained a tank, or a save that predates per-tank config, still has
 	 * something to edit.
+	 * <p>
+	 * Safe to call on the client: the GUI runs it when it opens, because the
+	 * server-side {@link #update} that used to be its only caller returns early on
+	 * the client. Without that, a client whose config arrived as "tank 0 only"
+	 * (the default constructor, or a save written before the machine had a second
+	 * tank) could see the extra tank in the selector but never select it.
 	 *
 	 * @param machineBase {@link MachineBaseBlockEntity} the machine
 	 */
 	public void ensureTanks(MachineBaseBlockEntity machineBase) {
+		boolean added = false;
 		for (int i = 0; i < machineBase.getTankCount(); i++) {
 			if (getTankDetails(i) == null) {
 				updateTankDetails(new TankConfigHolder(i));
+				added = true;
 			}
+		}
+		// New holders only exist because a tank showed up, so persist once per
+		// addition instead of on every call. A client block entity has nothing to
+		// save, so the flag is only raised server-side.
+		if (added && machineBase.getWorld() != null && !machineBase.getWorld().isClient) {
+			machineBase.markDirty();
 		}
 	}
 

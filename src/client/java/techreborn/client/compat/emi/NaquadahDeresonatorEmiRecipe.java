@@ -45,6 +45,9 @@ public class NaquadahDeresonatorEmiRecipe extends TREmiRecipe<NaquadahDeresonato
 	private static final int FLUID_X = 16 + 20;
 	private static final int OUTPUT_X = FLUID_X + 22 + 2 + 18 + 24;
 
+	/** Width of a {@link TRFluidSlotWidget}, used to size the display. */
+	private static final int TANK_WIDGET_WIDTH = 22;
+
 	public NaquadahDeresonatorEmiRecipe(RecipeEntry<NaquadahDeresonatorRecipe> recipe) {
 		super(recipe);
 	}
@@ -56,8 +59,10 @@ public class NaquadahDeresonatorEmiRecipe extends TREmiRecipe<NaquadahDeresonato
 
 	@Override
 	public int getDisplayWidth() {
-		// Room for the product tank when the recipe names one.
-		return OUTPUT_X + 18 + (recipe.outputFluid().isPresent() ? 24 : 0);
+		// Room for the product tank when the recipe names one. The widget starts at
+		// OUTPUT_X + 18 + 6 and is 22 wide, so the old +24 left it 4 px short and
+		// the right edge of the tank got clipped.
+		return OUTPUT_X + 18 + (recipe.outputFluid().isPresent() ? 6 + TANK_WIDGET_WIDTH + 2 : 0);
 	}
 
 	@Override

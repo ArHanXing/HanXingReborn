@@ -24,6 +24,7 @@
 
 package reborncore.client.gui.config;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -31,6 +32,8 @@ import org.jetbrains.annotations.Nullable;
 import reborncore.client.gui.GuiBase;
 import reborncore.client.gui.config.elements.ConfigFluidElement;
 import reborncore.client.gui.config.elements.SlotType;
+import reborncore.common.blockentity.MachineBaseBlockEntity;
+import reborncore.common.network.serverbound.FluidConfigRequestPayload;
 
 import java.util.Objects;
 
@@ -59,6 +62,14 @@ public class FluidConfigGui extends GuiTab {
 
 	@Override
 	public void open() {
+		MachineBaseBlockEntity machine = guiBase.getMachine();
+		// Fill in holders for every tank locally so the selector is usable
+		// immediately, then ask the server for the authoritative config: it only
+		// ever reached the client as a side effect of a save, so a machine whose NBT
+		// still describes one tank would otherwise leave the extra tank visible but
+		// unselectable. Both paths are idempotent.
+		machine.fluidConfiguration.ensureTanks(machine);
+		ClientPlayNetworking.send(new FluidConfigRequestPayload(machine.getPos()));
 		fluidConfigElement = new ConfigFluidElement(SlotType.NORMAL, 35 - guiBase.getGuiLeft() + 50, 35 - guiBase.getGuiTop() - 25, guiBase);
 	}
 

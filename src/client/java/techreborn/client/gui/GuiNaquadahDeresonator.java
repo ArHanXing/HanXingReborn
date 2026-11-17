@@ -64,13 +64,16 @@ public class GuiNaquadahDeresonator extends GuiMultiblockMachine {
 		super.drawForeground(drawContext, mouseX, mouseY);
 		final Layer layer = Layer.FOREGROUND;
 
-		// Input on the left, product on the right; the product tank is what pipes
-		// drain, so the two must be visually distinct. Labels are omitted because
-		// the tanks' own tooltips name the fluid and the amount.
-		builder.drawTank(drawContext, this, 52, 12, mouseX, mouseY, blockEntity.tank.getFluidInstance(), blockEntity.tank.getFluidValueCapacity(), blockEntity.tank.isEmpty(), layer);
-		builder.drawTank(drawContext, this, 76, 12, mouseX, mouseY, blockEntity.outputTank.getFluidInstance(), blockEntity.outputTank.getFluidValueCapacity(), blockEntity.outputTank.isEmpty(), layer);
+		// Left-to-right, matching the EMI page: item input, the tank that feeds the
+		// recipe, the progress arrow, the item outputs, then the product tank.
+		// Keeping the product on the far right is what makes the two tanks read as
+		// "what goes in" versus "what comes out" instead of one blurred pair.
+		builder.drawTank(drawContext, this, 57, 12, mouseX, mouseY, blockEntity.tank.getFluidInstance(), blockEntity.tank.getFluidValueCapacity(), blockEntity.tank.isEmpty(), layer);
+		builder.drawTank(drawContext, this, 146, 12, mouseX, mouseY, blockEntity.outputTank.getFluidInstance(), blockEntity.outputTank.getFluidValueCapacity(), blockEntity.outputTank.isEmpty(), layer);
 
-		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 52, 80, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
+		// Centred between the feed tank (ending at x=79) and the item outputs
+		// (starting at x=107); the arrow sprite is 16x10.
+		builder.drawProgressBar(drawContext, this, blockEntity.getProgressScaled(100), 100, 85, 35, mouseX, mouseY, GuiBuilder.ProgressDirection.RIGHT, layer);
 
 		// The chance the run in progress will actually produce its outputs.
 		drawCentredText(drawContext, Text.translatable("gui.techreborn.naquadah_deresonator.chance",

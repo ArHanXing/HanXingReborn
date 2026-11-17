@@ -111,6 +111,19 @@ public class ServerBoundPackets {
 			NetworkManager.sendToTracking(new FluidConfigSyncPayload(payload.pos(), machine.fluidConfiguration), machine);
 		});
 
+		// The client only learns about per-tank config through a save otherwise, so a
+		// freshly opened fluid tab asks for the authoritative holders. Without this
+		// a machine whose NBT still describes a single tank keeps the extra tank
+		// visible in the selector but unselectable.
+		ServerPlayNetworking.registerGlobalReceiver(FluidConfigRequestPayload.ID, (payload, context) -> {
+			var machine = configurableMachine(payload, context.player());
+			if (machine == null || machine.fluidConfiguration == null) {
+				return;
+			}
+			machine.fluidConfiguration.ensureTanks(machine);
+			NetworkManager.sendToTracking(new FluidConfigSyncPayload(payload.pos(), machine.fluidConfiguration), machine);
+		});
+
 		ServerPlayNetworking.registerGlobalReceiver(IoSavePayload.ID, (payload, context) -> {
 			var machine = configurableMachine(payload, context.player());
 			if (machine == null || machine.getSlotConfiguration() == null) {

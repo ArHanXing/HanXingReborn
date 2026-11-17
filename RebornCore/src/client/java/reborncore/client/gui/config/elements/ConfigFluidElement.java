@@ -32,6 +32,7 @@ import reborncore.client.gui.GuiSprites;
 import reborncore.common.blockentity.FluidConfiguration;
 import reborncore.common.blockentity.RedstoneConfiguration;
 import reborncore.common.network.serverbound.SetRedstoneStatePayload;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The fluid IO panel.
@@ -80,10 +81,10 @@ public class ConfigFluidElement extends ParentElement {
 		}
 
 		elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.fluidconfig.pullin"), x + TANK_X, y + TANK_CURRENT_Y + 16,
-			checkBoxElement -> holder(gui).autoInput(),
+			checkBoxElement -> autoInputOf(gui),
 			() -> popupElement.updateCheckBox("input", gui)));
 		elements.add(new CheckBoxElement(Text.translatable("reborncore.gui.fluidconfig.pumpout"), x + TANK_X, y + TANK_CURRENT_Y + 31,
-			checkBoxElement -> holder(gui).autoOutput(),
+			checkBoxElement -> autoOutputOf(gui),
 			() -> popupElement.updateCheckBox("output", gui)));
 
 		// The redstone gate that decides whether fluid IO runs at all used to sit
@@ -127,29 +128,65 @@ public class ConfigFluidElement extends ParentElement {
 
 	/**
 	 * @param gui {@link GuiBase} the open GUI
-	 * @return {@link FluidConfiguration.TankConfigHolder} the holder being edited
+	 * @return {@link FluidConfiguration.TankConfigHolder} the holder being edited,
+	 *         or {@code null} when the machine no longer has that tank
 	 */
-	private FluidConfiguration.TankConfigHolder holder(GuiBase<?> gui) {
-		FluidConfiguration configuration = gui.getMachine().fluidConfiguration;
-		FluidConfiguration.TankConfigHolder holder = configuration.getTankDetails(selectedTank);
-		if (holder == null) {
-			// The server has not sent this tank yet; fall back to tank 0 rather
-			// than dereferencing null in the middle of a draw call.
-			holder = configuration.getTankDetails(0);
-		}
-		return holder;
+	@Nullable
+	private FluidConfiguration.TankConfigHolder holderOrNull(GuiBase<?> gui) {
+		return gui.getMachine().fluidConfiguration.getTankDetails(selectedTank);
 	}
 
 	/**
+	 * @param gui {@link GuiBase} the open GUI
+	 * @return {@code boolean} whether the selected tank pulls fluid in
+	 */
+	private boolean autoInputOf(GuiBase<?> gui) {
+		FluidConfiguration.TankConfigHolder holder = holderOrNull(gui);
+		return holder != null && holder.autoInput();
+	}
+
+	/**
+	 * @param gui {@link GuiBase} the open GUI
+	 * @return {@code boolean} whether the selected tank pumps fluid out
+	 */
+	private boolean autoOutputOf(GuiBase<?> gui) {
+		FluidConfiguration.TankConfigHolder holder = holderOrNull(gui);
+		return holder != null && holder.autoOutput();
+	}
+
+	/**
+	 * @param gui {@link GuiBase} the open GUI
 	 * @return {@code int} the tank index currently being configured
 	 */
 	public int getSelectedTank() {
 		return selectedTank;
 	}
 
+	/**
+	 * Selects which tank the panel edits.
+	 * <p>
+	 * The gate is the machine's tank count, not the presence of a holder: the
+	 * holder map is empty on a freshly opened client and used to make every tank
+	 * above the first unselectable. {@link
+	 * reborncore.client.gui.config.FluidConfigGui#open()} fills the holders in, so
+	 * widening the gate only ever admits tanks the machine actually reports.
+	 *
+	 * @param tankID {@code int} the tank index
+	 * @param gui    {@link GuiBase} the open GUI
+	 */
 	private void selectTank(int tankID, GuiBase<?> gui) {
-		if (gui.getMachine().fluidConfiguration.getTankDetails(tankID) == null) {
+		if (tankID < 0 || tankID >= gui.getMachine().getTankCount()) {
 			return;
+		}
+		FluidConfiguration configuration = gui.getMachine().fluidConfiguration;
+		if (configuration.getTankDetails(tankID) == null) {
+			// Opening the editor normally guarantees a holder; if one is still
+			// missing (a tank added while the GUI is open), create it rather than
+			// refusing the click.
+			configuration.ensureTanks(gui.getMachine());
+			if (configuration.getTankDetails(tankID) == null) {
+				return;
+			}
 		}
 		selectedTank = tankID;
 	}

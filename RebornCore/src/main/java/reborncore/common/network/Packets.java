@@ -33,6 +33,7 @@ import reborncore.common.network.clientbound.QueueItemStacksPayload;
 import reborncore.common.network.clientbound.ScreenHandlerUpdatePayload;
 import reborncore.common.network.clientbound.SlotSyncPayload;
 import reborncore.common.network.serverbound.ChunkLoaderRequestPayload;
+import reborncore.common.network.serverbound.FluidConfigRequestPayload;
 import reborncore.common.network.serverbound.FluidConfigSavePayload;
 import reborncore.common.network.serverbound.FluidIoSavePayload;
 import reborncore.common.network.serverbound.IoSavePayload;
@@ -59,6 +60,7 @@ public class Packets {
 		registry.register(ChunkLoaderRequestPayload.ID, ChunkLoaderRequestPayload.PACKET_CODEC);
 		registry.register(FluidConfigSavePayload.ID, FluidConfigSavePayload.PACKET_CODEC);
 		registry.register(FluidIoSavePayload.ID, FluidIoSavePayload.PACKET_CODEC);
+		registry.register(FluidConfigRequestPayload.ID, FluidConfigRequestPayload.PACKET_CODEC);
 		registry.register(IoSavePayload.ID, IoSavePayload.PACKET_CODEC);
 		registry.register(SetRedstoneStatePayload.ID, SetRedstoneStatePayload.CODEC);
 		registry.register(SlotConfigSavePayload.ID, SlotConfigSavePayload.PACKET_CODEC);
