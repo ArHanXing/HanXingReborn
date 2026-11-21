@@ -101,9 +101,11 @@ public record NaquadahDeresonatorRecipe(RecipeType<NaquadahDeresonatorRecipe> ty
 
 	@Override
 	public boolean canCraft(final BlockEntity blockEntity) {
-		// The structure has to be assembled before the machine runs at all.
-		return blockEntity instanceof NaquadahDeresonatorBlockEntity machine && machine.isMultiblockValid()
-				&& machine.hasRoomForFluidOutput(outputFluid().isPresent());
+		// Delegate to the machine instead of re-deriving the conditions here. The
+		// override used to check only "structure assembled" and "product has room",
+		// which silently bypassed every other gate the machine applies - most
+		// importantly the one that refuses to start on an empty fluid tank.
+		return blockEntity instanceof NaquadahDeresonatorBlockEntity machine && machine.canCraft(this);
 	}
 
 	/**

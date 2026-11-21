@@ -149,8 +149,26 @@ public class Tank extends SnapshotParticipant<FluidInstance> implements Syncable
 	public void setFluidInstance(@NotNull FluidInstance fluidInstance) {
 		boolean changed = !this.fluidInstance.equals(fluidInstance);
 		this.fluidInstance = fluidInstance;
-		if (changed && changeListener != null && Transaction.getCurrentUnsafe() == null) {
+		// Only notify when no transaction is open: inside one, onFinalCommit does it
+		// once the transfer actually commits, so an aborted transfer never reports
+		// contents that were rolled back.
+		if (changed && changeListener != null && !isInTransaction()) {
 			changeListener.run();
+		}
+	}
+
+	/**
+	 * @return {@code boolean} whether a transfer transaction is currently open on
+	 *         this thread
+	 */
+	private static boolean isInTransaction() {
+		try {
+			return Transaction.getCurrentUnsafe() != null;
+		} catch (IllegalStateException e) {
+			// Thrown from a transaction close callback ("May not call getCurrentUnsafe()
+			// from a close callback"). A change made there is either a rollback or part
+			// of a commit that onFinalCommit already covers, so treat it as "inside".
+			return true;
 		}
 	}
 
@@ -245,6 +263,10 @@ public class Tank extends SnapshotParticipant<FluidInstance> implements Syncable
 
 	@Override
 	protected void readSnapshot(FluidInstance snapshot) {
-		setFluidInstance(snapshot);
+		// Plain field write on purpose: this runs from a transaction close callback
+		// during a rollback, where both Transaction.getCurrentUnsafe() and any
+		// listener notification are off limits - the transaction never happened, so
+		// there is nothing to announce.
+		this.fluidInstance = snapshot;
 	}
 }
