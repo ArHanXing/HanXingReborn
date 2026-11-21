@@ -143,32 +143,66 @@ public class FluidConfiguration implements NBTSerializable {
 		}
 	}
 
+	/**
+	 * Runs the configured fluid IO for every tank.
+	 * <p>
+	 * Output is attempted every tick at {@link MachineBaseBlockEntity#fluidOutputTransferAmount()},
+	 * while input keeps its original {@link MachineBaseBlockEntity#slotTransferSpeed()}
+	 * cadence and per-attempt amount. The two directions used to share one cadence
+	 * and one amount, which capped a tank at a quarter bucket every four ticks -
+	 * far too slow to drain a large tank or to feed a neighbouring machine.
+	 * <p>
+	 * The per-face neighbour lookup is a plain capability lookup and only happens
+	 * for faces that are actually configured, so ticking this every tick costs one
+	 * lookup per enabled face rather than per face of every tank.
+	 *
+	 * @param machineBase {@link MachineBaseBlockEntity} the machine
+	 */
 	public void update(MachineBaseBlockEntity machineBase) {
 		ensureTanks(machineBase);
-		if (machineBase.getWorld() == null || machineBase.getWorld().getTime() % machineBase.slotTransferSpeed() != 0) {
+		if (machineBase.getWorld() == null) {
 			return;
 		}
+		final boolean inputTick = machineBase.getWorld().getTime() % machineBase.slotTransferSpeed() == 0;
 
 		for (TankConfigHolder holder : tankDetails) {
-			if (!holder.autoInput() && !holder.autoOutput()) {
+			boolean wantsInput = holder.autoInput() && inputTick && machineBase.canInsertFluid(holder.getTankID());
+			boolean wantsOutput = holder.autoOutput() && machineBase.canExtractFluid(holder.getTankID());
+			if (!wantsInput && !wantsOutput) {
 				continue;
 			}
 			@Nullable Tank tank = machineBase.getTank(holder.getTankID());
 			if (tank == null) {
 				continue;
 			}
+			// Nothing to push out of an empty tank, so skip the neighbour lookups
+			// entirely. This is what keeps the once-per-tick output attempt cheap on
+			// idle machines: no capability lookups, no transactions.
+			if (wantsOutput && tank.isEmpty()) {
+				wantsOutput = false;
+				if (!wantsInput) {
+					continue;
+				}
+			}
 			for (Direction facing : Direction.values()) {
 				FluidConfig fluidConfig = holder.getSideDetail(facing);
 				if (fluidConfig == null || !fluidConfig.getIoConfig().isEnabled()) {
 					continue;
 				}
+				boolean insert = fluidConfig.getIoConfig().isInsert();
+				boolean extract = fluidConfig.getIoConfig().isExtract();
+				if (!(wantsInput && insert) && !(wantsOutput && extract)) {
+					continue;
+				}
 
 				@Nullable Storage<FluidVariant> neighbour = getTank(machineBase, facing);
-				if (holder.autoInput() && fluidConfig.getIoConfig().isInsert() && machineBase.canInsertFluid(holder.getTankID())) {
-					StorageUtil.move(neighbour, tank, FluidConfiguration::isTransferable, machineBase.fluidTransferAmount().getRawValue(), null);
+				if (wantsInput && insert) {
+					StorageUtil.move(neighbour, tank, FluidConfiguration::isTransferable,
+						machineBase.fluidTransferAmount().getRawValue(), null);
 				}
-				if (holder.autoOutput() && fluidConfig.getIoConfig().isExtract() && machineBase.canExtractFluid(holder.getTankID())) {
-					StorageUtil.move(tank, neighbour, FluidConfiguration::isTransferable, machineBase.fluidTransferAmount().getRawValue(), null);
+				if (wantsOutput && extract) {
+					StorageUtil.move(tank, neighbour, FluidConfiguration::isTransferable,
+						machineBase.fluidOutputTransferAmount().getRawValue(), null);
 				}
 			}
 		}

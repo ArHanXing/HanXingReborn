@@ -80,6 +80,8 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 	public boolean renderMultiblock = false;
 	private final static int syncCoolDown = 20;
 	private boolean markSync = false;
+	/** World time of the last comparator notification, so a tick does at most one. */
+	private long lastComparatorUpdateTick = Long.MIN_VALUE;
 	private int tickTime = 0;
 
 	public static double SPEED_CAP = 0.99;
@@ -152,7 +154,53 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 			if (fluidConfiguration == null) {
 				fluidConfiguration = new FluidConfiguration();
 			}
+			attachTankListeners();
 		}
+	}
+
+	/**
+	 * Wires every tank to {@link #onTankChanged()}.
+	 * <p>
+	 * A tank can be filled or drained by anything that reaches it through the
+	 * transfer API - a pipe, a hopper, another machine - and none of those paths go
+	 * through this block entity. Without this hook the comparator and the open GUI
+	 * kept showing whatever the contents were the last time the machine itself
+	 * touched the tank. Idempotent: re-attaching the same {@code this::onTankChanged}
+	 * reference is harmless.
+	 */
+	private void attachTankListeners() {
+		for (int i = 0; i < getTankCount(); i++) {
+			@Nullable Tank tank = getTank(i);
+			if (tank != null) {
+				tank.setChangeListener(this::onTankChanged);
+			}
+		}
+	}
+
+	/**
+	 * Called after a transfer into or out of one of this machine's tanks commits.
+	 * <p>
+	 * Kept cheap on purpose: a comparator update is a single neighbour notification
+	 * and {@link #syncWithAll()} only raises a flag that the existing throttled sync
+	 * path picks up at most once per second. Neither does any allocation per call
+	 * beyond what those two already do, so this is safe to run on every commit.
+	 */
+	protected void onTankChanged() {
+		World world = getWorld();
+		if (world == null || world.isClient) {
+			return;
+		}
+		// Several transfers can commit in the same tick (one per configured face), so
+		// collapse them into a single comparator update rather than notifying the
+		// neighbours once per face.
+		long now = world.getTime();
+		if (now != lastComparatorUpdateTick) {
+			lastComparatorUpdateTick = now;
+			world.updateComparators(pos, getCachedState().getBlock());
+		}
+		// Only raises a flag; the existing throttled sync path sends at most one
+		// update per second regardless of how often this fires.
+		syncWithAll();
 	}
 
 	@Nullable
@@ -286,6 +334,10 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 		if (tagCompound.contains("fluidConfig")) {
 			fluidConfiguration = new FluidConfiguration(tagCompound.getCompound("fluidConfig"));
 		}
+		// A subclass recreates its tanks in readNbt, so the listeners have to be
+		// re-attached after the super call or externally driven changes would stop
+		// refreshing the comparator and the open GUI.
+		attachTankListeners();
 		if (tagCompound.contains("redstoneConfig")) {
 			NbtCompound redstoneConfig = tagCompound.getCompound("redstoneConfig");
 			DataResult<RedstoneConfiguration> result = RedstoneConfiguration.CODEC.codec().parse(NbtOps.INSTANCE, redstoneConfig);
@@ -484,6 +536,20 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 	//The amount of fluid transferred each tick buy the fluid config
 	public FluidValue fluidTransferAmount() {
 		return FluidValue.BUCKET_QUARTER;
+	}
+
+	/**
+	 * How much fluid one output attempt may push into a neighbour.
+	 * <p>
+	 * Deliberately much larger than {@link #fluidTransferAmount()}: output is how a
+	 * machine gets rid of what it produced, and a quarter bucket per attempt left
+	 * large tanks permanently backed up. This only bounds a single attempt - the
+	 * neighbour still has to accept the fluid, so nothing is wasted.
+	 *
+	 * @return {@link FluidValue} the per-attempt output limit
+	 */
+	public FluidValue fluidOutputTransferAmount() {
+		return FluidValue.fromMillibuckets(10_000L);
 	}
 
 	@Override

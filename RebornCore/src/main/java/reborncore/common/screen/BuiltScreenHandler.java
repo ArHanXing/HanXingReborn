@@ -136,7 +136,10 @@ public class BuiltScreenHandler extends ScreenHandler {
 				updatedValues.put(identifiedSyncedObject, value);
 				return value;
 			}
-			return null;
+			// Keep the cached value. Returning null here dropped it, so the next tick
+			// compared against null, saw a "change" and sent the same value again -
+			// a packet every other tick per synced field even when nothing moved.
+			return cached;
 		});
 
 		if (updatedValues.isEmpty()) {

@@ -27,6 +27,7 @@ package reborncore.common.util;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 import net.minecraft.fluid.Fluid;
@@ -34,6 +35,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import reborncore.common.fluid.FluidValue;
 import reborncore.common.fluid.container.FluidInstance;
 import reborncore.common.screen.Syncable;
@@ -45,6 +47,18 @@ public class Tank extends SnapshotParticipant<FluidInstance> implements Syncable
 	private final String name;
 	private FluidInstance fluidInstance = new FluidInstance();
 	private final FluidValue capacity;
+
+	/**
+	 * Notified after a transfer transaction actually commits, so the owning block
+	 * entity can refresh its comparator output and push the new contents to open
+	 * GUIs.
+	 * <p>
+	 * This is what makes an externally driven change (a pipe, another machine, a
+	 * hopper) visible at all: before, only the machine's own code paths touched the
+	 * tank, so nothing told the world the contents had moved.
+	 */
+	@Nullable
+	private Runnable changeListener;
 
 	public Tank(String name, FluidValue capacity) {
 		super();
@@ -122,8 +136,39 @@ public class Tank extends SnapshotParticipant<FluidInstance> implements Syncable
 		setFluidInstance(operator.apply(fluidInstance));
 	}
 
+	/**
+	 * Sets the contents directly, for code that does not run inside a transfer
+	 * transaction (recipe output, cell handling, admin commands).
+	 * <p>
+	 * Inside a transaction the change is not announced here: {@link #onFinalCommit}
+	 * does it once the outer transaction actually commits, so an aborted transfer
+	 * never reports contents that were rolled back.
+	 *
+	 * @param fluidInstance {@link FluidInstance} the new contents
+	 */
 	public void setFluidInstance(@NotNull FluidInstance fluidInstance) {
+		boolean changed = !this.fluidInstance.equals(fluidInstance);
 		this.fluidInstance = fluidInstance;
+		if (changed && changeListener != null && Transaction.getCurrentUnsafe() == null) {
+			changeListener.run();
+		}
+	}
+
+	/**
+	 * Registers the owner's refresh hook. Called with no arguments, on the server
+	 * thread, after every committed transfer.
+	 *
+	 * @param changeListener {@link Runnable} the hook, or {@code null} to clear it
+	 */
+	public void setChangeListener(@Nullable Runnable changeListener) {
+		this.changeListener = changeListener;
+	}
+
+	@Override
+	protected void onFinalCommit() {
+		if (changeListener != null) {
+			changeListener.run();
+		}
 	}
 
 	@Override

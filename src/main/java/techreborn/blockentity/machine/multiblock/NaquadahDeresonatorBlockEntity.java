@@ -155,12 +155,19 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 		if (!isMultiblockValid()) {
 			return false;
 		}
+		if (!(rebornRecipe instanceof NaquadahDeresonatorRecipe deresonatorRecipe)) {
+			return true;
+		}
+		// No fluid in the tank means the run could only use the base chance, which
+		// wastes the item inputs for a gamble the player did not pay for. Idle
+		// instead and let the tank fill.
+		if (tank.isEmpty() || !tank.getFluid().matchesType(deresonatorRecipe.getFluid())) {
+			return false;
+		}
 		// A recipe with a fluid product has to put it somewhere. With the product
 		// tank full the run could only fall back to its no-fluid chance, so idle
 		// instead of burning the inputs.
-		if (rebornRecipe instanceof NaquadahDeresonatorRecipe deresonatorRecipe
-				&& deresonatorRecipe.outputFluid().isPresent()
-				&& outputTank.getFreeSpace().isEmpty()) {
+		if (deresonatorRecipe.outputFluid().isPresent() && outputTank.getFreeSpace().isEmpty()) {
 			return false;
 		}
 		return true;

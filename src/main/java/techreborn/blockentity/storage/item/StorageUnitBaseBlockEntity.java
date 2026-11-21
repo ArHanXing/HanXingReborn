@@ -280,6 +280,11 @@ public class StorageUnitBaseBlockEntity extends MachineBaseBlockEntity implement
 
 		if (inventory.hasChanged()) {
 			syncWithAll();
+			// Items that arrived through a pipe never pass the code that used to be
+			// the only place a comparator was refreshed, so notify here as well. Folded
+			// into the existing change flag, so it costs one notification per tick that
+			// actually changed something.
+			world.updateComparators(pos, getCachedState().getBlock());
 			inventory.resetHasChanged();
 		}
 	}
