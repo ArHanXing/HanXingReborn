@@ -98,7 +98,7 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 	private static final long RAW_PER_MB = 81L;
 
 	/** Success chance of a run that consumed no fluid at all. */
-	public static final double BASE_SUCCESS_RATE = 0.10;
+	public static final double BASE_SUCCESS_RATE = 0.20;
 
 	/** Chance added per full {@link #FLUID_PER_UNIT_MB} of fluid consumed. */
 	public static final double SUCCESS_PER_UNIT = 0.10;
@@ -221,7 +221,7 @@ public class NaquadahDeresonatorBlockEntity extends JsonMultiblockMachineBlockEn
 	 * much worse than either rounding down or saving up.
 	 * <p>
 	 * The result is deliberately not clamped: a full 100 B tank already reaches
-	 * 110%, and the roll simply always succeeds from there.
+	 * 120%, and the roll simply always succeeds from there.
 	 *
 	 * @param fluidMb {@code long} fluid consumed by the run, in millibuckets
 	 * @return {@code double} the chance the run succeeds

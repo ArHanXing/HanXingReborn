@@ -48,6 +48,7 @@ import techreborn.blockentity.storage.fluid.TankUnitBaseBlockEntity;
 import techreborn.init.TRBlockSettings;
 import techreborn.init.TRContent;
 import techreborn.items.DynamicCellItem;
+import techreborn.utils.StorageComparator;
 
 public class TankUnitBlock extends BlockMachineBase {
 
@@ -61,6 +62,20 @@ public class TankUnitBlock extends BlockMachineBase {
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
 		return new TankUnitBaseBlockEntity(pos, state, unitType);
+	}
+
+	/**
+	 * Reports how full the tank is, so a comparator can switch a pump off exactly
+	 * when the unit fills. The inherited implementation reads the item inventory,
+	 * which says nothing about the fluid inside.
+	 */
+	@Override
+	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+		if (!(world.getBlockEntity(pos) instanceof TankUnitBaseBlockEntity tankUnit) || tankUnit.getTank() == null) {
+			return 0;
+		}
+		return StorageComparator.signal(tankUnit.getTank().getFluidAmount().getRawValue(),
+			tankUnit.getTank().getFluidValueCapacity().getRawValue());
 	}
 
 	@Override

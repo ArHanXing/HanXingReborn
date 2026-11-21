@@ -34,7 +34,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import reborncore.api.blockentity.IMachineGuiHandler;
 import reborncore.common.blocks.BlockMachineBase;
@@ -45,6 +44,7 @@ import techreborn.blockentity.storage.item.StorageUnitBaseBlockEntity;
 import techreborn.init.TRBlockSettings;
 import techreborn.init.TRContent;
 import techreborn.items.tool.WrenchItem;
+import techreborn.utils.StorageComparator;
 
 public class StorageUnitBlock extends BlockMachineBase {
 
@@ -101,8 +101,10 @@ public class StorageUnitBlock extends BlockMachineBase {
 		if (storageEntity == null){
 			return 0;
 		}
-		float delta = (float) storageEntity.getCurrentCapacity()/storageEntity.getMaxCapacity();
-		return MathHelper.lerpPositive(delta, 0, 15);
+		// Shared with the fluid tanks so both kinds of storage answer a comparator the
+		// same way: 0 empty, 15 only when full, everything else spread evenly over
+		// 1..14. The rule the old lerp already honoured is kept, not changed.
+		return StorageComparator.signal(storageEntity.getCurrentCapacity(), storageEntity.getMaxCapacity());
 	}
 
 	@Override

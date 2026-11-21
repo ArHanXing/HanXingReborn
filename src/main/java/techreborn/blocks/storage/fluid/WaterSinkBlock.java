@@ -36,12 +36,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import reborncore.api.blockentity.IMachineGuiHandler;
 import reborncore.common.blocks.BlockMachineBase;
 import techreborn.blockentity.GuiType;
 import techreborn.blockentity.storage.fluid.WaterSinkBlockEntity;
 import techreborn.init.TRBlockSettings;
+import techreborn.utils.StorageComparator;
 
 /**
  * The water sink: a decorative basin that holds water and refills itself.
@@ -100,5 +102,18 @@ public class WaterSinkBlock extends BlockMachineBase {
 	@Override
 	public IMachineGuiHandler getGui() {
 		return GuiType.WATER_SINK;
+	}
+
+	/**
+	 * Reports how full the basin is. The sink tops itself up, so this mostly stays
+	 * at 15; it only drops while a pipe is draining it faster than it refills.
+	 */
+	@Override
+	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+		if (!(world.getBlockEntity(pos) instanceof WaterSinkBlockEntity sink)) {
+			return 0;
+		}
+		return StorageComparator.signal(sink.tank.getFluidAmount().getRawValue(),
+			sink.tank.getFluidValueCapacity().getRawValue());
 	}
 }
