@@ -538,6 +538,12 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "rotary_hearth_furnace", key = "RotaryHearthFurnaceMaxEnergy", comment = "Rotary Hearth Furnace Max Energy")
 	public static int rotaryHearthFurnaceMaxEnergy = 100_000;
 
+	@Config(config = "machines", category = "large_canning_machine", key = "LargeCanningMachineMaxInput", comment = "Large Canning Machine Max Input (Energy per tick)")
+	public static int largeCanningMachineMaxInput = 512;
+
+	@Config(config = "machines", category = "large_canning_machine", key = "LargeCanningMachineMaxEnergy", comment = "Large Canning Machine Max Energy")
+	public static int largeCanningMachineMaxEnergy = 100_000;
+
 	@Config(config = "machines", category = "large_compressor", key = "LargeCompressorMaxInput", comment = "Large Compressor Max Input (Energy per tick)")
 	public static int largeCompressorMaxInput = 128;
 

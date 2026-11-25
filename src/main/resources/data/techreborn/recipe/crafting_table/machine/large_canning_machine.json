@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ICI",
+    "BSB",
+    "IMI"
+  ],
+  "key": {
+    "I": {
+      "item": "techreborn:industrial_machine_frame"
+    },
+    "C": {
+      "item": "techreborn:solid_canning_machine"
+    },
+    "B": {
+      "item": "techreborn:advanced_machine_casing"
+    },
+    "S": {
+      "item": "techreborn:advanced_machine_frame"
+    },
+    "M": {
+      "item": "techreborn:energy_flow_chip"
+    }
+  },
+  "result": {
+    "id": "techreborn:large_canning_machine"
+  }
+}

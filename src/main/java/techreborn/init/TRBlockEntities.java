@@ -124,6 +124,7 @@ public class TRBlockEntities {
 	public static final BlockEntityType<IndustrialSawmillBlockEntity> INDUSTRIAL_SAWMILL = register(IndustrialSawmillBlockEntity::new, "industrial_sawmill", TRContent.Machine.INDUSTRIAL_SAWMILL);
 	public static final BlockEntityType<LargeChemicalReactorBlockEntity> LARGE_CHEMICAL_REACTOR = register(LargeChemicalReactorBlockEntity::new, "large_chemical_reactor", TRContent.Machine.LARGE_CHEMICAL_REACTOR);
 	public static final BlockEntityType<LargeCompressorBlockEntity> LARGE_COMPRESSOR = register(LargeCompressorBlockEntity::new, "large_compressor", TRContent.Machine.LARGE_COMPRESSOR);
+	public static final BlockEntityType<LargeCanningMachineBlockEntity> LARGE_CANNING_MACHINE = register(LargeCanningMachineBlockEntity::new, "large_canning_machine", TRContent.Machine.LARGE_CANNING_MACHINE);
 	public static final BlockEntityType<LargeWireMillBlockEntity> LARGE_WIRE_MILL = register(LargeWireMillBlockEntity::new, "large_wire_mill", TRContent.Machine.LARGE_WIRE_MILL);
 	public static final BlockEntityType<LargeOreCrusherBlockEntity> LARGE_ORE_CRUSHER = register(LargeOreCrusherBlockEntity::new, "large_ore_crusher", TRContent.Machine.LARGE_ORE_CRUSHER);
 	public static final BlockEntityType<IndustrialAlloySmelterBlockEntity> INDUSTRIAL_ALLOY_SMELTER = register(IndustrialAlloySmelterBlockEntity::new, "industrial_alloy_smelter", TRContent.Machine.INDUSTRIAL_ALLOY_SMELTER);

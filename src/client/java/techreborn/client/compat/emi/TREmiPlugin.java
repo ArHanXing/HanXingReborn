@@ -301,6 +301,7 @@ public class TREmiPlugin implements EmiPlugin {
 		Map.entry("industrial_sawmill", TRContent.Machine.INDUSTRIAL_SAWMILL),
 		Map.entry("vacuum_freezer", TRContent.Machine.VACUUM_FREEZER),
 		Map.entry("large_heat_sink", TRContent.Machine.LARGE_HEAT_SINK),
+		Map.entry("large_canning_machine", TRContent.Machine.LARGE_CANNING_MACHINE),
 		Map.entry("rotary_hearth_furnace", TRContent.Machine.ROTARY_HEARTH_FURNACE),
 		Map.entry("large_compressor", TRContent.Machine.LARGE_COMPRESSOR),
 		Map.entry("large_wire_mill", TRContent.Machine.LARGE_WIRE_MILL),

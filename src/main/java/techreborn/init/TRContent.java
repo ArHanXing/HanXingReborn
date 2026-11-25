@@ -83,6 +83,7 @@ import techreborn.blocks.KrollReductionVesselBlock;
 import techreborn.blocks.CultivationVesselBlock;
 import techreborn.blocks.IrradiatedMutagensisChamberBlock;
 import techreborn.blocks.SupercriticalPolymerizationChamberBlock;
+import techreborn.blocks.LargeCanningMachineBlock;
 import techreborn.blocks.LargeCompressorBlock;
 import techreborn.blocks.LargeGrinderBlock;
 import techreborn.blocks.LargeLatheBlock;
@@ -862,6 +863,7 @@ public class TRContent {
 		LARGE_HEAT_SINK(new LargeHeatSinkBlock(GuiType.LARGE_HEAT_SINK, LargeHeatSinkBlockEntity::new)),
 		LARGE_CHEMICAL_REACTOR(new LargeChemicalReactorBlock(GuiType.LARGE_CHEMICAL_REACTOR, LargeChemicalReactorBlockEntity::new)),
 		LARGE_COMPRESSOR(new LargeCompressorBlock(GuiType.LARGE_COMPRESSOR, LargeCompressorBlockEntity::new)),
+		LARGE_CANNING_MACHINE(new LargeCanningMachineBlock(GuiType.LARGE_CANNING_MACHINE, LargeCanningMachineBlockEntity::new)),
 		LARGE_WIRE_MILL(new LargeWireMillBlock(GuiType.LARGE_WIRE_MILL, LargeWireMillBlockEntity::new)),
 		LARGE_ORE_CRUSHER(new LargeOreCrusherBlock(GuiType.LARGE_ORE_CRUSHER, LargeOreCrusherBlockEntity::new)),
 		LARGE_GRINDER(new LargeGrinderBlock(GuiType.LARGE_GRINDER, LargeGrinderBlockEntity::new)),

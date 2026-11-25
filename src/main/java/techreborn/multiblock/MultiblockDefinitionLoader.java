@@ -108,7 +108,8 @@ public class MultiblockDefinitionLoader {
 			"rocketdyne_f1a_engine",
 			"void_drill",
 			"gas_collector",
-			"large_heat_sink"
+			"large_heat_sink",
+			"large_canning_machine"
 	};
 
 	private MultiblockDefinitionLoader() {

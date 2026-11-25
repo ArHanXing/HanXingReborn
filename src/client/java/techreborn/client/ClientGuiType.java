@@ -45,6 +45,7 @@ import techreborn.blockentity.machine.multiblock.IndustrialBlastFurnaceBlockEnti
 import techreborn.blockentity.machine.multiblock.IndustrialGrinderBlockEntity;
 import techreborn.blockentity.machine.multiblock.IndustrialSawmillBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeChemicalReactorBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeCanningMachineBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeCompressorBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeGrinderBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeWireMillBlockEntity;
@@ -204,6 +205,7 @@ public record ClientGuiType<T extends BlockEntity>(GuiType<T> guiType, GuiFactor
 	public static final ClientGuiType<AutoCraftingTableBlockEntity> AUTO_CRAFTING_TABLE = register(GuiType.AUTO_CRAFTING_TABLE, GuiAutoCrafting::new);
 	public static final ClientGuiType<IndustrialBlastFurnaceBlockEntity> BLAST_FURNACE = register(GuiType.BLAST_FURNACE, GuiBlastFurnace::new);
 	public static final ClientGuiType<LargeCompressorBlockEntity> LARGE_COMPRESSOR = register(GuiType.LARGE_COMPRESSOR, GuiLargeMachine::new);
+	public static final ClientGuiType<LargeCanningMachineBlockEntity> LARGE_CANNING_MACHINE = register(GuiType.LARGE_CANNING_MACHINE, GuiLargeMachine::new);
 	public static final ClientGuiType<LargeWireMillBlockEntity> LARGE_WIRE_MILL = register(GuiType.LARGE_WIRE_MILL, GuiLargeMachine::new);
 	public static final ClientGuiType<LargeOreCrusherBlockEntity> LARGE_ORE_CRUSHER = register(GuiType.LARGE_ORE_CRUSHER, GuiLargeMachine::new);
 	public static final ClientGuiType<LargeGrinderBlockEntity> LARGE_GRINDER = register(GuiType.LARGE_GRINDER, GuiLargeMachine::new);

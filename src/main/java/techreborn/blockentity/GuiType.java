@@ -65,6 +65,7 @@ import techreborn.blockentity.machine.multiblock.LargeHeatSinkBlockEntity;
 import techreborn.blockentity.machine.multiblock.IndustrialGrinderBlockEntity;
 import techreborn.blockentity.machine.multiblock.IndustrialSawmillBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeChemicalReactorBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeCanningMachineBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeCompressorBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeGrinderBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeWireMillBlockEntity;
@@ -191,6 +192,7 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<GreenhouseControllerBlockEntity> GREENHOUSE_CONTROLLER = register("greenhouse_controller");
 	public static final GuiType<FluidReplicatorBlockEntity> FLUID_REPLICATOR = register("fluid_replicator");
 	public static final GuiType<LargeCompressorBlockEntity> LARGE_COMPRESSOR = register("large_compressor");
+	public static final GuiType<LargeCanningMachineBlockEntity> LARGE_CANNING_MACHINE = register("large_canning_machine");
 	public static final GuiType<LargeWireMillBlockEntity> LARGE_WIRE_MILL = register("large_wire_mill");
 	public static final GuiType<LargeOreCrusherBlockEntity> LARGE_ORE_CRUSHER = register("large_ore_crusher");
 	public static final GuiType<LargeGrinderBlockEntity> LARGE_GRINDER = register("large_grinder");
