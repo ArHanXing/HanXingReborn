@@ -107,7 +107,8 @@ public class MultiblockDefinitionLoader {
 			"naquadah_deresonator",
 			"rocketdyne_f1a_engine",
 			"void_drill",
-			"gas_collector"
+			"gas_collector",
+			"large_heat_sink"
 	};
 
 	private MultiblockDefinitionLoader() {

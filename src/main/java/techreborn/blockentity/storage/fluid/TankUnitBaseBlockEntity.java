@@ -149,8 +149,10 @@ public class TankUnitBaseBlockEntity extends MachineBaseBlockEntity implements I
 
 	@Override
 	public FluidValue fluidTransferAmount() {
-		// Full capacity should be filled in four minutes (4 minutes * 20 ticks per second / slotTransferSpeed equals 4)
-		return type.capacity.fraction(1200);
+		// Filling a unit takes two minutes of continuous pumping. This used to be
+		// capacity/1200, i.e. four minutes, which made a large unit painfully slow to
+		// charge even when the upstream pipe had the throughput to spare.
+		return type.capacity.fraction(600);
 	}
 
 	// InventoryProvider

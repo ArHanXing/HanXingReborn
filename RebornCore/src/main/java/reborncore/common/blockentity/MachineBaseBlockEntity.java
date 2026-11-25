@@ -496,7 +496,7 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 	 * input slot. Two ticks is ten operations per second, five times the original
 	 * twice-a-second pacing.
 	 */
-	public static final int DEFAULT_CELL_TRANSFER_INTERVAL = 2;
+	public static final int DEFAULT_CELL_TRANSFER_INTERVAL = 1;
 
 	/**
 	 * Ticks between two attempts to empty or fill a cell in the input slot.
@@ -528,14 +528,45 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 		return -1;
 	}
 
-	//The amount of ticks between a slot transfer attempt, less is faster
+	/**
+	 * Ticks between two item IO attempts.
+	 * <p>
+	 * Every attempt moves at most {@link #itemTransferAmount()} items per face, so
+	 * the cadence is what actually caps a machine's throughput. It used to be 4,
+	 * which meant an item-configured face could shift at most five stacks a second
+	 * even when the neighbour would have taken far more; every machine now attempts
+	 * once a tick and the per-attempt amount does the limiting.
+	 *
+	 * @return {@code int} ticks between item IO attempts
+	 */
 	public int slotTransferSpeed() {
-		return 4;
+		return 1;
 	}
 
-	//The amount of fluid transferred each tick buy the fluid config
+	/**
+	 * How many items one item-IO attempt may move through one face.
+	 * <p>
+	 * Raised from the old hard-coded 4 to a full stack: the cadence is now every
+	 * tick, so a quarter-stack cap would have been the new bottleneck. A neighbour
+	 * that only accepts less still gets exactly what it accepts.
+	 *
+	 * @return {@code int} maximum items per attempt
+	 */
+	public int itemTransferAmount() {
+		return 64;
+	}
+
+	/**
+	 * How much fluid one input attempt may pull into a tank.
+	 * <p>
+	 * Raised from a quarter bucket to four buckets. Input runs every
+	 * {@link #slotTransferSpeed()} ticks, so the old value capped a machine at five
+	 * buckets a second - far below what a pipe or another machine could deliver.
+	 *
+	 * @return {@link FluidValue} the per-attempt input limit
+	 */
 	public FluidValue fluidTransferAmount() {
-		return FluidValue.BUCKET_QUARTER;
+		return FluidValue.BUCKET.multiply(4);
 	}
 
 	/**
@@ -549,7 +580,7 @@ public class MachineBaseBlockEntity extends BlockEntity implements BlockEntityTi
 	 * @return {@link FluidValue} the per-attempt output limit
 	 */
 	public FluidValue fluidOutputTransferAmount() {
-		return FluidValue.fromMillibuckets(10_000L);
+		return FluidValue.fromMillibuckets(32_000L);
 	}
 
 	@Override

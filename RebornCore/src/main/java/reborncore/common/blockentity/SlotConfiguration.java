@@ -363,7 +363,7 @@ public class SlotConfiguration implements NBTSerializable {
 					ItemStorage.SIDED.find(machineBase.getWorld(), machineBase.getPos().offset(side), side.getOpposite()),
 					InventoryStorage.of(machineBase, null).getSlot(slotID),
 					iv -> true,
-					4, // Move up to 4 per tick.
+					machineBase.itemTransferAmount(),
 					null
 			);
 		}

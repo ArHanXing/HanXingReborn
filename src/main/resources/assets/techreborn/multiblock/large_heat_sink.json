@@ -1,9 +1,25 @@
 {
-  "translate": [-1, -1, -1],
+  "translate": [
+    1,
+    -1,
+    -1
+  ],
   "layers": [
-    ["AAA", "AAA", "AAA"],
-    ["ABA", "BCB", "ABA"],
-    ["AAA", "AAA", "AAA"]
+    [
+      "AAA",
+      "AAA",
+      "AAA"
+    ],
+    [
+      "ABA",
+      "BCB",
+      "ABA"
+    ],
+    [
+      "AAA",
+      "AAA",
+      "AAA"
+    ]
   ],
   "keys": {
     "A": {
