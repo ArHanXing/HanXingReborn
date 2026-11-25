@@ -59,7 +59,8 @@ import java.util.function.Function;
  * @param power       {@code int} energy per tick
  * @param time        {@code int} process time in ticks
  * @param fluid       {@link FluidInstance} coolant consumed per run, empty for a
- *                    recipe that only needs the cold
+ *                    recipe that only needs the cold. Read from the {@code
+ *                    fluid_input} JSON field, to pair with {@code fluid_output}.
  * @param fluidOutput {@link FluidInstance} fluid produced per run, empty when the
  *                    recipe produces none
  */
@@ -72,7 +73,7 @@ public record LargeHeatSinkRecipe(RecipeType<LargeHeatSinkRecipe> type, List<Siz
 		Codec.list(ItemStack.CODEC).fieldOf("outputs").forGetter(RebornRecipe::outputs),
 		Codecs.POSITIVE_INT.fieldOf("power").forGetter(RebornRecipe::power),
 		Codecs.POSITIVE_INT.fieldOf("time").forGetter(RebornRecipe::time),
-		FluidInstance.CODEC.optionalFieldOf("fluid", FluidInstance.EMPTY).forGetter(RebornFluidRecipe::fluid),
+		FluidInstance.CODEC.optionalFieldOf("fluid_input", FluidInstance.EMPTY).forGetter(RebornFluidRecipe::fluid),
 		FluidInstance.CODEC.optionalFieldOf("fluid_output", FluidInstance.EMPTY).forGetter(LargeHeatSinkRecipe::fluidOutput)
 	).apply(instance, (ingredients, outputs, power, time, fluid, fluidOutput) ->
 		new LargeHeatSinkRecipe(type, ingredients, outputs, power, time, fluid, fluidOutput)));
