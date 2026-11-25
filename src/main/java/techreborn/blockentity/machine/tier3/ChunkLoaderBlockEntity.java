@@ -114,7 +114,26 @@ public class ChunkLoaderBlockEntity extends MachineBaseBlockEntity implements IT
 			return;
 		}
 		unloadAll();
-		ChunkLoaderManager.get(world).clearClient((ServerPlayerEntity) playerEntity);
+		if (playerEntity instanceof ServerPlayerEntity serverPlayer) {
+			ChunkLoaderManager.get(world).clearClient(serverPlayer);
+		}
+	}
+
+	/**
+	 * Releases this loader's chunks when the block entity goes away.
+	 * <p>
+	 * {@link #onBreak} only runs when a player mines the block. An explosion, a
+	 * {@code /setblock}, or a chunk being replaced removes the block entity
+	 * without ever calling it, and the entries would then stay in the manager -
+	 * keeping those chunks loaded for the rest of the save's life with nothing
+	 * left in the world to switch them off.
+	 */
+	@Override
+	public void markRemoved() {
+		if (world != null && !world.isClient) {
+			unloadAll();
+		}
+		super.markRemoved();
 	}
 
 	@Override

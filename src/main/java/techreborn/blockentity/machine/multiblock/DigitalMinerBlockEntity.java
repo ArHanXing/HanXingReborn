@@ -865,11 +865,18 @@ public class DigitalMinerBlockEntity extends JsonMultiblockMachineBlockEntity im
 	 * working entirely (broken, unloaded or invalid structure).
 	 */
 	private void unloadChunks() {
-		if (!chunksLoaded || world == null || world.isClient) {
+		if (world == null || world.isClient) {
 			chunksLoaded = false;
 			loadedRadius = -1;
 			return;
 		}
+		// Always ask the manager, even when this block entity believes it holds
+		// nothing. chunksLoaded is a plain field and is not persisted, so after a
+		// restart it is false while the manager still holds this machine's entries
+		// from disk - skipping the call there stranded those entries forever, and
+		// the machine then kept its chunks loaded with no way to release them.
+		// unloadChunkLoader is idempotent: it only touches entries whose loader is
+		// this position.
 		ChunkLoaderManager.get(world).unloadChunkLoader(world, getPos());
 		chunksLoaded = false;
 		loadedRadius = -1;

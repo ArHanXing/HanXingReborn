@@ -129,7 +129,15 @@ public class ChunkLoaderManager extends PersistentState {
 
 
 	public void loadChunk(World world, ChunkPos chunkPos, BlockPos chunkLoader, String player){
-		Validate.isTrue(!isChunkLoaded(world, chunkPos, chunkLoader), "chunk is already loaded");
+		// Registering the same chunk twice is a no-op, not an error. This used to
+		// throw, and because the caller runs inside tickBlockEntities - which has
+		// no exception handler - a single duplicate took the whole server down.
+		// A machine reloading after a restart is exactly the case that produces a
+		// duplicate: its in-memory bookkeeping is empty while this manager has
+		// already restored the entries from disk.
+		if (isChunkLoaded(world, chunkPos, chunkLoader)) {
+			return;
+		}
 		LoadedChunk loadedChunk = new LoadedChunk(chunkPos, getWorldName(world), player, chunkLoader);
 		loadedChunks.add(loadedChunk);
 
@@ -144,7 +152,13 @@ public class ChunkLoaderManager extends PersistentState {
 
 	public void unloadChunk(World world, ChunkPos chunkPos, BlockPos chunkLoader){
 		Optional<LoadedChunk> optionalLoadedChunk = getLoadedChunk(world, chunkPos, chunkLoader);
-		Validate.isTrue(optionalLoadedChunk.isPresent(), "chunk is not loaded");
+		// Unloading something that is not registered is a no-op. The callers are
+		// machine lifecycle hooks, which run twice for an ordinary break (once from
+		// onBreak, once from markRemoved when the chunk drops the block entity), so
+		// throwing here would crash on every second break.
+		if (optionalLoadedChunk.isEmpty()) {
+			return;
+		}
 
 		LoadedChunk loadedChunk = optionalLoadedChunk.get();
 
@@ -157,8 +171,21 @@ public class ChunkLoaderManager extends PersistentState {
 		markDirty();
 	}
 
+	/**
+	 * Re-applies the chunk tickets of this world after it loads.
+	 * <p>
+	 * Only entries belonging to {@code world} are registered: chunk tickets live
+	 * in a per-world ticket manager, so replaying a nether loader's chunks into
+	 * the overworld would both keep the wrong chunks loaded and leave the nether
+	 * ones unprotected.
+	 *
+	 * @param world {@link ServerWorld} the world that just loaded
+	 */
 	public void onServerWorldLoad(ServerWorld world) {
-		loadedChunks.forEach(loadedChunk -> loadChunk(world, loadedChunk));
+		Identifier worldName = getWorldName(world);
+		loadedChunks.stream()
+			.filter(loadedChunk -> loadedChunk.world().equals(worldName))
+			.forEach(loadedChunk -> loadChunk(world, loadedChunk));
 	}
 
 	public void onServerWorldTick(ServerWorld world) {
