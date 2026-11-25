@@ -346,6 +346,7 @@
   "block.techreborn.lapotronic_su": "LESU控制器",
   "block.techreborn.lsu_storage": "LESU存储器",
   "block.techreborn.distillation_tower": "蒸馏塔",
+  "block.techreborn.large_heat_sink": "大型吸热中枢",
   "block.techreborn.vacuum_freezer": "真空冷凝器",
   "block.techreborn.plasma_generator": "等离子体发电机",
   "block.techreborn.fusion_control_computer": "聚变控制计算机",

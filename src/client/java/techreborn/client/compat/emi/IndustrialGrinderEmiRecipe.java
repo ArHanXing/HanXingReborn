@@ -39,6 +39,9 @@ import net.minecraft.recipe.RecipeEntry;
 import techreborn.client.compat.emi.core.LongHolder;
 
 public class IndustrialGrinderEmiRecipe extends TREmiRecipe<IndustrialGrinderRecipe> {
+	private static final int INPUT_X = 16 + 22 + 2;
+	private static final int TANK_X = 16;
+	private static final int OUTPUT_X = INPUT_X + 18 + 24;
 	private final List<EmiIngredient> inputsWithFluids;
 	private final List<EmiStack> outputsWithFluid;
 	private final LongHolder capacityHolder;
@@ -76,7 +79,10 @@ public class IndustrialGrinderEmiRecipe extends TREmiRecipe<IndustrialGrinderRec
 
 	@Override
 	public int getDisplayWidth() {
-		return 16 + 22 + 2 + 18 + 24 + 18 + (recipe.fluidOutput().isEmpty() ? 0 : 2 + 22);
+		// The product tank is drawn whether or not this particular recipe fills it:
+		// it is part of the machine, so hiding it per recipe made the page look like
+		// the machine had no output tank at all.
+		return OUTPUT_X + 18 + 2 + TRFluidSlotWidget.WIDTH;
 	}
 
 	@Override
@@ -86,19 +92,21 @@ public class IndustrialGrinderEmiRecipe extends TREmiRecipe<IndustrialGrinderRec
 
 	@Override
 	public void addWidgets(WidgetHolder widgets) {
-		widgets.addSlot(getInput(0), 16 + 22 + 2, 18 * 3 / 2);
-		widgets.add(new TRFluidSlotWidget(recipe.fluid(), 16, (18 * 4 - 56) / 2, capacityHolder.getValue()));
+		widgets.addSlot(getInput(0), INPUT_X, 18 * 3 / 2);
+		widgets.add(new TRFluidSlotWidget(recipe.fluid(), TANK_X, (18 * 4 - 56) / 2, capacityHolder.getValue()));
 
 		for (int i = 0; i < 4; i++) {
-			widgets.addSlot(getOutput(i), 16 + 22 + 2 + 18 + 24, i * 18).recipeContext(this);
+			widgets.addSlot(getOutput(i), OUTPUT_X, i * 18).recipeContext(this);
 		}
-		if (!recipe.fluidOutput().isEmpty()) {
-			int outputX = 16 + 22 + 2 + 18 + 24 + 18 + 2;
-			widgets.add(new TRFluidSlotWidget(recipe.fluidOutput(), outputX, (18 * 4 - 56) / 2,
-				Math.max(capacityHolder.getValue(), recipe.fluidOutput().getAmount().getRawValue())));
-		}
+		// Always drawn, so the machine's product tank is visible on every page; an
+		// empty one reads as "this recipe produces no fluid" instead of the tank
+		// silently disappearing. A blank variant is what the widget treats as empty -
+		// passing the FluidInstance itself would build an EmiStack out of Fluids.EMPTY.
+		long productCapacity = Math.max(capacityHolder.getValue(), recipe.fluidOutput().getAmount().getRawValue());
+		widgets.add(new TRFluidSlotWidget(recipe.fluidOutput().fluidVariant(), recipe.fluidOutput().getAmount().getRawValue(),
+			OUTPUT_X + 18 + 2, (18 * 4 - 56) / 2, productCapacity));
 
 		TRUIUtils.energyBar(widgets, recipe, 10, 0, (18 * 4 - 50) / 2);
-		TRUIUtils.arrowRight(widgets, recipe, 16 + 22 + 2 + 18 + 4, (18 * 4 - 10) / 2);
+		TRUIUtils.arrowRight(widgets, recipe, INPUT_X + 18 + 4, (18 * 4 - 10) / 2);
 	}
 }

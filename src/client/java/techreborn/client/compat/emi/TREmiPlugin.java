@@ -71,6 +71,7 @@ public class TREmiPlugin implements EmiPlugin {
 	public static final EmiStack SCRAP_BOX_STACK = EmiStack.of(TRContent.SCRAP_BOX);
 	public static final EmiStack SCRAPBOXINATOR_STACK = EmiStack.of(TRContent.Machine.SCRAPBOXINATOR);
 	public static final EmiStack VACUUM_FREEZER_STACK = EmiStack.of(TRContent.Machine.VACUUM_FREEZER);
+	public static final EmiStack LARGE_HEAT_SINK_STACK = EmiStack.of(TRContent.Machine.LARGE_HEAT_SINK);
 	public static final EmiStack FLUID_REPLICATOR_STACK = EmiStack.of(TRContent.Machine.FLUID_REPLICATOR);
 	public static final EmiStack FUSION_CONTROL_COMPUTER_STACK = EmiStack.of(TRContent.Machine.FUSION_CONTROL_COMPUTER);
 	public static final EmiStack ROLLING_MACHINE_STACK = EmiStack.of(TRContent.Machine.ROLLING_MACHINE);
@@ -155,6 +156,9 @@ public class TREmiPlugin implements EmiPlugin {
 			EmiRecipeSorting.compareOutputThenInput());
 	public static final EmiRecipeCategory SCRAPBOX_CATEGORY =
 		new EmiRecipeCategory(trId("scrapbox"), SCRAP_BOX_STACK, EmiTextures.SCRAPBOX,
+			EmiRecipeSorting.compareOutputThenInput());
+	public static final EmiRecipeCategory LARGE_HEAT_SINK_CATEGORY =
+		new EmiRecipeCategory(trId("large_heat_sink"), LARGE_HEAT_SINK_STACK, LARGE_HEAT_SINK_STACK,
 			EmiRecipeSorting.compareOutputThenInput());
 	public static final EmiRecipeCategory VACUUM_FREEZER_CATEGORY =
 		new EmiRecipeCategory(trId("vacuum_freezer"), VACUUM_FREEZER_STACK, EmiTextures.VACUUM_FREEZING,
@@ -296,6 +300,7 @@ public class TREmiPlugin implements EmiPlugin {
 		Map.entry("industrial_grinder", TRContent.Machine.INDUSTRIAL_GRINDER),
 		Map.entry("industrial_sawmill", TRContent.Machine.INDUSTRIAL_SAWMILL),
 		Map.entry("vacuum_freezer", TRContent.Machine.VACUUM_FREEZER),
+		Map.entry("large_heat_sink", TRContent.Machine.LARGE_HEAT_SINK),
 		Map.entry("rotary_hearth_furnace", TRContent.Machine.ROTARY_HEARTH_FURNACE),
 		Map.entry("large_compressor", TRContent.Machine.LARGE_COMPRESSOR),
 		Map.entry("large_wire_mill", TRContent.Machine.LARGE_WIRE_MILL),
@@ -470,6 +475,14 @@ public class TREmiPlugin implements EmiPlugin {
 		registry.addWorkstation(VACUUM_FREEZER_CATEGORY, VACUUM_FREEZER_STACK);
 		for (var recipe : getRecipes(registry, ModRecipes.VACUUM_FREEZER)) {
 			registry.addRecipe(new SimpleOneInputEmiRecipe(recipe, VACUUM_FREEZER_CATEGORY, 64));
+		}
+
+		// Large Heat Sink: own recipe type with its own coolant accounting.
+		registry.addCategory(LARGE_HEAT_SINK_CATEGORY);
+		registry.addWorkstation(LARGE_HEAT_SINK_CATEGORY, LARGE_HEAT_SINK_STACK);
+		LongHolder heatSinkCapacityHolder = new LongHolder(1000 * 81);
+		for (var recipe : getRecipes(registry, ModRecipes.LARGE_HEAT_SINK)) {
+			registry.addRecipe(new LargeHeatSinkEmiRecipe(recipe, heatSinkCapacityHolder));
 		}
 
 		// Fluid Replicating

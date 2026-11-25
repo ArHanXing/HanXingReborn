@@ -496,6 +496,12 @@ public class TechRebornConfig {
 	@Config(config = "machines", category = "matter_fabricator", key = "MatterFabricatorEnergyPerAmp", comment = "Matter Fabricator EU per amplifier unit, multiply this with the rate for total Energy")
 	public static int matterFabricatorEnergyPerAmp = 5;
 
+	@Config(config = "machines", category = "large_heat_sink", key = "LargeHeatSinkMaxInput", comment = "Large Heat Sink Max Input (Energy per tick)")
+	public static int largeHeatSinkMaxInput = 2048;
+
+	@Config(config = "machines", category = "large_heat_sink", key = "LargeHeatSinkMaxEnergy", comment = "Large Heat Sink Max Energy")
+	public static int largeHeatSinkMaxEnergy = 1_000_000;
+
 	@Config(config = "machines", category = "industrial_grinder", key = "IndustrialGrinderMaxInput", comment = "Industrial Grinder Max Input (Energy per tick)")
 	public static int industrialGrinderMaxInput = 128;
 

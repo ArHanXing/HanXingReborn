@@ -76,6 +76,7 @@ import techreborn.blockentity.storage.energy.AdjustableSUBlockEntity;
 import techreborn.blocks.DigitalMinerBlock;
 import techreborn.blocks.GenericMachineBlock;
 import techreborn.blocks.IndustrialGrinderBlock;
+import techreborn.blocks.LargeHeatSinkBlock;
 import techreborn.blocks.LargeChemicalReactorBlock;
 import techreborn.blocks.HunterProcessReactorBlock;
 import techreborn.blocks.KrollReductionVesselBlock;
@@ -858,6 +859,7 @@ public class TRContent {
 		ROLLING_MACHINE(new GenericMachineBlock(GuiType.ROLLING_MACHINE, RollingMachineBlockEntity::new)),
 		SCRAPBOXINATOR(new GenericMachineBlock(GuiType.SCRAPBOXINATOR, ScrapboxinatorBlockEntity::new)),
 		VACUUM_FREEZER(new GenericMachineBlock(GuiType.VACUUM_FREEZER, VacuumFreezerBlockEntity::new, 16)),
+		LARGE_HEAT_SINK(new LargeHeatSinkBlock(GuiType.LARGE_HEAT_SINK, LargeHeatSinkBlockEntity::new)),
 		LARGE_CHEMICAL_REACTOR(new LargeChemicalReactorBlock(GuiType.LARGE_CHEMICAL_REACTOR, LargeChemicalReactorBlockEntity::new)),
 		LARGE_COMPRESSOR(new LargeCompressorBlock(GuiType.LARGE_COMPRESSOR, LargeCompressorBlockEntity::new)),
 		LARGE_WIRE_MILL(new LargeWireMillBlock(GuiType.LARGE_WIRE_MILL, LargeWireMillBlockEntity::new)),

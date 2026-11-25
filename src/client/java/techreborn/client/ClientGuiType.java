@@ -53,6 +53,7 @@ import techreborn.blockentity.machine.multiblock.FurnaceProMaxBlockEntity;
 import techreborn.blockentity.machine.multiblock.PreciseAssemblerBlockEntity;
 import techreborn.blockentity.machine.multiblock.PrimitiveDistillationTowerBlockEntity;
 import techreborn.blockentity.machine.multiblock.RotaryHearthFurnaceBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeHeatSinkBlockEntity;
 import techreborn.blockentity.machine.multiblock.VacuumFreezerBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeOreCrusherBlockEntity;
 import techreborn.blockentity.machine.multiblock.IndustrialAlloySmelterBlockEntity;
@@ -187,6 +188,7 @@ import techreborn.client.gui.GuiStorageUnit;
 import techreborn.client.gui.GuiTankUnit;
 import techreborn.client.gui.GuiWaterSink;
 import techreborn.client.gui.GuiThermalGenerator;
+import techreborn.client.gui.GuiLargeHeatSink;
 import techreborn.client.gui.GuiVacuumFreezer;
 import techreborn.client.gui.GuiWireMill;
 
@@ -276,6 +278,7 @@ public record ClientGuiType<T extends BlockEntity>(GuiType<T> guiType, GuiFactor
 	public static final ClientGuiType<SemiFluidGeneratorBlockEntity> SEMIFLUID_GENERATOR = register(GuiType.SEMIFLUID_GENERATOR, GuiSemifluidGenerator::new);
 	public static final ClientGuiType<ThermalGeneratorBlockEntity> THERMAL_GENERATOR = register(GuiType.THERMAL_GENERATOR, GuiThermalGenerator::new);
 	public static final ClientGuiType<VacuumFreezerBlockEntity> VACUUM_FREEZER = register(GuiType.VACUUM_FREEZER, GuiVacuumFreezer::new);
+	public static final ClientGuiType<LargeHeatSinkBlockEntity> LARGE_HEAT_SINK = register(GuiType.LARGE_HEAT_SINK, GuiLargeHeatSink::new);
 	public static final ClientGuiType<SolidCanningMachineBlockEntity> SOLID_CANNING_MACHINE = register(GuiType.SOLID_CANNING_MACHINE, GuiSolidCanningMachine::new);
 	public static final ClientGuiType<WireMillBlockEntity> WIRE_MILL = register(GuiType.WIRE_MILL, GuiWireMill::new);
 	public static final ClientGuiType<GreenhouseControllerBlockEntity> GREENHOUSE_CONTROLLER = register(GuiType.GREENHOUSE_CONTROLLER, GuiGreenhouseController::new);

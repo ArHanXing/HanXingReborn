@@ -1,0 +1,19 @@
+{
+  "translate": [-1, -1, -1],
+  "layers": [
+    ["AAA", "AAA", "AAA"],
+    ["ABA", "BCB", "ABA"],
+    ["AAA", "AAA", "AAA"]
+  ],
+  "keys": {
+    "A": {
+      "block": "techreborn:industrial_machine_casing"
+    },
+    "B": {
+      "block": "techreborn:advanced_machine_casing"
+    },
+    "C": {
+      "air": true
+    }
+  }
+}

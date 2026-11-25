@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ICI",
+    "BVB",
+    "IMI"
+  ],
+  "key": {
+    "I": {
+      "item": "techreborn:industrial_machine_frame"
+    },
+    "C": {
+      "item": "techreborn:industrial_centrifuge"
+    },
+    "B": {
+      "item": "techreborn:industrial_machine_casing"
+    },
+    "V": {
+      "item": "techreborn:vacuum_freezer"
+    },
+    "M": {
+      "item": "techreborn:energy_flow_chip"
+    }
+  },
+  "result": {
+    "id": "techreborn:large_heat_sink"
+  }
+}

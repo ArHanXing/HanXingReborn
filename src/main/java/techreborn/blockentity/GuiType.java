@@ -61,6 +61,7 @@ import techreborn.blockentity.machine.multiblock.FluidReplicatorBlockEntity;
 import techreborn.blockentity.machine.multiblock.FusionControlComputerBlockEntity;
 import techreborn.blockentity.machine.multiblock.ImplosionCompressorBlockEntity;
 import techreborn.blockentity.machine.multiblock.IndustrialBlastFurnaceBlockEntity;
+import techreborn.blockentity.machine.multiblock.LargeHeatSinkBlockEntity;
 import techreborn.blockentity.machine.multiblock.IndustrialGrinderBlockEntity;
 import techreborn.blockentity.machine.multiblock.IndustrialSawmillBlockEntity;
 import techreborn.blockentity.machine.multiblock.LargeChemicalReactorBlockEntity;
@@ -184,6 +185,7 @@ public record GuiType<T extends BlockEntity>(Identifier identifier, ScreenHandle
 	public static final GuiType<SemiFluidGeneratorBlockEntity> SEMIFLUID_GENERATOR = register("semifluid_generator");
 	public static final GuiType<ThermalGeneratorBlockEntity> THERMAL_GENERATOR = register("thermal_generator");
 	public static final GuiType<VacuumFreezerBlockEntity> VACUUM_FREEZER = register("vacuum_freezer");
+	public static final GuiType<LargeHeatSinkBlockEntity> LARGE_HEAT_SINK = register("large_heat_sink");
 	public static final GuiType<SolidCanningMachineBlockEntity> SOLID_CANNING_MACHINE = register("solid_canning_machine");
 	public static final GuiType<WireMillBlockEntity> WIRE_MILL = register("wire_mill");
 	public static final GuiType<GreenhouseControllerBlockEntity> GREENHOUSE_CONTROLLER = register("greenhouse_controller");

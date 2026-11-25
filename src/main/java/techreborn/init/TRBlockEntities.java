@@ -118,6 +118,7 @@ public class TRBlockEntities {
 	public static final BlockEntityType<LSUStorageBlockEntity> LSU_STORAGE = register(LSUStorageBlockEntity::new, "lsu_storage", TRContent.Machine.LSU_STORAGE);
 	public static final BlockEntityType<DistillationTowerBlockEntity> DISTILLATION_TOWER = register(DistillationTowerBlockEntity::new, "distillation_tower", TRContent.Machine.DISTILLATION_TOWER);
 	public static final BlockEntityType<VacuumFreezerBlockEntity> VACUUM_FREEZER = register(VacuumFreezerBlockEntity::new, "vacuum_freezer", TRContent.Machine.VACUUM_FREEZER);
+	public static final BlockEntityType<LargeHeatSinkBlockEntity> LARGE_HEAT_SINK = register(LargeHeatSinkBlockEntity::new, "large_heat_sink", TRContent.Machine.LARGE_HEAT_SINK);
 	public static final BlockEntityType<FusionControlComputerBlockEntity> FUSION_CONTROL_COMPUTER = register(FusionControlComputerBlockEntity::new, "fusion_control_computer", TRContent.Machine.FUSION_CONTROL_COMPUTER);
 	public static final BlockEntityType<LightningRodBlockEntity> LIGHTNING_ROD = register(LightningRodBlockEntity::new, "lightning_rod", TRContent.Machine.LIGHTNING_ROD);
 	public static final BlockEntityType<IndustrialSawmillBlockEntity> INDUSTRIAL_SAWMILL = register(IndustrialSawmillBlockEntity::new, "industrial_sawmill", TRContent.Machine.INDUSTRIAL_SAWMILL);

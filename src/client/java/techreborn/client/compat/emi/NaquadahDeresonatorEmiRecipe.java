@@ -25,12 +25,17 @@
 package techreborn.client.compat.emi;
 
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.recipe.RecipeEntry;
 import reborncore.common.fluid.FluidValue;
 import techreborn.blockentity.machine.multiblock.NaquadahDeresonatorBlockEntity;
 import techreborn.recipe.recipes.NaquadahDeresonatorRecipe;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 public class NaquadahDeresonatorEmiRecipe extends TREmiRecipe<NaquadahDeresonatorRecipe> {
 
@@ -48,8 +53,33 @@ public class NaquadahDeresonatorEmiRecipe extends TREmiRecipe<NaquadahDeresonato
 	/** Width of a {@link TRFluidSlotWidget}, used to size the display. */
 	private static final int TANK_WIDGET_WIDTH = 22;
 
+	private final List<EmiIngredient> inputsWithFluid;
+	private final List<EmiStack> outputsWithFluid;
+
 	public NaquadahDeresonatorEmiRecipe(RecipeEntry<NaquadahDeresonatorRecipe> recipe) {
 		super(recipe);
+		// EMI indexes a recipe by getInputs()/getOutputs(), not by what addWidgets()
+		// happens to draw. Without these the fluid never took part in lookup, so the
+		// page was unreachable when searching for the fluid even though it was
+		// visibly drawn on the card.
+		FluidVariant inputFluid = FluidVariant.of(recipe.value().fluid());
+		inputsWithFluid = Stream.concat(inputs.stream(),
+			Stream.of(EmiStack.of(inputFluid.getFluid(), inputFluid.getComponents(), DISPLAY_FLUID_AMOUNT))).toList();
+
+		outputsWithFluid = recipe.value().outputFluid()
+			.map(fluid -> Stream.concat(outputs.stream(),
+				Stream.of(EmiStack.of(fluid, DISPLAY_FLUID_AMOUNT))).toList())
+			.orElse(outputs);
+	}
+
+	@Override
+	public List<EmiIngredient> getInputs() {
+		return inputsWithFluid;
+	}
+
+	@Override
+	public List<EmiStack> getOutputs() {
+		return outputsWithFluid;
 	}
 
 	@Override
